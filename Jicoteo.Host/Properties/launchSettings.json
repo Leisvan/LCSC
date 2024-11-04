@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Jicoteo.Host (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Jicoteo.Host (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
