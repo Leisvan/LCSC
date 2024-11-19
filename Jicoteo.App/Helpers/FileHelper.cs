@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace Jicoteo.Manager.Helpers
 {
@@ -6,7 +7,7 @@ namespace Jicoteo.Manager.Helpers
     {
         public static string GetRootDirectory(string folderName = "", string fileName = "")
         {
-            var root = Environment.CurrentDirectory;
+            var root = "";//Environment.CurrentDirectory;
             if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
             {
                 string withDirectory = Path.Combine(root, folderName);

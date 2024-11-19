@@ -1,8 +1,9 @@
-﻿using Jicoteo.Bot;
-using Jicoteo.Manager.Bot;
-using Jicoteo.Services;
+﻿using Jicoteo.Manager.Bot;
+using Jicoteo.Manager;
+using Jicoteo.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
+using System;
 
 namespace Jicoteo.Manager.Helpers
 {
@@ -23,12 +24,12 @@ namespace Jicoteo.Manager.Helpers
             var container = new Container();
             container.Configure(config =>
             {
-                config.Scan(_ =>
-                {
-                    _.AssemblyContainingType(typeof(Program));
-                    _.WithDefaultConventions();
-                });
-                config.Populate(_services);
+                //config.Scan(_ =>
+                //{
+                //    _.AssemblyContainingType(typeof(Jicoteo.App.App));
+                //    _.WithDefaultConventions();
+                //});
+                //config.Populate(_services);
             });
 
             _serviceProvider = container.GetInstance<IServiceProvider>();

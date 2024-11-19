@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Jicoteo.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Jicoteo.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

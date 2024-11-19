@@ -1,6 +1,6 @@
-﻿using Jicoteo.Bot;
-using Jicoteo.Manager.Bot;
-using Jicoteo.Services;
+﻿using Jicoteo.Manager.Bot;
+using Jicoteo.Manager;
+using Jicoteo.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
@@ -25,7 +25,7 @@ namespace Jicoteo.Manager.Helpers
             {
                 config.Scan(_ =>
                 {
-                    _.AssemblyContainingType(typeof(Program));
+                    _.AssemblyContainingType(typeof(App));
                     _.WithDefaultConventions();
                 });
                 config.Populate(_services);

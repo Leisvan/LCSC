@@ -1,11 +1,11 @@
-﻿using Jicoteo.Bot;
-using Jicoteo.Bot.Models.Json;
-using Jicoteo.Host.Helpers;
+﻿using Jicoteo.Bot.Models.Json;
+using Jicoteo.Manager.Bot;
+using Jicoteo.Manager.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 const string BotConfigFileName = "dconfig.json";
-const string CONFIGDirectoryName = "Config";
+const string CONFIGDirectoryName = "Bot\\Config";
 
 var dependencies = new DependencyServiceHelper();
 var bot = dependencies.ServiceProvider.GetService<BotManager>();
