@@ -3,7 +3,7 @@ using DSharpPlus.EventArgs;
 
 namespace Jicoteo.Manager.Services;
 
-public class MessageListener
+public class MessageHandlingService
 {
     public async void HandleMessageAsync(DiscordClient sender, MessageCreatedEventArgs args)
     {

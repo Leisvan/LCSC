@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using Windows.Storage;
+using System.IO;
 using System.Text;
+using Windows.ApplicationModel;
 
 namespace Jicoteo.Manager.Helpers
 {
     public static class FileHelper
     {
-        public static string GetRootDirectory(string folderName = "", string fileName = "")
+        public static string GetFileInAppDirectoryAsync(string folderName = "", string fileName = "")
         {
-            var root = "";//Environment.CurrentDirectory;
+            var root = Package.Current.InstalledLocation.Path;
             if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
             {
                 string withDirectory = Path.Combine(root, folderName);
@@ -30,6 +32,6 @@ namespace Jicoteo.Manager.Helpers
         }
 
         public static string ReadTextFileFromDirectory(string dirName, string fileName)
-                            => ReadTextFile(GetRootDirectory(dirName, fileName));
+                            => ReadTextFile(GetFileInAppDirectoryAsync(dirName, fileName));
     }
 }

@@ -1,4 +1,9 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Jicoteo.App.Bot;
+using Jicoteo.App.Services;
+using Jicoteo.App.ViewModels;
+using Jicoteo.Manager.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -26,14 +31,21 @@ namespace Jicoteo.App
     /// </summary>
     public partial class App : Application
     {
+        private Window? m_window;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
+            Services = ConfigureServices();
             this.InitializeComponent();
         }
+
+        public new static App Current => (App)Application.Current;
+
+        public IServiceProvider Services { get; }
 
         /// <summary>
         /// Invoked when the application is launched.
@@ -45,6 +57,13 @@ namespace Jicoteo.App
             m_window.Activate();
         }
 
-        private Window? m_window;
+        private IServiceProvider ConfigureServices()
+        {
+            return new ServiceCollection()
+                .AddSingleton<BotService>()
+                .AddSingleton<MessageHandlingService>()
+                .AddSingleton<MainViewModel>()
+                .BuildServiceProvider();
+        }
     }
 }

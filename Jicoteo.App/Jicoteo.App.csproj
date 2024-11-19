@@ -39,6 +39,8 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.241112-preview1" />
     <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02422" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02422" />
     <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02422" />

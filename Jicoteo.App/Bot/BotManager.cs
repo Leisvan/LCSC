@@ -9,22 +9,16 @@ namespace Jicoteo.App.Bot;
 public class BotManager
 {
     private const ulong DiscordBotUserId = 1303150451893600276;
-    private MessageListener? _messageListener;
 
-    public BotManager(MessageListener listener)
+    public BotManager()
     {
-        _messageListener = listener;
+        //_messageListener = listener;
     }
 
     public DiscordClient? Client { get; private set; }
 
-    public void ConfigureBot(IServiceProvider services, string token)
+    public void ConfigureBot(string token)
     {
-        if (services == null)
-        {
-            return;
-        }
-
         var builder = DiscordClientBuilder.CreateDefault(token, DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents);
         builder.ConfigureEventHandlers
         (
@@ -55,7 +49,7 @@ public class BotManager
     {
         if (args.Author.Id != DiscordBotUserId)
         {
-            _messageListener?.HandleMessageAsync(sender, args);
+            //_messageListener?.HandleMessageAsync(sender, args);
         }
         return Task.CompletedTask;
     }
