@@ -1,5 +1,5 @@
 ﻿using LCSC.App.Bot;
-using LCSC.Bot.Models.Json;
+using LCSC.App.Models.Bot.Json;
 using LCSC.Manager.Helpers;
 using Newtonsoft.Json;
 using System;

@@ -1,23 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using LCSC.App.Bot;
-using LCSC.App.Services;
-using System;
+using LCSC.Http.Models;
+using LCSC.Http.Services;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableRecipient
     {
-        private BotService _botService;
-
-        public MainViewModel(BotService botService)
+        public MainViewModel()
         {
-            _botService = botService;
         }
-
-        [RelayCommand]
-        private Task ConnectBot()
-        => _botService.ConnectAsync();
     }
 }

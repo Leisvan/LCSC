@@ -8,6 +8,7 @@ public static class AirtableExtensions
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
     => new(
         record.Id,
+        record.GetField<int>(nameof(MemberRecord.Number)),
         record.GetField<string>(nameof(MemberRecord.Nick)),
         record.GetField<string>(nameof(MemberRecord.RealName)),
         record.GetField<string>(nameof(MemberRecord.KnownRace)),

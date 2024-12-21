@@ -2,6 +2,7 @@
 {
     public record class MemberRecord(
         string Id,
+        int Number = 0,
         string? Nick = null,
         string? RealName = null,
         string? KnownRace = null,

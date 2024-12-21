@@ -8,47 +8,33 @@
         xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
         xmlns:local="using:LCSC.App"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="using:LCSC.App.Views"
         Title="Jicoteo.App"
         mc:Ignorable="d">
 
 
-    <Grid Background="#FF2D2D2D">
+    <Grid Background="{StaticResource AppColor2}">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <!--  Title bar  -->
         <Grid x:Name="TitleBar"
-              Background="#FF1D1D1D">
+              Background="{StaticResource AppColor1}">
             <Image Height="24"
                    Margin="16,0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
-                   Source="ms-appx:///Assets/Branding/LCSC.png" />
+                   Source="ms-appx:///Assets/Images/LCSC.png" />
         </Grid>
         <Pivot Grid.Row="1">
+            <PivotItem Header="Miembros">
+                <views:MembersUserControl />
+            </PivotItem>
+
+            <PivotItem Header="Torneos" />
             <PivotItem Header="Bot">
-                <Grid Padding="16"
-                      RowSpacing="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Vertical"
-                                Spacing="4">
-                        <Button Command="{x:Bind ViewModel.ConnectBotCommand, Mode=OneWay}"
-                                Content="Connect bot" />
-                    </StackPanel>
-                    <Grid Grid.Row="1">
-                        <RichTextBlock HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Stretch"
-                                       FontFamily="Cascadia Mono">
-                            <interactivity:Interaction.Behaviors>
-                                <appBehaviors:ConsoleMirrorBehavior />
-                            </interactivity:Interaction.Behaviors>
-                        </RichTextBlock>
-                    </Grid>
-                </Grid>
+                <views:BotUserControl />
             </PivotItem>
         </Pivot>
     </Grid>
