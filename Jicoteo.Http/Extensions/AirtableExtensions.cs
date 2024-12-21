@@ -1,7 +1,7 @@
 ﻿using AirtableApiClient;
-using Jicoteo.Http.Models;
+using LCSC.Http.Models;
 
-namespace Jicoteo.Http.Extensions;
+namespace LCSC.Http.Extensions;
 
 public static class AirtableExtensions
 {

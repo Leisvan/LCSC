@@ -1,10 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using Jicoteo.Manager.Services;
+using LCSC.Manager.Services;
 using System;
 using System.Threading.Tasks;
 
-namespace Jicoteo.App.Bot;
+namespace LCSC.App.Bot;
 
 public class BotManager
 {

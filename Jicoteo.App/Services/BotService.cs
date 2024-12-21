@@ -1,15 +1,11 @@
-﻿using CommunityToolkit.HighPerformance;
-using Jicoteo.App.Bot;
-using Jicoteo.Bot.Models.Json;
-using Jicoteo.Manager.Helpers;
+﻿using LCSC.App.Bot;
+using LCSC.Bot.Models.Json;
+using LCSC.Manager.Helpers;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Jicoteo.App.Services
+namespace LCSC.App.Services
 {
     public class BotService
     {

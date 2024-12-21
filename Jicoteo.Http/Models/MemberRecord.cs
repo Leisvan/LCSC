@@ -1,4 +1,4 @@
-﻿namespace Jicoteo.Http.Models
+﻿namespace LCSC.Http.Models
 {
     public record class MemberRecord(
         string Id,

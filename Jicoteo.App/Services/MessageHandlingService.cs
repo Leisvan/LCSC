@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 
-namespace Jicoteo.Manager.Services;
+namespace LCSC.Manager.Services;
 
 public class MessageHandlingService
 {

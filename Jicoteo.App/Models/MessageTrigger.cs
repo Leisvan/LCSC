@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Jicoteo.Models
+namespace LCSC.Models
 {
     public class MessageTrigger
     {

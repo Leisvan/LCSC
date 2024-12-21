@@ -12,6 +12,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Assets\Branding\LCSC.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -49,7 +52,12 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jicoteo.Http\Jicoteo.Http.csproj" />
+    <ProjectReference Include="..\Jicoteo.Http\LSCC.Http.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\Branding\LCSC.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <!--

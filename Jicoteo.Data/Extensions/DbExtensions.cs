@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Jicoteo.Data.Extensions;
+namespace LCSC.Data.Extensions;
 
 public static class DbExtensions
 {

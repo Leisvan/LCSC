@@ -1,8 +1,8 @@
-﻿using Jicoteo.App.Bot;
-using Jicoteo.App.Services;
-using Jicoteo.App.ViewModels;
-using Jicoteo.Http.Services;
-using Jicoteo.Manager.Services;
+﻿using LCSC.App.Bot;
+using LCSC.App.Services;
+using LCSC.App.ViewModels;
+using LCSC.Http.Services;
+using LCSC.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -25,7 +25,7 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace Jicoteo.App
+namespace LCSC.App
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.

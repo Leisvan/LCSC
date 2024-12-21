@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.WinUI.Behaviors;
-using Jicoteo.Manager.Tools;
+using LCSC.Manager.Tools;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using System;
 
-namespace Jicoteo.App.Behaviors
+namespace LCSC.App.Behaviors
 {
     public class ConsoleMirrorBehavior : BehaviorBase<RichTextBlock>
     {

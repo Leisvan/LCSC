@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jicoteo.Data;
+namespace LCSC.Data;
 
 public static class DbInitializer
 {

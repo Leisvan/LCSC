@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jicoteo.App", "Jicoteo.App\Jicoteo.App.csproj", "{05748B72-91D6-4873-8DF6-B4D6B7144301}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCSC.App", "Jicoteo.App\LCSC.App.csproj", "{05748B72-91D6-4873-8DF6-B4D6B7144301}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jicoteo.Data", "Jicoteo.Data\Jicoteo.Data.csproj", "{11E42C68-3474-4E1F-B0CF-4ED1EDB50F2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCSC.Data", "Jicoteo.Data\LCSC.Data.csproj", "{11E42C68-3474-4E1F-B0CF-4ED1EDB50F2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jicoteo.Http", "Jicoteo.Http\Jicoteo.Http.csproj", "{F50C59FC-B278-442C-97FB-61498CBDC350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSCC.Http", "Jicoteo.Http\LSCC.Http.csproj", "{F50C59FC-B278-442C-97FB-61498CBDC350}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

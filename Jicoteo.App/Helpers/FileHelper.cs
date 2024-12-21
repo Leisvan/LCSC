@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Windows.ApplicationModel;
 
-namespace Jicoteo.Manager.Helpers
+namespace LCSC.Manager.Helpers
 {
     public static class FileHelper
     {

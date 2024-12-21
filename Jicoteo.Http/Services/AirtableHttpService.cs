@@ -1,8 +1,8 @@
 ﻿using AirtableApiClient;
-using Jicoteo.Http.Extensions;
-using Jicoteo.Http.Models;
+using LCSC.Http.Extensions;
+using LCSC.Http.Models;
 
-namespace Jicoteo.Http.Services
+namespace LCSC.Http.Services
 {
     public static class AirtableHttpService
     {

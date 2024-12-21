@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jicoteo.Bot.Models.Json
+namespace LCSC.Bot.Models.Json
 {
     public struct BotConfigJson
     {

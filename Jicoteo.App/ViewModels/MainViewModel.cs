@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Jicoteo.App.Bot;
-using Jicoteo.App.Services;
+using LCSC.App.Bot;
+using LCSC.App.Services;
 using System;
 using System.Threading.Tasks;
 
-namespace Jicoteo.App.ViewModels
+namespace LCSC.App.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
