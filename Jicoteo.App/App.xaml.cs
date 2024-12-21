@@ -1,6 +1,7 @@
 ﻿using Jicoteo.App.Bot;
 using Jicoteo.App.Services;
 using Jicoteo.App.ViewModels;
+using Jicoteo.Http.Services;
 using Jicoteo.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -58,12 +59,10 @@ namespace Jicoteo.App
         }
 
         private IServiceProvider ConfigureServices()
-        {
-            return new ServiceCollection()
+            => new ServiceCollection()
                 .AddSingleton<BotService>()
                 .AddSingleton<MessageHandlingService>()
                 .AddSingleton<MainViewModel>()
                 .BuildServiceProvider();
-        }
     }
 }

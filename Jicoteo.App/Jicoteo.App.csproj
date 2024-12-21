@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Jicoteo.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -39,14 +39,17 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.241112-preview1" />
-    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02422" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02422" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02422" />
+    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02436" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02436" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02436" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.241114004-experimental1" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jicoteo.Http\Jicoteo.Http.csproj" />
   </ItemGroup>
 
   <!--
@@ -64,5 +67,7 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 </Project>
