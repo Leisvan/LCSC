@@ -1,4 +1,4 @@
-﻿namespace LSCC.App.Models;
+﻿namespace LCSC.App.Models;
 
 public enum Race
 {

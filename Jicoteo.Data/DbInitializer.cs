@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LSCC.Data;
+namespace LCSC.Data;
 
 public static class DbInitializer
 {

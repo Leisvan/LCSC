@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LSCC.App.Models;
-using LSCC.Http.Models;
+using LCSC.App.Models;
+using LCSC.Http.Models;
 using System;
 
-namespace LSCC.App.ObservableObjects
+namespace LCSC.App.ObservableObjects
 {
     public partial class MemberObservableObject : ObservableObject
     {
@@ -15,6 +15,8 @@ namespace LSCC.App.ObservableObjects
         }
 
         public bool IsBanned => _record.Banned;
+
+        public bool IsVerified => _record.Verified;
 
         public string? Nick => _record.Nick;
 

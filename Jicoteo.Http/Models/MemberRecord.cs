@@ -1,4 +1,4 @@
-﻿namespace LSCC.Http.Models
+﻿namespace LCSC.Http.Models
 {
     public record class MemberRecord(
         string Id,
@@ -10,6 +10,7 @@
         string? CountryTag = null,
         string? DiscordId = null,
         string? BattleTag = null,
+        bool Verified = false,
         bool Banned = false,
         string? PictureUrl = null,
         string? ContactEmail = null,

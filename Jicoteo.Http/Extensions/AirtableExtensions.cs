@@ -1,7 +1,7 @@
 ﻿using AirtableApiClient;
-using LSCC.Http.Models;
+using LCSC.Http.Models;
 
-namespace LSCC.Http.Extensions;
+namespace LCSC.Http.Extensions;
 
 public static class AirtableExtensions
 {
@@ -16,6 +16,7 @@ public static class AirtableExtensions
         record.GetField<string>(nameof(MemberRecord.CountryTag)),
         record.GetField<string>(nameof(MemberRecord.DiscordId)),
         record.GetField<string>(nameof(MemberRecord.BattleTag)),
+        record.GetField<bool>(nameof(MemberRecord.Verified)),
         record.GetField<bool>(nameof(MemberRecord.Banned)),
         record.GetField<string>(nameof(MemberRecord.PictureUrl)),
         record.GetField<string>(nameof(MemberRecord.ContactEmail)),

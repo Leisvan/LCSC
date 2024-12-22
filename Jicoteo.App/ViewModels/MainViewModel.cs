@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LSCC.Http.Models;
-using LSCC.Http.Helpers;
+using LCSC.Http.Models;
+using LCSC.Http.Helpers;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LSCC.App.ViewModels
+namespace LCSC.App.ViewModels
 {
     public partial class MainViewModel : ObservableRecipient
     {

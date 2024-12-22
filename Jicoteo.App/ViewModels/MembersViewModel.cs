@@ -1,13 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LSCC.App.ObservableObjects;
-using LSCC.Http.Helpers;
+using LCSC.App.ObservableObjects;
+using LCSC.Http.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace LSCC.App.ViewModels;
+namespace LCSC.App.ViewModels;
 
 public partial class MembersViewModel : ObservableObject
 {

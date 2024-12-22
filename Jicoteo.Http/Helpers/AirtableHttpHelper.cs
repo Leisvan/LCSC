@@ -1,8 +1,9 @@
 ﻿using AirtableApiClient;
-using LSCC.Http.Extensions;
-using LSCC.Http.Models;
+using LCSC.Http.Extensions;
+using LCSC.Http.Models;
+using System.Text.Json;
 
-namespace LSCC.Http.Helpers
+namespace LCSC.Http.Helpers
 {
     public static class AirtableHttpHelper
     {
@@ -86,6 +87,22 @@ namespace LSCC.Http.Helpers
                 errorMessage = "Unknown error";
             }
             return null;
+        }
+
+        public class Link
+        {
+            public string absoluteUrl { get; set; }
+
+            public int playerCharacterId { get; set; }
+
+            public string type { get; set; }
+        }
+
+        public class Root
+        {
+            public List<object> failedTypes { get; set; }
+
+            public List<Link> links { get; set; }
         }
     }
 }

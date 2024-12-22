@@ -1,9 +1,9 @@
-using LSCC.App.ViewModels;
+using LCSC.App.ViewModels;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
-namespace LSCC.App.Views;
+namespace LCSC.App.Views;
 
 public sealed partial class BotUserControl : UserControl
 {

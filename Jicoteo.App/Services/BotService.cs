@@ -1,11 +1,11 @@
-﻿using LSCC.App.Bot;
-using LSCC.App.Models.Bot.Json;
-using LSCC.Manager.Helpers;
+﻿using LCSC.App.Bot;
+using LCSC.App.Models.Bot.Json;
+using LCSC.Manager.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
-namespace LSCC.App.Services
+namespace LCSC.App.Services
 {
     public class BotService
     {

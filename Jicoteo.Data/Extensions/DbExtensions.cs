@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace LSCC.Data.Extensions;
+namespace LCSC.Data.Extensions;
 
 public static class DbExtensions
 {

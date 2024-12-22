@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSCC.Manager.Tools
+namespace LCSC.Manager.Tools
 {
     public enum TextWriteType
     {

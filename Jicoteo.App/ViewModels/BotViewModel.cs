@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LSCC.App.Services;
+using LCSC.App.Services;
 using System.Threading.Tasks;
 
-namespace LSCC.App.ViewModels;
+namespace LCSC.App.ViewModels;
 
 public partial class BotViewModel : ObservableObject
 {
