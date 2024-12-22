@@ -1,4 +1,4 @@
-﻿namespace LCSC.Http.Models
+﻿namespace LSCC.Http.Models
 {
     public record class MemberRecord(
         string Id,

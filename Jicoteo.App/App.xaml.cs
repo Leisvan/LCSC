@@ -1,11 +1,11 @@
-﻿using LCSC.App.ViewModels;
-using LCSC.App.Bot;
-using LCSC.App.Services;
+﻿using LSCC.App.ViewModels;
+using LSCC.App.Bot;
+using LSCC.App.Services;
 
-using LCSC.App.ViewModels;
+using LSCC.App.ViewModels;
 
-using LCSC.Http.Services;
-using LCSC.Manager.Services;
+using LSCC.Http.Helpers;
+using LSCC.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -25,12 +25,12 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-using LCSC.App.ViewModels;
+using LSCC.App.ViewModels;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace LCSC.App
+namespace LSCC.App
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.

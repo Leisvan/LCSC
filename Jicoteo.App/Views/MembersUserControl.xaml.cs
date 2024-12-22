@@ -1,9 +1,9 @@
-using LCSC.App.ViewModels;
+using LSCC.App.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactions.Core;
 
-namespace LCSC.App.Views;
+namespace LSCC.App.Views;
 
 public sealed partial class MembersUserControl : UserControl
 {

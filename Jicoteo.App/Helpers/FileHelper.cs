@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Windows.ApplicationModel;
 
-namespace LCSC.Manager.Helpers
+namespace LSCC.Manager.Helpers
 {
     public static class FileHelper
     {

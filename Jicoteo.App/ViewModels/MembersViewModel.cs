@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.App.ObservableObjects;
-using LCSC.Http.Services;
+using LSCC.App.ObservableObjects;
+using LSCC.Http.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LCSC.App.ViewModels;
+namespace LSCC.App.ViewModels;
 
 public partial class MembersViewModel : ObservableObject
 {
@@ -43,7 +43,7 @@ public partial class MembersViewModel : ObservableObject
         SearchTerm = string.Empty;
         if (force || Members.Count == 0)
         {
-            var members = await AirtableHttpService.GetMemberRecordsAsync();
+            var members = await AirtableHttpHelper.GetMemberRecordsAsync();
             if (members != null && members.Any())
             {
                 _membersSource.Clear();

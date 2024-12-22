@@ -1,8 +1,8 @@
-using LCSC.App.ViewModels;
+using LSCC.App.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 
-namespace LCSC.App
+namespace LSCC.App
 {
     public sealed partial class MainWindow : Window
     {

@@ -1,10 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using LCSC.Manager.Services;
+using LSCC.Manager.Services;
 using System;
 using System.Threading.Tasks;
 
-namespace LCSC.App.Bot;
+namespace LSCC.App.Bot;
 
 public class BotManager
 {

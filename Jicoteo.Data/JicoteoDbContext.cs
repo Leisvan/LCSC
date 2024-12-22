@@ -1,7 +1,7 @@
-﻿using LCSC.Data.DataModels;
+﻿using LSCC.Data.DataModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace LCSC.Data
+namespace LSCC.Data
 {
     public class JicoteoDbContext : DbContext
     {

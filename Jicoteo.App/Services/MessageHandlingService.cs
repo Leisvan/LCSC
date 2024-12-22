@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 
-namespace LCSC.Manager.Services;
+namespace LSCC.Manager.Services;
 
 public class MessageHandlingService
 {

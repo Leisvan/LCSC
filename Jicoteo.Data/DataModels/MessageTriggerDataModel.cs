@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LCSC.Data.DataModels;
+namespace LSCC.Data.DataModels;
 
 [Table("MessageTrigger")]
 public class MessageTriggerDataModel

@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace LCSC.Manager.Services;
+namespace LSCC.Manager.Services;
 
 public class ConsoleService
 {

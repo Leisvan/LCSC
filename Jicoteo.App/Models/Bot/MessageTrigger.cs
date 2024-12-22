@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LCSC.App.Models.Bot
+namespace LSCC.App.Models.Bot
 {
     public class MessageTrigger
     {

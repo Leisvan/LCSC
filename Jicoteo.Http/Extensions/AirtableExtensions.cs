@@ -1,7 +1,7 @@
 ﻿using AirtableApiClient;
-using LCSC.Http.Models;
+using LSCC.Http.Models;
 
-namespace LCSC.Http.Extensions;
+namespace LSCC.Http.Extensions;
 
 public static class AirtableExtensions
 {

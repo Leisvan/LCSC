@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LCSC.App.Models;
-using LCSC.Http.Models;
+using LSCC.App.Models;
+using LSCC.Http.Models;
 using System;
 
-namespace LCSC.App.ObservableObjects
+namespace LSCC.App.ObservableObjects
 {
     public partial class MemberObservableObject : ObservableObject
     {

@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.WinUI.Behaviors;
-using LCSC.Manager.Tools;
+using LSCC.Manager.Tools;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using System;
 
-namespace LCSC.App.Behaviors
+namespace LSCC.App.Behaviors
 {
     public class ConsoleMirrorBehavior : BehaviorBase<RichTextBlock>
     {

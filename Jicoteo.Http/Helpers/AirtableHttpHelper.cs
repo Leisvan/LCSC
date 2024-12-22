@@ -1,10 +1,10 @@
 ﻿using AirtableApiClient;
-using LCSC.Http.Extensions;
-using LCSC.Http.Models;
+using LSCC.Http.Extensions;
+using LSCC.Http.Models;
 
-namespace LCSC.Http.Services
+namespace LSCC.Http.Helpers
 {
-    public static class AirtableHttpService
+    public static class AirtableHttpHelper
     {
         private const string AirtableToken = "patSlwRfzMHUuwyiv.e32d45a3daf6b5a0e04de06ae55f3f9d10ba899dddc6bdb5935190657e0ac897";
         private const string LCSCBaseId = "appW9fDctxfHb1WMI";
@@ -43,7 +43,7 @@ namespace LCSC.Http.Services
                 {
                     records.AddRange(response.Records);
                 }
-                else if (response.AirtableApiError is AirtableApiException)
+                else if (response.AirtableApiError is not null)
                 {
                     errorMessage = response.AirtableApiError.ErrorMessage;
                     if (response.AirtableApiError is AirtableInvalidRequestException)
@@ -62,7 +62,7 @@ namespace LCSC.Http.Services
             return records;
         }
 
-        private static async Task<AirtableRecord> GetSingleRecordAsync(string table, string id)
+        private static async Task<AirtableRecord?> GetSingleRecordAsync(string table, string id)
         {
             using var airtableBase = new AirtableBase(AirtableToken, LCSCBaseId);
             string? errorMessage = null;
