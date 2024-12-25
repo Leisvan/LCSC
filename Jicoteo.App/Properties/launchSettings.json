@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "Jicoteo.App (Package)": {
+    "LCSC (Package)": {
       "commandName": "MsixPackage"
     },
-    "Jicoteo.App (Unpackaged)": {
+    "LCSC (Unpackaged)": {
       "commandName": "Project"
     }
   }

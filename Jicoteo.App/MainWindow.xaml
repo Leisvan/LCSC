@@ -9,7 +9,7 @@
         xmlns:local="using:LCSC.App"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:LCSC.App.Views"
-        Title="Jicoteo.App"
+        Title="LCSC"
         mc:Ignorable="d">
 
 
