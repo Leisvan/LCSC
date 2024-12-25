@@ -23,9 +23,11 @@
     <None Remove="Assets\Images\TerranPortrait.png" />
     <None Remove="Assets\Images\ZergPortrait.png" />
     <None Remove="ColorsAndBrushes.xaml" />
+    <None Remove="Styles\Fonts.xaml" />
     <None Remove="Styles\Textblocks.xaml" />
     <None Remove="Views\BotUserControl.xaml" />
     <None Remove="Views\MembersUserControl.xaml" />
+    <None Remove="Views\TournamentsUserControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,7 +66,7 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jicoteo.Http\LSCC.Http.csproj" />
+    <ProjectReference Include="..\Jicoteo.Http\LCSC.Http.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\Fonts\MaterialIcons-Regular.ttf">
@@ -100,6 +102,16 @@
     <Content Update="Assets\Images\ZergRace.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Fonts.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\TournamentsUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ColorsAndBrushes.xaml">

@@ -35,5 +35,7 @@ namespace LCSC.App.ObservableObjects
         }
 
         public string? RealName => _record.RealName;
+
+        public MemberRecord Record => _record;
     }
 }

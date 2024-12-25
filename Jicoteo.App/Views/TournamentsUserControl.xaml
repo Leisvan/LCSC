@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl x:Class="LCSC.App.Views.TournamentsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:adapters="using:LCSC.App.Adapters"
+             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="using:Microsoft.Xaml.Interactivity"
+             xmlns:local="using:LCSC.App.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:observable="using:LCSC.App.ObservableObjects"
+             mc:Ignorable="d">
+    <i:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="Loaded">
+            <core:InvokeCommandAction Command="{x:Bind ViewModel.RefreshCommand}">
+                <core:InvokeCommandAction.CommandParameter>
+                    <x:Boolean>False</x:Boolean>
+                </core:InvokeCommandAction.CommandParameter>
+            </core:InvokeCommandAction>
+        </core:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="500" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Margin="8"
+              RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Padding="8"
+                  Background="{StaticResource AppColor3}"
+                  ColumnSpacing="8"
+                  CornerRadius="8">
+                <Button HorizontalAlignment="Right"
+                        Command="{x:Bind ViewModel.RefreshCommand}"
+                        Content="Refresh">
+                    <Button.CommandParameter>
+                        <x:Boolean>True</x:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </Grid>
+            <Grid Grid.Row="1"
+                  Background="{StaticResource AppColor3}"
+                  CornerRadius="8">
+                <ListView Padding="4,8"
+                          ItemsSource="{x:Bind ViewModel.Tournaments, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedTournament, Mode=TwoWay}">
+                    <ListView.Resources>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding"
+                                    Value="5" />
+                            <Setter Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.ItemTemplate>
+
+                        <DataTemplate x:DataType="observable:TournamentObservableObject">
+                            <Grid Padding="6"
+                                  Background="{StaticResource AppColor4}"
+                                  CornerRadius="8">
+                                <Grid.Resources>
+                                    <x:Double x:Key="ParticipantPictureDimensions">28</x:Double>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="56"
+                                      Height="56">
+                                    <Image Source="{x:Bind adapters:VisualAdapters.ToImageSource(LogoUrl, 128), Mode=OneWay}" />
+                                </Grid>
+                                <StackPanel Grid.Column="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="16,0,0,8"
+                                            VerticalAlignment="Center"
+                                            Orientation="Vertical">
+                                    <TextBlock Style="{StaticResource AppItemMainTextStyle}"
+                                               Text="{x:Bind DisplayName}" />
+                                    <TextBlock Style="{StaticResource AppItemSecondaryTextStyle}"
+                                               Text="{x:Bind Date}" />
+                                </StackPanel>
+                                <Grid Grid.Column="2"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Bottom"
+                                      ColumnSpacing="-8"
+                                      RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.ColumnSpan="5"
+                                               Margin="4,0"
+                                               HorizontalAlignment="Right"
+                                               Opacity=".5"
+                                               Text="{x:Bind ParticipantsDisplayCount}"
+                                               TextAlignment="Right" />
+                                    <Grid Grid.Row="1"
+                                          Grid.Column="4"
+                                          Width="{StaticResource ParticipantPictureDimensions}"
+                                          Height="{StaticResource ParticipantPictureDimensions}">
+                                        <Border Background="{StaticResource AppColor2}"
+                                                BorderBrush="{StaticResource AppColor2}"
+                                                BorderThickness="2"
+                                                CornerRadius="16">
+                                            <TextBlock Margin="-4,0,0,1"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="10"
+                                                       Text="{x:Bind ExtraParticipantsCount}"
+                                                       TextAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Grid.Row="1"
+                                          Grid.Column="3"
+                                          Width="{StaticResource ParticipantPictureDimensions}"
+                                          Height="{StaticResource ParticipantPictureDimensions}"
+                                          Visibility="{x:Bind HasPlace4, Mode=OneWay}">
+                                        <Ellipse Stroke="{StaticResource AppColor2}"
+                                                 StrokeThickness="2"
+                                                 ToolTipService.ToolTip="{x:Bind Place4.Nick}">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{x:Bind adapters:VisualAdapters.ToMemberPictureImageSource(Place4.PictureUrl, Place4.Race, 64), Mode=OneWay}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
+                                    <Grid Grid.Row="1"
+                                          Grid.Column="2"
+                                          Width="{StaticResource ParticipantPictureDimensions}"
+                                          Height="{StaticResource ParticipantPictureDimensions}"
+                                          Visibility="{x:Bind HasPlace3, Mode=OneWay}">
+                                        <Ellipse Stroke="{StaticResource AppColor2}"
+                                                 StrokeThickness="2"
+                                                 ToolTipService.ToolTip="{x:Bind Place3.Nick}">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{x:Bind adapters:VisualAdapters.ToMemberPictureImageSource(Place3.PictureUrl, Place3.Race, 64), Mode=OneWay}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
+                                    <Grid Grid.Row="1"
+                                          Grid.Column="1"
+                                          Width="{StaticResource ParticipantPictureDimensions}"
+                                          Height="{StaticResource ParticipantPictureDimensions}"
+                                          Visibility="{x:Bind HasPlace2, Mode=OneWay}">
+                                        <Ellipse Stroke="{StaticResource AppColor2}"
+                                                 StrokeThickness="2"
+                                                 ToolTipService.ToolTip="{x:Bind Place2.Nick}">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{x:Bind adapters:VisualAdapters.ToMemberPictureImageSource(Place2.PictureUrl, Place2.Race, 64), Mode=OneWay}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
+                                    <Grid Grid.Row="1"
+                                          Width="{StaticResource ParticipantPictureDimensions}"
+                                          Height="{StaticResource ParticipantPictureDimensions}"
+                                          Visibility="{x:Bind HasPlace1, Mode=OneWay}">
+                                        <Ellipse Stroke="{StaticResource AppColor2}"
+                                                 StrokeThickness="2"
+                                                 ToolTipService.ToolTip="{x:Bind Place1.Nick}">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{x:Bind adapters:VisualAdapters.ToMemberPictureImageSource(Place1.PictureUrl, Place1.Race, 64), Mode=OneWay}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Border Background="{StaticResource AppColor3}"
+                        Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
+                    <ProgressRing IsActive="True" />
+                </Border>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <ListView ItemsSource="{x:Bind ViewModel.SelectedTournament.Matches, Mode=OneWay}" />
+        </Grid>
+    </Grid>
+</UserControl>

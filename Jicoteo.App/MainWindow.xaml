@@ -32,7 +32,9 @@
                 <views:MembersUserControl />
             </PivotItem>
 
-            <PivotItem Header="Torneos" />
+            <PivotItem Header="Torneos">
+                <views:TournamentsUserControl />
+            </PivotItem>
             <PivotItem Header="Bot">
                 <views:BotUserControl />
             </PivotItem>

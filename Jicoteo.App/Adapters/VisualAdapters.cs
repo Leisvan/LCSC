@@ -10,6 +10,20 @@ namespace LCSC.App.Adapters
 {
     public static class VisualAdapters
     {
+        public static ImageSource? ToImageSource(string? pictureUrl, int decodedPixelWidth = 128)
+        {
+            if (pictureUrl == null)
+            {
+                return null;
+            }
+            var uri = new Uri(pictureUrl);
+            var bitmapImage = new BitmapImage(uri)
+            {
+                DecodePixelWidth = decodedPixelWidth
+            };
+            return bitmapImage;
+        }
+
         public static ImageSource ToMemberPictureImageSource(string? pictureUrl, Race race, int decodedPixelWidth = 128)
         {
             if (string.IsNullOrWhiteSpace(pictureUrl))

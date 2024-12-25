@@ -1,31 +1,10 @@
-﻿using LCSC.App.ViewModels;
-using LCSC.App.Bot;
-using LCSC.App.Services;
-
+﻿using LCSC.App.Services;
 using LCSC.App.ViewModels;
-
-using LCSC.Http.Helpers;
 using LCSC.Manager.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
-using LCSC.App.ViewModels;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -66,12 +45,14 @@ namespace LCSC.App
         private static ServiceProvider ConfigureServices()
             => new ServiceCollection()
             //Services
+            .AddSingleton<AirtableService>()
             .AddSingleton<BotService>()
             .AddSingleton<MessageHandlingService>()
             //ViewModels
             .AddSingleton<MainViewModel>()
-            .AddSingleton<BotViewModel>()
-            .AddSingleton<MembersViewModel>()
+            .AddTransient<BotViewModel>()
+            .AddTransient<MembersViewModel>()
+            .AddTransient<TournamentsViewModel>()
             .BuildServiceProvider();
     }
 }

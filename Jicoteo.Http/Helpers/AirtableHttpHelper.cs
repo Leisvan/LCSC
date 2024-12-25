@@ -10,6 +10,7 @@ namespace LCSC.Http.Helpers
         private const string AirtableToken = "patSlwRfzMHUuwyiv.e32d45a3daf6b5a0e04de06ae55f3f9d10ba899dddc6bdb5935190657e0ac897";
         private const string LCSCBaseId = "appW9fDctxfHb1WMI";
         private const string MembersTableName = "Members";
+        private const string TournamentTableName = "Tournaments";
 
         public static async Task<IEnumerable<MemberRecord>?> GetMemberRecordsAsync()
         {
@@ -29,6 +30,16 @@ namespace LCSC.Http.Helpers
                 return null;
             }
             return record.ToMemberRecord();
+        }
+
+        public static async Task<IEnumerable<TournamentRecord>?> GetTournamentRecordsAsync()
+        {
+            var records = await GetRecordsAsync(TournamentTableName);
+            if (records == null)
+            {
+                return null;
+            }
+            return records.Select(r => r.ToTournamentRecord());
         }
 
         private static async Task<IEnumerable<AirtableRecord>> GetRecordsAsync(string table)
@@ -87,22 +98,6 @@ namespace LCSC.Http.Helpers
                 errorMessage = "Unknown error";
             }
             return null;
-        }
-
-        public class Link
-        {
-            public string absoluteUrl { get; set; }
-
-            public int playerCharacterId { get; set; }
-
-            public string type { get; set; }
-        }
-
-        public class Root
-        {
-            public List<object> failedTypes { get; set; }
-
-            public List<Link> links { get; set; }
         }
     }
 }
