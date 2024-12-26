@@ -16,7 +16,6 @@
     <Content Remove="Assets\UnknownPortrait.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\Config\appsettings.json" />
     <None Remove="Assets\Fonts\MaterialIcons-Regular.ttf" />
     <None Remove="Assets\Images\LCSC.png" />
     <None Remove="Assets\Images\ProtossPortrait.png" />
@@ -72,7 +71,7 @@
     <ProjectReference Include="..\Jicoteo.Http\LCSC.Http.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Assets\Config\appsettings.json">
+    <Content Update="Assets\Config\appsettings-demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Fonts\MaterialIcons-Regular.ttf">
