@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.Http.Models;
-using LCSC.Http.Helpers;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;

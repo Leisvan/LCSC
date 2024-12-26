@@ -1,34 +1,34 @@
 ﻿using LCSC.App.Models;
 using LCSC.App.ObservableObjects;
-using LCSC.Http.Helpers;
 using LCSC.Http.Models;
 using LCSC.Http.Models.Json;
+using LCSC.Http.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Security.Isolation;
 
 namespace LCSC.App.Services
 {
-    public class AirtableService
+    public class RemoteDataService
     {
+        private readonly AirtableHttpService _airtableHttpService;
         private readonly List<MemberObservableObject> _members;
         private readonly List<TournamentObservableObject> _tournaments;
 
-        public AirtableService()
+        public RemoteDataService(AirtableHttpService airtableHttpService)
         {
             _members = [];
             _tournaments = [];
+            _airtableHttpService = airtableHttpService;
         }
 
         public async Task<List<MemberObservableObject>> GetMembersAsync(bool forceRefresh = false)
         {
             if (forceRefresh || _members.Count == 0)
             {
-                var members = await AirtableHttpHelper.GetMemberRecordsAsync();
+                var members = await _airtableHttpService.GetMemberRecordsAsync();
                 if (members != null && members.Any())
                 {
                     _members.Clear();
@@ -42,7 +42,7 @@ namespace LCSC.App.Services
         {
             if (forceRefresh || _tournaments.Count == 0)
             {
-                var tournaments = await AirtableHttpHelper.GetTournamentRecordsAsync();
+                var tournaments = await _airtableHttpService.GetTournamentRecordsAsync();
                 if (tournaments != null && tournaments.Any())
                 {
                     var results = new List<TournamentObservableObject>();
@@ -84,7 +84,7 @@ namespace LCSC.App.Services
             try
             {
                 var jsonText = System.Text.Json.JsonSerializer.Serialize(matches);
-                var result = await AirtableHttpHelper.UpdateTournamentMatchesData(tournament.Record.Id, jsonText);
+                var result = await _airtableHttpService.UpdateTournamentMatchesData(tournament.Record.Id, jsonText);
             }
             catch (Exception)
             {

@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
 {
-    public partial class TournamentsViewModel(AirtableService airtableService) : ObservableObject
+    public partial class TournamentsViewModel(RemoteDataService airtableService) : ObservableObject
     {
-        private readonly AirtableService _airtableService = airtableService;
+        private readonly RemoteDataService _airtableService = airtableService;
 
         [ObservableProperty]
         private bool _isLoading;

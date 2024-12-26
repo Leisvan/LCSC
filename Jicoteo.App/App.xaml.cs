@@ -1,9 +1,13 @@
 ﻿using LCSC.App.Services;
 using LCSC.App.ViewModels;
+using LCSC.Http.Services;
 using LCSC.Manager.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using System;
+using System.IO;
+using Windows.ApplicationModel;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -22,13 +26,15 @@ namespace LCSC.App
         /// </summary>
         public App()
         {
-            Services = ConfigureServices();
+            var configuration = ReadConfigurations();
+            Services = ConfigureServices(configuration);
             this.InitializeComponent();
         }
 
         public new static App Current => (App)Application.Current;
 
         public static Window MainWindow { get; } = new MainWindow();
+
 
         public IServiceProvider Services { get; }
 
@@ -41,10 +47,11 @@ namespace LCSC.App
             MainWindow.Activate();
         }
 
-        private static ServiceProvider ConfigureServices()
+        private static ServiceProvider ConfigureServices(IConfiguration configuration)
             => new ServiceCollection()
             //Services
-            .AddSingleton<AirtableService>()
+            .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
+            .AddSingleton<RemoteDataService>()
             .AddSingleton<BotService>()
             .AddSingleton<MessageHandlingService>()
             //ViewModels
@@ -53,5 +60,13 @@ namespace LCSC.App
             .AddTransient<MembersViewModel>()
             .AddTransient<TournamentsViewModel>()
             .BuildServiceProvider();
+
+        private IConfiguration ReadConfigurations()
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Package.Current.InstalledLocation.Path)
+                .AddJsonFile("assets\\Config\\appsettings.json", false)
+                .Build();
+        }
     }
 }

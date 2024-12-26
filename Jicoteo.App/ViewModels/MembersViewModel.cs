@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace LCSC.App.ViewModels;
 
-public partial class MembersViewModel(AirtableService airtableService) : ObservableObject
+public partial class MembersViewModel(RemoteDataService airtableService) : ObservableObject
 {
-    private readonly AirtableService _airtableService = airtableService;
+    private readonly RemoteDataService _airtableService = airtableService;
 
     [ObservableProperty]
     private bool _isLoading;
