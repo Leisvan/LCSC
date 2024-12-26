@@ -2,6 +2,7 @@
 using LCSC.Http.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace LCSC.App.ObservableObjects
@@ -16,6 +17,12 @@ namespace LCSC.App.ObservableObjects
         List<MatchObservableObject>? matches = null) : ObservableObject
     {
         private readonly TournamentRecord _record = record;
+        private MatchObservableObject? _selectedMatch;
+        public MatchObservableObject? SelectedMatch
+        {
+            get => _selectedMatch;
+            set => SetProperty(ref _selectedMatch, value);
+        }
 
         public string Date => Record.Date == null ? string.Empty : Record.Date.Value.ToShortDateString();
 
@@ -44,7 +51,7 @@ namespace LCSC.App.ObservableObjects
 
         public string? LogoUrl => Record.LogoUrl;
 
-        public List<MatchObservableObject>? Matches { get; } = matches;
+        public ObservableCollection<MatchObservableObject>? Matches { get; } = new ObservableCollection<MatchObservableObject>(matches ?? []);
 
         public List<MemberObservableObject>? Participants { get; } = participants;
 

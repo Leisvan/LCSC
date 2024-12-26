@@ -2,12 +2,14 @@
 using LCSC.App.ObservableObjects;
 using LCSC.Http.Helpers;
 using LCSC.Http.Models;
+using LCSC.Http.Models.Json;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Security.Isolation;
 
 namespace LCSC.App.Services
 {
@@ -62,6 +64,33 @@ namespace LCSC.App.Services
             return _tournaments;
         }
 
+        public async Task UpdateTournamentMatchesAsync(TournamentObservableObject tournament)
+        {
+            if (tournament == null || tournament.Matches == null)
+            {
+                return;
+            }
+            var matches = tournament.Matches.Select(match => new MatchJsonModel
+            {
+                LoserId = match.Loser.Record.Id,
+                LoserRace = (int)match.LoserRace,
+                LoserScore = match.LoserScore,
+                WinnerId = match.Winner.Record.Id,
+                WinnerRace = (int)match.WinnerRace,
+                WinnerScore = match.WinnerScore,
+                Stage = (int)match.Stage,
+                Notes = match.Notes,
+            });
+            try
+            {
+                var jsonText = System.Text.Json.JsonSerializer.Serialize(matches);
+                var result = await AirtableHttpHelper.UpdateTournamentMatchesData(tournament.Record.Id, jsonText);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private static string? GetFirstItemFromArray(string[]? array)
         {
             if (array == null || array.Length == 0)
@@ -109,18 +138,26 @@ namespace LCSC.App.Services
                 return [];
             }
 
-            var matchesList = matchesArray
-                .Select(match => new MatchObservableObject(
-                    GetPlayerById(match.WinnerId),
-                    GetPlayerById(match.LoserId),
-                    match.WinnerRace,
-                    match.LoserRace,
-                    match.WinnerScore,
-                    match.LoserScore,
-                    match.Stage))
-                .ToList();
-
-            return matchesList;
+            var list = new List<MatchObservableObject>();
+            foreach (var match in matchesArray)
+            {
+                var winner = GetPlayerById(match.WinnerId);
+                var loser = GetPlayerById(match.LoserId);
+                if (winner != null && loser != null)
+                {
+                    list.Add(new MatchObservableObject(
+                        winner,
+                        loser,
+                        (Race)match.WinnerRace,
+                        (Race)match.LoserRace,
+                        match.WinnerScore,
+                        match.LoserScore,
+                        (MatchStage)match.Stage,
+                        match.Notes));
+                }
+            }
+            list.Sort();
+            return list;
         }
 
         private MemberObservableObject? GetPlayerById(string? id)
@@ -130,25 +167,6 @@ namespace LCSC.App.Services
                 return _members.FirstOrDefault(m => m.Record.Id == id);
             }
             return null;
-        }
-
-        private class MatchJsonModel
-        {
-            public string? LoserId { get; set; }
-
-            public Race LoserRace { get; set; }
-
-            public int LoserScore { get; set; }
-
-            public string? Notes { get; set; }
-
-            public MatchStage Stage { get; set; }
-
-            public string? WinnerId { get; set; }
-
-            public Race WinnerRace { get; set; }
-
-            public int WinnerScore { get; set; }
         }
     }
 }

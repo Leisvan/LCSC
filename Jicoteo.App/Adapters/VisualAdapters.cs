@@ -10,6 +10,12 @@ namespace LCSC.App.Adapters
 {
     public static class VisualAdapters
     {
+        public static Visibility StringToVisibility(string value)
+            => string.IsNullOrWhiteSpace(value) ? Visibility.Collapsed : Visibility.Visible;
+
+        public static Visibility ToReverseBoolVisibility(bool value)
+            => value ? Visibility.Collapsed : Visibility.Visible;
+
         public static ImageSource? ToImageSource(string? pictureUrl, int decodedPixelWidth = 128)
         {
             if (pictureUrl == null)

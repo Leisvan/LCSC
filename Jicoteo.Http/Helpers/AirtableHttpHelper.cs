@@ -1,6 +1,7 @@
 ﻿using AirtableApiClient;
 using LCSC.Http.Extensions;
 using LCSC.Http.Models;
+using LCSC.Http.Models.Json;
 using System.Text.Json;
 
 namespace LCSC.Http.Helpers
@@ -40,6 +41,15 @@ namespace LCSC.Http.Helpers
                 return null;
             }
             return records.Select(r => r.ToTournamentRecord());
+        }
+
+        public static async Task<bool> UpdateTournamentMatchesData(string tournamentId, string matchesData)
+        {
+            using var airtableBase = new AirtableBase(AirtableToken, LCSCBaseId);
+            var fields = new Fields();
+            fields.AddField(nameof(TournamentRecord.MatchesData), matchesData);
+            var response = await airtableBase.UpdateRecord(TournamentTableName, fields, tournamentId);
+            return response.Success;
         }
 
         private static async Task<IEnumerable<AirtableRecord>> GetRecordsAsync(string table)
