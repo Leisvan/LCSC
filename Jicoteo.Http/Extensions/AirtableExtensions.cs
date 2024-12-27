@@ -5,28 +5,35 @@ namespace LCSC.Http.Extensions;
 
 public static class AirtableExtensions
 {
+    public static BattleNetProfileRecord ToBattleNetProfileRecord(this AirtableRecord record)
+        => new(record.Id,
+            Number: record.GetField<int>(nameof(BattleNetProfileRecord.Number)),
+            BattleTag: record.GetField<string>(nameof(BattleNetProfileRecord.BattleTag)),
+            PulseId: record.GetField<string>(nameof(BattleNetProfileRecord.PulseId)),
+            ProfileRealm: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileRealm)),
+            ProfileId: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileId)),
+            AccountId: record.GetField<string>(nameof(BattleNetProfileRecord.AccountId)),
+            MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
+            Path: record.GetField<string>(nameof(BattleNetProfileRecord.Path)),
+            Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)));
+
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
-    => new(
-        record.Id,
-        Number: record.GetField<int>(nameof(MemberRecord.Number)),
-        Nick: record.GetField<string>(nameof(MemberRecord.Nick)),
-        RealName: record.GetField<string>(nameof(MemberRecord.RealName)),
-        KnownRace: record.GetField<string>(nameof(MemberRecord.KnownRace)),
-        CountryTag: record.GetField<string>(nameof(MemberRecord.CountryTag)),
-        PulseId: record.GetField<string>(nameof(MemberRecord.PulseId)),
-        DiscordId: record.GetField<string>(nameof(MemberRecord.DiscordId)),
-        BattleTag: record.GetField<string>(nameof(MemberRecord.BattleTag)),
-        BattleNetPath: record.GetField<string>(nameof(MemberRecord.BattleNetPath)),
-        BattleNetRealm: record.GetField<string>(nameof(MemberRecord.BattleNetRealm)),
-        BattleNetId: record.GetField<string>(nameof(MemberRecord.BattleNetId)),
-        BlizzardAccountId: record.GetField<string>(nameof(MemberRecord.BattleNetId)),
-        Verified: record.GetField<bool>(nameof(MemberRecord.Verified)),
-        Banned: record.GetField<bool>(nameof(MemberRecord.Banned)),
-        PictureUrl: record.GetField<string>(nameof(MemberRecord.PictureUrl)),
-        ContactEmail: record.GetField<string>(nameof(MemberRecord.ContactEmail)),
-        ChallongeEmail: record.GetField<string>(nameof(MemberRecord.ChallongeEmail)),
-        record.GetField<string>(nameof(MemberRecord.Phone)),
-        Tournaments: record.GetField<string[], string>(nameof(MemberRecord.Tournaments)));
+        => new(
+            record.Id,
+            Number: record.GetField<int>(nameof(MemberRecord.Number)),
+            Nick: record.GetField<string>(nameof(MemberRecord.Nick)),
+            RealName: record.GetField<string>(nameof(MemberRecord.RealName)),
+            KnownRace: record.GetField<string>(nameof(MemberRecord.KnownRace)),
+            CountryTag: record.GetField<string>(nameof(MemberRecord.CountryTag)),
+            DiscordId: record.GetField<string>(nameof(MemberRecord.DiscordId)),
+            Verified: record.GetField<bool>(nameof(MemberRecord.Verified)),
+            Banned: record.GetField<bool>(nameof(MemberRecord.Banned)),
+            PictureUrl: record.GetField<string>(nameof(MemberRecord.PictureUrl)),
+            ContactEmail: record.GetField<string>(nameof(MemberRecord.ContactEmail)),
+            ChallongeEmail: record.GetField<string>(nameof(MemberRecord.ChallongeEmail)),
+            record.GetField<string>(nameof(MemberRecord.Phone)),
+            Tournaments: record.GetField<string[], string>(nameof(MemberRecord.Tournaments)),
+            BattleNetProfiles: record.GetField<string[], string>(nameof(MemberRecord.BattleNetProfiles)));
 
     public static TournamentRecord ToTournamentRecord(this AirtableRecord record)
         => new(

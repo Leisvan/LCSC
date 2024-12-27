@@ -42,13 +42,22 @@
                 <AutoSuggestBox PlaceholderText="Buscar"
                                 QueryIcon="Find"
                                 Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="8">
+
                     <Button Grid.Column="1"
+                            VerticalAlignment="Stretch"
                             Command="{x:Bind ViewModel.RefreshCommand}"
                             Content="Refresh">
                         <Button.CommandParameter>
                             <x:Boolean>True</x:Boolean>
                         </Button.CommandParameter>
+                    </Button>
+                    <Button VerticalAlignment="Stretch"
+                            Style="{StaticResource AccentButtonStyle}">
+                        <TextBlock FontFamily="{StaticResource MaterialIconsRegular}"
+                                   Text="add" />
                     </Button>
                 </StackPanel>
             </Grid>

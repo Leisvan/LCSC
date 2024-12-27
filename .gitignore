@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Jicoteo.App/Assets/Config/appsettings.json
+/Jicoteo.App/Assets/Config/appsettings-demo.json
+/Jicoteo.App/Assets/Config/appsettings.json

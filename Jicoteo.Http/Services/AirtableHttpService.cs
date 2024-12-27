@@ -7,8 +7,8 @@ namespace LCSC.Http.Services;
 public class AirtableHttpService(string? airtableToken, string? baseId)
 {
     private const string MembersTableName = "Members";
+    private const string ProfilesTableName = "BattleNetProfiles";
     private const string TournamentTableName = "Tournaments";
-
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
 
@@ -30,6 +30,16 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
             return null;
         }
         return record.ToMemberRecord();
+    }
+
+    public async Task<BattleNetProfileRecord?> GetSingleProfileAsync(string profileId)
+    {
+        var record = await GetSingleRecordAsync(ProfilesTableName, profileId);
+        if (record == null)
+        {
+            return null;
+        }
+        return record.ToBattleNetProfileRecord();
     }
 
     public async Task<IEnumerable<TournamentRecord>?> GetTournamentRecordsAsync()
