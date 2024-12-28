@@ -17,8 +17,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Fonts\MaterialIcons-Regular.ttf" />
+    <None Remove="Assets\Images\bnet.png" />
     <None Remove="Assets\Images\LCSC.png" />
     <None Remove="Assets\Images\ProtossPortrait.png" />
+    <None Remove="Assets\Images\Pulse.png" />
     <None Remove="Assets\Images\RandomPortrait.png" />
     <None Remove="Assets\Images\TerranPortrait.png" />
     <None Remove="Assets\Images\ZergPortrait.png" />
@@ -65,6 +67,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.241114004-experimental1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +80,9 @@
     <Content Update="Assets\Fonts\MaterialIcons-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\Images\bnet.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\Images\LCSC.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -84,6 +90,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Images\ProtossRace.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Images\Pulse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Images\RandomPortrait.png">

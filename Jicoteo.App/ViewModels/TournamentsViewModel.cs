@@ -23,7 +23,7 @@ namespace LCSC.App.ViewModels
 
         private TournamentObservableObject? _selectedTournament;
 
-        public MatchCretorObservableObject MatchCreator { get; } = new MatchCretorObservableObject();
+        public MatchCreatorObservableObject MatchCreator { get; } = new MatchCreatorObservableObject();
 
         public TournamentObservableObject? SelectedTournament
         {

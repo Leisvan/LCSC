@@ -50,6 +50,7 @@ namespace LCSC.App
         private static ServiceProvider ConfigureServices(IConfiguration configuration)
             => new ServiceCollection()
             //Services
+            .AddSingleton<PulseHttpService>()
             .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
             .AddSingleton<RemoteDataService>()
             .AddSingleton<BotService>()

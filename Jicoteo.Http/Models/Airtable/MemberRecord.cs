@@ -1,4 +1,4 @@
-﻿namespace LCSC.Http.Models
+﻿namespace LCSC.Http.Models.Airtable
 {
     public record class MemberRecord(
         string Id,

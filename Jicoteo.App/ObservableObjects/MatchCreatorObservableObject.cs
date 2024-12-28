@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace LCSC.App.ObservableObjects;
 
-public partial class MatchCretorObservableObject : ObservableObject
+public partial class MatchCreatorObservableObject : ObservableObject
 {
     private MemberObservableObject? _loser;
     private Race _loserRace;

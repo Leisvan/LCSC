@@ -1,6 +1,6 @@
 ﻿using AirtableApiClient;
 using LCSC.Http.Extensions;
-using LCSC.Http.Models;
+using LCSC.Http.Models.Airtable;
 
 namespace LCSC.Http.Services;
 
@@ -12,6 +12,24 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
 
+    public async Task<IEnumerable<BattleNetProfileRecord>?> GetBattleNetProfilesAsync()
+    {
+        var records = await GetRecordsAsync(ProfilesTableName);
+        if (records == null)
+        {
+            return null;
+        }
+        return records.Select(r => r.ToBattleNetProfileRecord());
+    }
+
+    public async Task<string?> CreateBattleNetProfile(BattleNetProfileRecord record)
+    {
+        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
+        
+        var result = await airtableBase.CreateRecord(ProfilesTableName, record.GetFields());
+        return result.Success ? result.Record.Id : null;
+    }
+
     public async Task<IEnumerable<MemberRecord>?> GetMemberRecordsAsync()
     {
         var records = await GetRecordsAsync(MembersTableName);
@@ -22,6 +40,16 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         return records.Select(r => r.ToMemberRecord());
     }
 
+    public async Task<BattleNetProfileRecord?> GetSingleBattleNetProfileAsync(string profileId)
+    {
+        var record = await GetSingleRecordAsync(ProfilesTableName, profileId);
+        if (record == null)
+        {
+            return null;
+        }
+        return record.ToBattleNetProfileRecord();
+    }
+
     public async Task<MemberRecord?> GetSingleMemberAsync(string id)
     {
         var record = await GetSingleRecordAsync(MembersTableName, id);
@@ -30,16 +58,6 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
             return null;
         }
         return record.ToMemberRecord();
-    }
-
-    public async Task<BattleNetProfileRecord?> GetSingleProfileAsync(string profileId)
-    {
-        var record = await GetSingleRecordAsync(ProfilesTableName, profileId);
-        if (record == null)
-        {
-            return null;
-        }
-        return record.ToBattleNetProfileRecord();
     }
 
     public async Task<IEnumerable<TournamentRecord>?> GetTournamentRecordsAsync()

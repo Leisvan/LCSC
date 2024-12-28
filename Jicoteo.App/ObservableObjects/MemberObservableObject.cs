@@ -1,41 +1,49 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.App.Models;
-using LCSC.Http.Models;
+using LCSC.Http.Models.Airtable;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace LCSC.App.ObservableObjects
 {
-    public partial class MemberObservableObject : ObservableObject
+    public partial class MemberObservableObject(MemberRecord record, List<BattleNetProfileRecord> profiles)
+        : ObservableObject, IComparable<MemberObservableObject>
     {
-        private readonly MemberRecord _record;
+        public bool IsBanned => Record.Banned;
 
-        public MemberObservableObject(MemberRecord record)
-        {
-            _record = record;
-        }
+        public bool IsVerified => Record.Verified;
 
-        public bool IsBanned => _record.Banned;
+        public string? Nick => Record.Nick;
 
-        public bool IsVerified => _record.Verified;
+        public string? PictureUrl => Record.PictureUrl;
 
-        public string? Nick => _record.Nick;
-
-        public string? PictureUrl => _record.PictureUrl;
+        public ObservableCollection<BattleNetProfileRecord> Profiles { get; }
+            = new ObservableCollection<BattleNetProfileRecord>(profiles);
 
         public Race Race
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(_record.KnownRace))
+                if (string.IsNullOrWhiteSpace(Record.KnownRace))
                 {
                     return Race.Unknown;
                 }
-                return Enum.Parse<Race>(_record.KnownRace, true);
+                return Enum.Parse<Race>(Record.KnownRace, true);
             }
         }
 
-        public string? RealName => _record.RealName;
+        public string? RealName => Record.RealName;
 
-        public MemberRecord Record => _record;
+        public MemberRecord Record { get; } = record;
+
+        public int CompareTo(MemberObservableObject? other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+            return Nick?.CompareTo(other.Nick) ?? -1;
+        }
     }
 }

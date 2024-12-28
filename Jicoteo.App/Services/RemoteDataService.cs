@@ -1,7 +1,6 @@
 ﻿using LCSC.App.Models;
 using LCSC.App.ObservableObjects;
-using LCSC.Http.Models;
-using LCSC.Http.Models.Json;
+using LCSC.Http.Models.Airtable;
 using LCSC.Http.Services;
 using Newtonsoft.Json;
 using System;
@@ -13,15 +12,21 @@ namespace LCSC.App.Services
 {
     public class RemoteDataService
     {
+        private const string DefaultRegionParameter = "US";
+
         private readonly AirtableHttpService _airtableHttpService;
         private readonly List<MemberObservableObject> _members;
+        private readonly PulseHttpService _pulseHttpService;
         private readonly List<TournamentObservableObject> _tournaments;
 
-        public RemoteDataService(AirtableHttpService airtableHttpService)
+        public RemoteDataService(
+            AirtableHttpService airtableHttpService,
+            PulseHttpService pulseHttpService)
         {
             _members = [];
             _tournaments = [];
             _airtableHttpService = airtableHttpService;
+            _pulseHttpService = pulseHttpService;
         }
 
         public async Task<List<MemberObservableObject>> GetMembersAsync(bool forceRefresh = false)
@@ -32,7 +37,23 @@ namespace LCSC.App.Services
                 if (members != null && members.Any())
                 {
                     _members.Clear();
-                    _members.AddRange(members.OrderBy(m => m.Nick).Select(m => new MemberObservableObject(m)));
+                    var bnetProfiles = await _airtableHttpService.GetBattleNetProfilesAsync();
+                    if (bnetProfiles == null)
+                    {
+                        _members.AddRange(members
+                            .Select(m => new MemberObservableObject(m, []))
+                            .OrderBy(x => x.Nick));
+                    }
+                    else
+                    {
+                        foreach (var member in members)
+                        {
+                            var profiles = bnetProfiles?.Where(profile => profile.Members?.Any(m => m == member.Id) ?? false)
+                                .ToList() ?? [];
+                            _members.Add(new MemberObservableObject(member, profiles));
+                        }
+                        _members.Sort();
+                    }
                 }
             }
             return _members;
@@ -62,6 +83,47 @@ namespace LCSC.App.Services
                 }
             }
             return _tournaments;
+        }
+
+        public async Task<ProfileSearchResult?> SearchProfileByBattleTag(string? battleTag)
+        {
+            if (battleTag == null)
+            {
+                return null;
+            }
+            var results = await _pulseHttpService.CharacterSearchAsync(battleTag);
+            if (results != null)
+            {
+                var result = results
+                    .Where(x => 
+                    string.Equals(x.Members?.Character?.Region, DefaultRegionParameter, StringComparison.InvariantCultureIgnoreCase) &&
+                    string.Equals(x.Members?.Account?.BattleTag, battleTag, StringComparison.InvariantCultureIgnoreCase))
+                    .FirstOrDefault();
+                if (result != null)
+                {
+                    return new ProfileSearchResult(
+                        result.Members?.Account?.BattleTag,
+                        result.Members?.Account?.Id.ToString(),
+                        result.Members?.Character?.Realm.ToString(),
+                        result.Members?.Character?.BattlenetId.ToString());
+                }
+            }
+            return null;
+        }
+
+        public Task<string?> CreateBattleNetProfile(string? battleTag, string? pulseId, string? profileRealm, string? profileId, bool mainProfile, string? notes, string memberId)
+        {
+            var record = new BattleNetProfileRecord(
+                string.Empty, 
+                0,
+                battleTag,
+                pulseId,
+                profileRealm,
+                profileId,
+                mainProfile,
+                notes,
+                [memberId]);
+            return _airtableHttpService.CreateBattleNetProfile(record);
         }
 
         public async Task UpdateTournamentMatchesAsync(TournamentObservableObject tournament)

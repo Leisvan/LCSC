@@ -13,9 +13,6 @@ namespace LCSC.App.Adapters
         public static Visibility StringToVisibility(string value)
             => string.IsNullOrWhiteSpace(value) ? Visibility.Collapsed : Visibility.Visible;
 
-        public static Visibility ToReverseBoolVisibility(bool value)
-            => value ? Visibility.Collapsed : Visibility.Visible;
-
         public static ImageSource? ToImageSource(string? pictureUrl, int decodedPixelWidth = 128)
         {
             if (pictureUrl == null)
@@ -103,5 +100,10 @@ namespace LCSC.App.Adapters
             };
             return bitmapImage;
         }
+
+        public static bool ToReverseBool(bool value) => !value;
+
+        public static Visibility ToReverseBoolVisibility(bool value)
+            => value ? Visibility.Collapsed : Visibility.Visible;
     }
 }

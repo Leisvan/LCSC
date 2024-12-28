@@ -1,5 +1,5 @@
 ﻿using AirtableApiClient;
-using LCSC.Http.Models;
+using LCSC.Http.Models.Airtable;
 
 namespace LCSC.Http.Extensions;
 
@@ -12,10 +12,9 @@ public static class AirtableExtensions
             PulseId: record.GetField<string>(nameof(BattleNetProfileRecord.PulseId)),
             ProfileRealm: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileRealm)),
             ProfileId: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileId)),
-            AccountId: record.GetField<string>(nameof(BattleNetProfileRecord.AccountId)),
             MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
-            Path: record.GetField<string>(nameof(BattleNetProfileRecord.Path)),
-            Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)));
+            Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)),
+            Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)));
 
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
         => new(
@@ -54,4 +53,18 @@ public static class AirtableExtensions
             record.GetField<string[], string>(nameof(TournamentRecord.Place4)),
             record.GetField<string[], string>(nameof(TournamentRecord.Participants)),
             record.GetField<string>(nameof(TournamentRecord.MatchesData)));
+
+    public static Fields GetFields(this BattleNetProfileRecord record)
+    {
+        var fields = new Fields();
+        fields.AddField(nameof(BattleNetProfileRecord.BattleTag), record.BattleTag);
+        fields.AddField(nameof(BattleNetProfileRecord.PulseId), record.PulseId);
+        fields.AddField(nameof(BattleNetProfileRecord.ProfileRealm), record.ProfileRealm);
+        fields.AddField(nameof(BattleNetProfileRecord.ProfileId), record.ProfileId);
+        fields.AddField(nameof(BattleNetProfileRecord.MainProfile), record.MainProfile);
+        fields.AddField(nameof(BattleNetProfileRecord.Notes), record.Notes);
+        fields.AddField(nameof(BattleNetProfileRecord.Members), record.Members);
+        return fields;
+
+    }
 }
