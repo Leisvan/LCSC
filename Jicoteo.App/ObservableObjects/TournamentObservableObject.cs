@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LCSC.Http.Models.Airtable;
+using LCSC.Common.Models.Airtable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

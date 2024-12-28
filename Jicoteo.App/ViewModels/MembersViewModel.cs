@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LCSC.App.ObservableObjects;
 using LCSC.App.Services;
-using LCSC.Http.Models.Airtable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

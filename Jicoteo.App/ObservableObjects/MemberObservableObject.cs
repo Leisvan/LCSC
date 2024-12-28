@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.App.Models;
-using LCSC.Http.Models.Airtable;
+using LCSC.Common.Models;
+using LCSC.Common.Models.Airtable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

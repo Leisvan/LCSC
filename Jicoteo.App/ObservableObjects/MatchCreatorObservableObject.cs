@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.App.Models;
+using LCSC.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

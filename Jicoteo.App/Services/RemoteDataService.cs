@@ -1,6 +1,7 @@
 ﻿using LCSC.App.Models;
 using LCSC.App.ObservableObjects;
-using LCSC.Http.Models.Airtable;
+using LCSC.Common.Models;
+using LCSC.Common.Models.Airtable;
 using LCSC.Http.Services;
 using Newtonsoft.Json;
 using System;

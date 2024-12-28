@@ -1,4 +1,4 @@
-﻿namespace LCSC.App.Models;
+﻿namespace LCSC.Common.Models;
 
 public record class ProfileSearchResult(
     string? BattleTag, 

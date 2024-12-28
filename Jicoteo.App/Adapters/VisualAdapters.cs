@@ -1,4 +1,5 @@
 ﻿using LCSC.App.Models;
+using LCSC.Common.Models;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
