@@ -1,6 +1,6 @@
 ﻿using AirtableApiClient;
 using LCSC.Http.Extensions;
-using LCSC.Common.Models.Airtable;
+using LCSC.Models.Airtable;
 
 namespace LCSC.Http.Services;
 
@@ -12,6 +12,14 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
 
+    public async Task<string?> CreateBattleNetProfile(BattleNetProfileRecord record)
+    {
+        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
+
+        var result = await airtableBase.CreateRecord(ProfilesTableName, record.GetFields());
+        return result.Success ? result.Record.Id : null;
+    }
+
     public async Task<IEnumerable<BattleNetProfileRecord>?> GetBattleNetProfilesAsync()
     {
         var records = await GetRecordsAsync(ProfilesTableName);
@@ -20,14 +28,6 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
             return null;
         }
         return records.Select(r => r.ToBattleNetProfileRecord());
-    }
-
-    public async Task<string?> CreateBattleNetProfile(BattleNetProfileRecord record)
-    {
-        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
-        
-        var result = await airtableBase.CreateRecord(ProfilesTableName, record.GetFields());
-        return result.Success ? result.Record.Id : null;
     }
 
     public async Task<IEnumerable<MemberRecord>?> GetMemberRecordsAsync()
@@ -121,7 +121,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         {
             return response.Record;
         }
-        else if (response.AirtableApiError is AirtableApiException)
+        else if (response.AirtableApiError is not null)
         {
             errorMessage = response.AirtableApiError.ErrorMessage;
             if (response.AirtableApiError is AirtableInvalidRequestException)

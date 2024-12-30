@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LCSC.App.ObservableObjects;
-using LCSC.App.Services;
+using LCSC.Models;
+using LCSC.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,20 +12,20 @@ using Windows.System;
 
 namespace LCSC.App.ViewModels;
 
-public partial class MembersViewModel(RemoteDataService remoteDataService) : ObservableObject
+public partial class MembersViewModel(MembersService membersService) : ObservableObject
 {
-    private readonly RemoteDataService _remoteDataService = remoteDataService;
+    private readonly MembersService _membersService = membersService;
 
     [ObservableProperty]
     private bool _isLoading;
 
     private string? _searchTerm;
 
-    private MemberObservableObject? _selectedMember;
+    private MemberModel? _selectedMember;
 
-    public ObservableCollection<MemberObservableObject> Members { get; set; } = [];
+    public ObservableCollection<MemberModel> Members { get; set; } = [];
 
-    public ProfileCreatorObservableObject ProfileCreator { get; } = new ProfileCreatorObservableObject(remoteDataService);
+    public ProfileCreatorObservableObject ProfileCreator { get; } = new ProfileCreatorObservableObject(membersService);
 
     public string? SearchTerm
     {
@@ -37,7 +38,7 @@ public partial class MembersViewModel(RemoteDataService remoteDataService) : Obs
         }
     }
 
-    public MemberObservableObject? SelectedMember
+    public MemberModel? SelectedMember
     {
         get => _selectedMember;
         set => SetProperty(ref _selectedMember, value);
@@ -51,7 +52,7 @@ public partial class MembersViewModel(RemoteDataService remoteDataService) : Obs
             return;
         }
 
-        var result = await _remoteDataService.CreateBattleNetProfile(
+        var result = await _membersService.CreateBattleNetProfile(
             ProfileCreator.BattleTag,
             ProfileCreator.PulseId,
             ProfileCreator.ProfileRealm,
@@ -62,9 +63,7 @@ public partial class MembersViewModel(RemoteDataService remoteDataService) : Obs
 
         if (result != null)
         {
-            
         }
-        
     }
 
     [RelayCommand]
@@ -92,12 +91,12 @@ public partial class MembersViewModel(RemoteDataService remoteDataService) : Obs
             return;
         }
         IsLoading = true;
-        IEnumerable<MemberObservableObject> source = await _remoteDataService.GetMembersAsync(forceRefresh);
+        IEnumerable<MemberModel> source = await _membersService.GetMembersAsync(forceRefresh);
         if (!string.IsNullOrWhiteSpace(_searchTerm))
         {
-            source = source.Where(m => m.Nick?
+            source = source.Where(m => m.Record.Nick?
             .Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true ||
-            m.RealName?.Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true);
+            m.Record.RealName?.Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true);
         }
         Members.Clear();
         foreach (var item in source)

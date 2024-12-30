@@ -1,4 +1,4 @@
-﻿namespace LCSC.Common.Models;
+﻿namespace LCSC.Models;
 
 public enum Race
 {

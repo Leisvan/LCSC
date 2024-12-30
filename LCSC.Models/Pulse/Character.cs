@@ -1,5 +1,4 @@
-﻿
-namespace LCSC.Common.Models.Pulse;
+﻿namespace LCSC.Models.Pulse;
 
 public record Character
 {

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using LCSC.Models.Pulse;
 using Newtonsoft.Json;
-using LCSC.Common.Models.Pulse;
 
 namespace LCSC.Http.Services;
 
@@ -28,7 +22,7 @@ public class PulseHttpService
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(content);
         }
-        catch (Exception e)
+        catch (Exception)
         {
         }
         return default;

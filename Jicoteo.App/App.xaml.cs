@@ -1,5 +1,6 @@
 ﻿using LCSC.App.Services;
 using LCSC.App.ViewModels;
+using LCSC.Core.Services;
 using LCSC.Http.Services;
 using LCSC.Manager.Services;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +53,7 @@ namespace LCSC.App
             //Services
             .AddSingleton<PulseHttpService>()
             .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
-            .AddSingleton<RemoteDataService>()
+            .AddSingleton<MembersService>()
             .AddSingleton<BotService>()
             .AddSingleton<MessageHandlingService>()
             //ViewModels

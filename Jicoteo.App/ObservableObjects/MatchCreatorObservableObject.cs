@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.App.Models;
-using LCSC.Common.Models;
+using LCSC.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,16 +10,16 @@ namespace LCSC.App.ObservableObjects;
 
 public partial class MatchCreatorObservableObject : ObservableObject
 {
-    private MemberObservableObject? _loser;
+    private MemberModel? _loser;
     private Race _loserRace;
     private string? _loserScore;
     private string? _notes;
     private MatchStage _stage;
-    private MemberObservableObject? _winner;
+    private MemberModel? _winner;
     private Race _winnerRace;
     private string? _winnerScore;
 
-    public MemberObservableObject? Loser
+    public MemberModel? Loser
     {
         get => _loser;
 
@@ -54,13 +54,13 @@ public partial class MatchCreatorObservableObject : ObservableObject
         set => SetProperty(ref _notes, value);
     }
 
-    public ObservableCollection<MemberObservableObject>? Participants { get; private set; }
+    public ObservableCollection<MemberModel>? Participants { get; private set; }
 
     public Race[] RaceValues => Enum.GetValues<Race>().Except([Race.Unknown]).ToArray();
 
     public MatchStage[] StageValues => Enum.GetValues<MatchStage>();
 
-    public MemberObservableObject? Winner
+    public MemberModel? Winner
     {
         get => _winner;
 
@@ -83,7 +83,7 @@ public partial class MatchCreatorObservableObject : ObservableObject
         set => SetProperty(ref _winnerScore, value);
     }
 
-    public MatchObservableObject? ToMatch()
+    public MatchModel? ToMatch()
     {
         if (Winner == null || Loser == null)
         {
@@ -100,10 +100,10 @@ public partial class MatchCreatorObservableObject : ObservableObject
         var wscore = swap ? loserScore : winnerScore;
         var lscore = swap ? winnerScore : loserScore;
 
-        return new MatchObservableObject(winner, loser, wrace, lrace, wscore, lscore, MatchStage, Notes);
+        return new MatchModel(winner, loser, wrace, lrace, wscore, lscore, MatchStage, Notes);
     }
 
-    public void Update(MatchObservableObject match)
+    public void Update(MatchModel match)
     {
         Winner = match.Winner;
         Loser = match.Loser;
@@ -115,10 +115,10 @@ public partial class MatchCreatorObservableObject : ObservableObject
         Notes = match.Notes;
     }
 
-    public void Update(IEnumerable<MemberObservableObject>? members)
+    public void Update(IEnumerable<MemberModel>? members)
     {
         members ??= [];
-        Participants = new ObservableCollection<MemberObservableObject>(members);
+        Participants = new ObservableCollection<MemberModel>(members);
         OnPropertyChanged(nameof(Participants));
     }
 

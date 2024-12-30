@@ -2,18 +2,17 @@
 using CommunityToolkit.Mvvm.Input;
 using LCSC.App.Helpers;
 using LCSC.App.ObservableObjects;
-using LCSC.App.Services;
+using LCSC.Models;
+using LCSC.Core.Services;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
 {
-    public partial class TournamentsViewModel(RemoteDataService airtableService) : ObservableObject
+    public partial class TournamentsViewModel(MembersService membersService) : ObservableObject
     {
-        private readonly RemoteDataService _airtableService = airtableService;
+        private readonly MembersService _membersService = membersService;
 
         [ObservableProperty]
         private bool _isLoading;
@@ -21,11 +20,18 @@ namespace LCSC.App.ViewModels
         [ObservableProperty]
         private bool _isUploading;
 
-        private TournamentObservableObject? _selectedTournament;
+        private MatchModel? _selectedMatch;
+        private TournamentModel? _selectedTournament;
 
         public MatchCreatorObservableObject MatchCreator { get; } = new MatchCreatorObservableObject();
 
-        public TournamentObservableObject? SelectedTournament
+        public MatchModel? SelectedMatch
+        {
+            get => _selectedMatch;
+            set => SetProperty(ref _selectedMatch, value);
+        }
+
+        public TournamentModel? SelectedTournament
         {
             get => _selectedTournament;
 
@@ -39,7 +45,7 @@ namespace LCSC.App.ViewModels
             }
         }
 
-        public ObservableCollection<TournamentObservableObject> Tournaments { get; set; } = [];
+        public ObservableCollection<TournamentModel> Tournaments { get; set; } = [];
 
         [RelayCommand]
         public void AddMatch()
@@ -57,7 +63,7 @@ namespace LCSC.App.ViewModels
         {
             IsLoading = true;
             Tournaments.Clear();
-            IEnumerable<TournamentObservableObject> source = await _airtableService.GetTournamentsAsync(force);
+            var source = await _membersService.GetTournamentsAsync(force);
 
             Tournaments.Clear();
             foreach (var item in source)
@@ -72,7 +78,7 @@ namespace LCSC.App.ViewModels
         {
             if (SelectedTournament == null ||
                 SelectedTournament.Matches == null ||
-                SelectedTournament.SelectedMatch == null)
+                SelectedMatch == null)
             {
                 return;
             }
@@ -80,7 +86,7 @@ namespace LCSC.App.ViewModels
 
             if (result == ContentDialogResult.Primary)
             {
-                var match = SelectedTournament.SelectedMatch;
+                var match = SelectedMatch;
                 SelectedTournament.Matches?.Remove(match);
                 MatchCreator.Update(match);
 
@@ -102,7 +108,7 @@ namespace LCSC.App.ViewModels
             if (result == ContentDialogResult.Primary)
             {
                 IsUploading = true;
-                await _airtableService.UpdateTournamentMatchesAsync(SelectedTournament);
+                await _membersService.UpdateTournamentMatchesAsync(SelectedTournament.Record.Id, SelectedTournament.Matches);
                 IsUploading = false;
             }
         }

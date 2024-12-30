@@ -1,4 +1,4 @@
-﻿namespace LCSC.Common.Models.Airtable
+﻿namespace LCSC.Models.Airtable
 {
     public class MatchJsonModel
     {

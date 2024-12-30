@@ -1,19 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.App.Services;
+using LCSC.Core.Services;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ObservableObjects;
 
 public partial class ProfileCreatorObservableObject : ObservableObject
 {
+    private readonly MembersService _membersService;
     private string? _battleTag;
     private bool _isSearching;
     private string? _notes;
     private string? _profileId;
     private string? _profileRealm;
     private string? _pulseId;
-    private readonly RemoteDataService _remoteDataService;
+
+    public ProfileCreatorObservableObject(MembersService membersService)
+    {
+        _membersService = membersService;
+    }
 
     public string? BattleTag
     {
@@ -51,17 +56,12 @@ public partial class ProfileCreatorObservableObject : ObservableObject
         set => SetProperty(ref _pulseId, value);
     }
 
-    public ProfileCreatorObservableObject(RemoteDataService airtableService)
-    {
-        _remoteDataService = airtableService;
-    }
-
     [RelayCommand]
     public async Task Search()
     {
         IsSearching = true;
 
-        var result = await _remoteDataService.SearchProfileByBattleTag(BattleTag);
+        var result = await _membersService.SearchProfileByBattleTag(BattleTag);
         if (result != null)
         {
             PulseId = result.PulseId;

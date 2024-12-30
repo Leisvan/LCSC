@@ -71,8 +71,9 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LCSC.Common\LCSC.Common.csproj" />
+    <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Http\LCSC.Http.csproj" />
+    <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\Config\appsettings-demo.json">

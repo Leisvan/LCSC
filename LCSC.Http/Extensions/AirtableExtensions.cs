@@ -1,12 +1,25 @@
 ﻿using AirtableApiClient;
-using LCSC.Common.Models.Airtable;
+using LCSC.Models.Airtable;
 
 namespace LCSC.Http.Extensions;
 
 public static class AirtableExtensions
 {
+    public static Fields GetFields(this BattleNetProfileRecord record)
+    {
+        var fields = new Fields();
+        fields.AddField(nameof(BattleNetProfileRecord.BattleTag), record.BattleTag);
+        fields.AddField(nameof(BattleNetProfileRecord.PulseId), record.PulseId);
+        fields.AddField(nameof(BattleNetProfileRecord.ProfileRealm), record.ProfileRealm);
+        fields.AddField(nameof(BattleNetProfileRecord.ProfileId), record.ProfileId);
+        fields.AddField(nameof(BattleNetProfileRecord.MainProfile), record.MainProfile);
+        fields.AddField(nameof(BattleNetProfileRecord.Notes), record.Notes);
+        fields.AddField(nameof(BattleNetProfileRecord.Members), record.Members);
+        return fields;
+    }
+
     public static BattleNetProfileRecord ToBattleNetProfileRecord(this AirtableRecord record)
-        => new(record.Id,
+            => new(record.Id,
             Number: record.GetField<int>(nameof(BattleNetProfileRecord.Number)),
             BattleTag: record.GetField<string>(nameof(BattleNetProfileRecord.BattleTag)),
             PulseId: record.GetField<string>(nameof(BattleNetProfileRecord.PulseId)),
@@ -53,18 +66,4 @@ public static class AirtableExtensions
             record.GetField<string[], string>(nameof(TournamentRecord.Place4)),
             record.GetField<string[], string>(nameof(TournamentRecord.Participants)),
             record.GetField<string>(nameof(TournamentRecord.MatchesData)));
-
-    public static Fields GetFields(this BattleNetProfileRecord record)
-    {
-        var fields = new Fields();
-        fields.AddField(nameof(BattleNetProfileRecord.BattleTag), record.BattleTag);
-        fields.AddField(nameof(BattleNetProfileRecord.PulseId), record.PulseId);
-        fields.AddField(nameof(BattleNetProfileRecord.ProfileRealm), record.ProfileRealm);
-        fields.AddField(nameof(BattleNetProfileRecord.ProfileId), record.ProfileId);
-        fields.AddField(nameof(BattleNetProfileRecord.MainProfile), record.MainProfile);
-        fields.AddField(nameof(BattleNetProfileRecord.Notes), record.Notes);
-        fields.AddField(nameof(BattleNetProfileRecord.Members), record.Members);
-        return fields;
-
-    }
 }

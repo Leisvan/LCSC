@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace LCSC.Common.Models.Pulse;
+namespace LCSC.Models.Pulse;
 
 public record class CharacterSearchResult
 {
