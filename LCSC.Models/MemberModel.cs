@@ -18,6 +18,8 @@ public record class MemberModel(
         }
     }
 
+    public LeagueStatsModel? Stats { get; set; }
+
     public int CompareTo(MemberModel? other)
     {
         if (other == null)

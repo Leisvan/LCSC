@@ -9,6 +9,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
+using Microsoft.UI.Xaml.Controls;
+using LCSC.Models.Airtable;
+using LCSC.App.Helpers;
 
 namespace LCSC.App.ViewModels;
 
@@ -82,6 +85,16 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
     {
         SearchTerm = string.Empty;
         RefreshMembersAsync(force);
+    }
+
+    [RelayCommand]
+    public void CopyBattleTag(object item)
+    {
+        if (item is ItemClickEventArgs e 
+            && e.ClickedItem is BattleNetProfileRecord profile)
+        {
+            ClipboardHelper.Copy(profile.BattleTag);
+        }
     }
 
     private async void RefreshMembersAsync(bool forceRefresh = false)

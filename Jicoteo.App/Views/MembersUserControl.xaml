@@ -147,8 +147,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".2*"
                                   MinWidth="400" />
-                <ColumnDefinition Width=".4*"
-                                  MinWidth="400" />
+                <ColumnDefinition Width=".4*" />
                 <ColumnDefinition Width=".4*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -159,9 +158,68 @@
                   Background="{StaticResource AppColor3}"
                   CornerRadius="8" />
             <Grid Grid.Column="1"
-                  Grid.ColumnSpan="2"
                   Background="{StaticResource AppColor3}"
                   CornerRadius="8" />
+            <Grid Grid.Column="2"
+                  Background="{StaticResource AppColor3}"
+                  CornerRadius="8">
+                <StackPanel Margin="16"
+                            VerticalAlignment="Bottom"
+                            Spacing="8">
+                    <TextBlock>
+                        <Run Text="1er lugar:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.Place1Count, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="2do lugar:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.Place2Count, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="3er lugar:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.Place3Count, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="4to lugar:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.Place4Count, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Participaciones:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.Participations, Mode=OneWay}" />
+                    </TextBlock>
+
+                    <Rectangle Height="1"
+                               Margin="0,8"
+                               HorizontalAlignment="Stretch"
+                               Fill="{StaticResource AppColor4}" />
+                    <TextBlock>
+                        <Run Text="Winrate total:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.TotalWinrate, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Terran winrate:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.TerranWinrate, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Zerg winrate:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.ZergWinrate, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Protoss winrate:" />
+                        <Run FontWeight="Bold"
+                             Text="{x:Bind ViewModel.SelectedMember.Stats.ProtossWinrate, Mode=OneWay}" />
+                    </TextBlock>
+
+                </StackPanel>
+            </Grid>
+
             <Grid Grid.Row="1"
                   Grid.Column="1"
                   Grid.ColumnSpan="2"
@@ -263,6 +321,7 @@
                     </StackPanel>
                 </Grid>
                 <ListView Grid.Row="1"
+                          IsItemClickEnabled="True"
                           ItemsSource="{x:Bind ViewModel.SelectedMember.Profiles, Mode=OneWay}"
                           SelectionMode="None">
                     <ListView.ItemTemplate>
@@ -338,6 +397,11 @@
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.CopyBattleTagCommand}" />
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
                 </ListView>
             </Grid>
         </Grid>
