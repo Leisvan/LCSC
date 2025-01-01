@@ -8,7 +8,9 @@ namespace LCSC.Core.Services
 {
     public class MembersService(
        AirtableHttpService airtableHttpService,
-       PulseHttpService pulseHttpService)
+       PulseHttpService pulseHttpService,
+       BattleNetHttpService battleNetHttpService,
+       CacheService cacheService)
     {
         private const string DefaultRegionParameter = "US";
 
@@ -16,6 +18,7 @@ namespace LCSC.Core.Services
         private readonly List<MemberModel> _members = [];
         private readonly PulseHttpService _pulseHttpService = pulseHttpService;
         private readonly List<TournamentModel> _tournaments = [];
+        private readonly LadderService _ladderService = new(pulseHttpService, battleNetHttpService, cacheService);
 
         public Task<string?> CreateBattleNetProfile(
             string? battleTag,
@@ -41,6 +44,8 @@ namespace LCSC.Core.Services
 
         private async Task RefreshAllAsync()
         {
+            await _ladderService.TryLadder();
+
             //Refresh members:
             var members = await _airtableHttpService.GetMemberRecordsAsync();
             if (members != null && members.Any())
@@ -117,7 +122,7 @@ namespace LCSC.Core.Services
             {
                 return null;
             }
-            var results = await _pulseHttpService.CharacterSearchAsync(battleTag);
+            var results = await _pulseHttpService.SearchCharacterAsync(battleTag);
             if (results != null)
             {
                 var result = results
@@ -143,6 +148,7 @@ namespace LCSC.Core.Services
             {
                 return;
             }
+
             var models = matches.Select(match => new MatchJsonModel
             {
                 LoserId = match.Loser.Record.Id,
@@ -275,7 +281,6 @@ namespace LCSC.Core.Services
             }
             return null;
         }
-
 
         private double RacePercent(IEnumerable<MatchModel> matches, string playerId, Race race)
         {

@@ -6,6 +6,7 @@ using LCSC.Manager.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.Storage;
 using System;
 using System.IO;
 using Windows.ApplicationModel;
@@ -53,6 +54,8 @@ namespace LCSC.App
             //Services
             .AddSingleton<PulseHttpService>()
             .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
+            .AddSingleton(new BattleNetHttpService(configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
+            .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
             .AddSingleton<MembersService>()
             .AddSingleton<BotService>()
             .AddSingleton<MessageHandlingService>()

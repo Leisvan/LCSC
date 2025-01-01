@@ -9,6 +9,7 @@ public record class BattleNetProfileRecord(
     string? ProfileId = null,
     bool MainProfile = false,
     string? Notes = null,
-    string[]? Members = null)
+    string[]? Members = null,
+    string[]? LadderStats = null)
 {
 }

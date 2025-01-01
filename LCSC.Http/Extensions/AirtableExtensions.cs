@@ -27,7 +27,8 @@ public static class AirtableExtensions
             ProfileId: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileId)),
             MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
             Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)),
-            Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)));
+            Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)),
+            LadderStats: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderStats));
 
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
         => new(
