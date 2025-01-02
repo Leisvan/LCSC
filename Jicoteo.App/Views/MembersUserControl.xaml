@@ -325,7 +325,7 @@
                           ItemsSource="{x:Bind ViewModel.SelectedMember.Profiles, Mode=OneWay}"
                           SelectionMode="None">
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="airtableModels:BattleNetProfileRecord">
+                        <DataTemplate x:DataType="models:BattleNetProfileModel">
                             <Grid Margin="2"
                                   Padding="32,8,8,8"
                                   Background="{StaticResource AppColor1}"
@@ -334,6 +334,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -351,14 +352,14 @@
                                                 Orientation="Horizontal"
                                                 Spacing="4">
                                         <TextBlock FontSize="18"
-                                                   Text="{x:Bind BattleTag}"
-                                                   ToolTipService.ToolTip="{x:Bind Notes}" />
+                                                   Text="{x:Bind Record.BattleTag}"
+                                                   ToolTipService.ToolTip="{x:Bind Record.Notes}" />
                                         <TextBlock VerticalAlignment="Center"
                                                    FontFamily="{StaticResource MaterialIconsRegular}"
                                                    Foreground="GreenYellow"
                                                    Text="verified"
                                                    ToolTipService.ToolTip="Perfil principal"
-                                                   Visibility="{x:Bind MainProfile}" />
+                                                   Visibility="{x:Bind Record.MainProfile}" />
                                     </StackPanel>
 
                                     <TextBlock Grid.Row="1"
@@ -368,9 +369,9 @@
                                                Opacity=".4"
                                                TextLineBounds="Tight">
                                         <Run Text="BNET:" />
-                                        <Run Text="{x:Bind ProfileRealm}" />
+                                        <Run Text="{x:Bind Record.ProfileRealm}" />
                                         <Run Text="/" />
-                                        <Run Text="{x:Bind ProfileId}" />
+                                        <Run Text="{x:Bind Record.ProfileId}" />
                                     </TextBlock>
                                     <TextBlock Grid.Row="2"
                                                Grid.Column="1"
@@ -379,16 +380,20 @@
                                                Opacity=".4"
                                                TextLineBounds="Tight">
                                         <Run Text="Pulse:" />
-                                        <Run Text="{x:Bind PulseId}" />
+                                        <Run Text="{x:Bind Record.PulseId}" />
                                     </TextBlock>
+                                    <TextBlock Grid.RowSpan="3"
+                                               Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Text="{x:Bind LadderRegion.CurrentMMR, Mode=OneWay}" />
                                     <Button Grid.RowSpan="3"
-                                            Grid.Column="2"
+                                            Grid.Column="3"
                                             Width="56"
                                             VerticalAlignment="Stretch"
                                             Background="Transparent"
                                             BorderThickness="0"
                                             Command="{StaticResource NavigateToProfilePageCommand}"
-                                            CommandParameter="{x:Bind PulseId}"
+                                            CommandParameter="{x:Bind Record.PulseId}"
                                             ToolTipService.ToolTip="Abrir perfil en Sc2Pulse.com">
                                         <TextBlock FontFamily="{StaticResource MaterialIconsRegular}"
                                                    Text="open_in_new" />

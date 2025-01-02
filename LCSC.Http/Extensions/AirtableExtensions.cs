@@ -18,6 +18,21 @@ public static class AirtableExtensions
         return fields;
     }
 
+    public static LadderRegionRecord ToLadderRegionRecord(this AirtableRecord record)
+        => new(record.Id,
+            Number: record.GetField<int>(nameof(LadderRegionRecord.Number)),
+            LastUpdated: record.GetField<DateTime>(nameof(LadderRegionRecord.LastUpdated)),
+            SeasonId: record.GetField<int>(nameof(LadderRegionRecord.SeasonId)),
+            Region: record.GetField<string>(nameof(LadderRegionRecord.Region)),
+            Race: record.GetField<string>(nameof(LadderRegionRecord.Race)),
+            CurrentMMR: record.GetField<int>(nameof(LadderRegionRecord.CurrentMMR)),
+            PreviousMMR: record.GetField<int>(nameof(LadderRegionRecord.PreviousMMR)),
+            League: record.GetField<int>(nameof(LadderRegionRecord.League)),
+            Tier: record.GetField<int>(nameof(LadderRegionRecord.Tier)),
+            Wins: record.GetField<int>(nameof(LadderRegionRecord.Wins)),
+            TotalMatches: record.GetField<int>(nameof(LadderRegionRecord.TotalMatches)),
+            BattleNetProfiles: record.GetField<string[], string>(nameof(LadderRegionRecord.BattleNetProfiles)));
+
     public static BattleNetProfileRecord ToBattleNetProfileRecord(this AirtableRecord record)
             => new(record.Id,
             Number: record.GetField<int>(nameof(BattleNetProfileRecord.Number)),
@@ -28,7 +43,7 @@ public static class AirtableExtensions
             MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
             Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)),
             Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)),
-            LadderStats: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderStats));
+            LadderRegion: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderRegion)));
 
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
         => new(

@@ -32,12 +32,26 @@ namespace LCSC.Core.Services
             _battleNetHttpService = battleNetHttpService;
         }
 
-        public async Task TryLadder()
+        public async Task<Team?> Get1v1TeamAsync(string? pulseId)
         {
-            var results = await GetLadderTiersAsync();
-            if (results != null)
+            if (string.IsNullOrEmpty(pulseId))
             {
+                return null;
             }
+            var result = await _pulseHttpService.GetCharacterCommonDataAsync(pulseId);
+            if (result == null)
+            {
+                return null;
+            }
+            var seasonId = await GetSeasonIdAsync();
+            var validTeam = result.Teams?
+                .Where(t => t.QueueType == 201 && t.Season == seasonId)
+                .FirstOrDefault();
+            if (validTeam == null)
+            {
+                return null;
+            }
+            return validTeam;
         }
 
         private async Task<List<LadderTierModel>?> GetLadderTiersAsync()

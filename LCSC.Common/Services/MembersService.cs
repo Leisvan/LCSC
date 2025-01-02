@@ -1,8 +1,11 @@
-﻿using LCSC.Http.Services;
+﻿using LCSC.Core.Helpers;
+using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {
@@ -13,6 +16,7 @@ namespace LCSC.Core.Services
        CacheService cacheService)
     {
         private const string DefaultRegionParameter = "US";
+        private static readonly TimeSpan RegionUpdateThreshold = TimeSpan.FromHours(12);
 
         private readonly AirtableHttpService _airtableHttpService = airtableHttpService;
         private readonly List<MemberModel> _members = [];
@@ -42,17 +46,46 @@ namespace LCSC.Core.Services
             return _airtableHttpService.CreateBattleNetProfile(record);
         }
 
+        private async Task<Dictionary<string, List<BattleNetProfileModel>>> GetBattleNetProfilesAsync()
+        {
+            var bnetProfiles = await _airtableHttpService.GetBattleNetProfilesAsync();
+            if (bnetProfiles != null)
+            {
+                var ladderRegions = await _airtableHttpService.GetLadderRegionsAsync() ?? [];
+                var results = new Dictionary<string, List<BattleNetProfileModel>>();
+
+                var regionsMap = ladderRegions
+                    .Where(x => x.BattleNetProfiles?.Length > 0)
+                    .ToDictionary(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
+
+                foreach (var item in bnetProfiles)
+                {
+                    regionsMap.TryGetValue(item.Id, out var region);
+                    var id = item.Members?.FirstOrDefault();
+                    if (id != null)
+                    {
+                        if (!results.TryGetValue(id, out List<BattleNetProfileModel>? value))
+                        {
+                            value = [];
+                            results[id] = value;
+                        }
+                        value.Add(new BattleNetProfileModel(item, region));
+                    }
+                }
+                return results;
+            }
+            return [];
+        }
+
         private async Task RefreshAllAsync()
         {
-            await _ladderService.TryLadder();
-
             //Refresh members:
             var members = await _airtableHttpService.GetMemberRecordsAsync();
             if (members != null && members.Any())
             {
                 _members.Clear();
-                var bnetProfiles = await _airtableHttpService.GetBattleNetProfilesAsync();
-                if (bnetProfiles == null)
+                var bnetProfiles = await GetBattleNetProfilesAsync();
+                if (bnetProfiles.Count == 0)
                 {
                     _members.AddRange(members
                         .Select(m => new MemberModel(m, []))
@@ -62,11 +95,8 @@ namespace LCSC.Core.Services
                 {
                     foreach (var member in members)
                     {
-                        var profiles = bnetProfiles?
-                            .Where(profile => profile.Members?.Any(m => m == member.Id) ?? false)
-                            .OrderByDescending(x => x.MainProfile)
-                            .ToList() ?? [];
-
+                        bnetProfiles.TryGetValue(member.Id, out var profiles);
+                        profiles?.Sort();
                         _members.Add(new MemberModel(member, profiles));
                     }
                     _members.Sort();
@@ -91,6 +121,52 @@ namespace LCSC.Core.Services
                 }
                 _tournaments.Clear();
                 _tournaments.AddRange(results.OrderByDescending(t => t.Record.Date));
+            }
+        }
+
+
+        public async Task UpdateAllRegionsAsync(bool forceUpdate = false, Action<int, int, string?>? progressReport = null)
+        {
+            var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
+            for (int i = 0; i < profilesList.Count; i++)
+            {
+                var profile = profilesList[0];
+
+                progressReport?.Invoke(i+1, profilesList.Count, profile.Record.BattleTag);
+
+                if (!forceUpdate)
+                {
+                    if (profile.LadderRegion != null &&
+                        profile.LadderRegion.LastUpdated + RegionUpdateThreshold > DateTime.UtcNow)
+                    {
+                        continue;
+                    }
+                }
+
+                var id = profile.LadderRegion?.Id ?? string.Empty;
+
+                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
+
+                var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
+                if (team == null)
+                {
+                    continue;
+                }
+                var race = LadderHelper.GetRaceFromTeamResult(team);
+                string raceText = race == Race.Unknown ? string.Empty : race.ToString();
+
+                var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
+                    id,
+                    team.Season,
+                    team.Region,
+                    raceText,
+                    team.Rating,
+                    previousMMR,
+                    team.LeagueType,
+                    team.TierType,
+                    team.Wins,
+                    (team.Wins + team.Losses + team.Ties),
+                    profile.Record.Id);
             }
         }
 
@@ -134,7 +210,7 @@ namespace LCSC.Core.Services
                 {
                     return new ProfileSearchResult(
                         result.Members?.Account?.BattleTag,
-                        result.Members?.Account?.Id.ToString(),
+                        result.Members?.Character?.Id.ToString(),
                         result.Members?.Character?.Realm.ToString(),
                         result.Members?.Character?.BattlenetId.ToString());
                 }

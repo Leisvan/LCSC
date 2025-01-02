@@ -1,10 +1,11 @@
 ﻿namespace LCSC.Models.Airtable;
 
-public record class LadderRecord(
+public record class LadderRegionRecord(
     string Id,
     int Number = 0,
     DateTime? LastUpdated = null,
     int SeasonId = 0,
+    string? Region = null,
     string? Race = null,
     int CurrentMMR = 0,
     int PreviousMMR = 0,
@@ -12,4 +13,4 @@ public record class LadderRecord(
     int Tier = 0,
     int Wins = 0,
     int TotalMatches = 0,
-    string[]? Members = null);
+    string[]? BattleNetProfiles = null);

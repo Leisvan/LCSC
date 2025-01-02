@@ -8,6 +8,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 {
     private const string MembersTableName = "Members";
     private const string ProfilesTableName = "BattleNetProfiles";
+    private const string LadderRegionsTableName = "LadderRegions";
     private const string TournamentTableName = "Tournaments";
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
@@ -30,6 +31,16 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         return records.Select(r => r.ToBattleNetProfileRecord());
     }
 
+    public async Task<IEnumerable<LadderRegionRecord>?> GetLadderRegionsAsync()
+    {
+        var records = await GetRecordsAsync(LadderRegionsTableName);
+        if (records == null)
+        {
+            return null;
+        }
+        return records.Select(r => r.ToLadderRegionRecord());
+    }
+
     public async Task<IEnumerable<MemberRecord>?> GetMemberRecordsAsync()
     {
         var records = await GetRecordsAsync(MembersTableName);
@@ -38,6 +49,40 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
             return null;
         }
         return records.Select(r => r.ToMemberRecord());
+    }
+
+    public async Task<string?> UpdateOrCreateRegionAsync(
+        string id,
+        int seasonId,
+        string? region,
+        string race,
+        int currentMMR,
+        int previousMMR,
+        int league,
+        int tier,
+        int wins,
+        int totalMatches,
+        string bnetProfileId)
+    {
+        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
+        Fields fields = new Fields();
+        fields.AddField(nameof(LadderRegionRecord.SeasonId), seasonId);
+        fields.AddField(nameof(LadderRegionRecord.Region), region);
+        fields.AddField(nameof(LadderRegionRecord.Race), race);
+        fields.AddField(nameof(LadderRegionRecord.CurrentMMR), currentMMR);
+        fields.AddField(nameof(LadderRegionRecord.PreviousMMR), previousMMR);
+        fields.AddField(nameof(LadderRegionRecord.League), league);
+        fields.AddField(nameof(LadderRegionRecord.Tier), tier);
+        fields.AddField(nameof(LadderRegionRecord.Wins), wins);
+        fields.AddField(nameof(LadderRegionRecord.TotalMatches), totalMatches);
+        fields.AddField(nameof(LadderRegionRecord.BattleNetProfiles), new string[] { bnetProfileId });
+        if (string.IsNullOrEmpty(id))
+        {
+            var result = await airtableBase.CreateRecord(LadderRegionsTableName, fields);
+            return result.Success ? result.Record.Id : null;
+        }
+        var result2 = await airtableBase.UpdateRecord(LadderRegionsTableName, fields, id);
+        return result2.Success ? result2.Record.Id : null;
     }
 
     public async Task<BattleNetProfileRecord?> GetSingleBattleNetProfileAsync(string profileId)

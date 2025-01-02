@@ -4,7 +4,7 @@ namespace LCSC.Models;
 
 public record class MemberModel(
     MemberRecord Record,
-    List<BattleNetProfileRecord>? Profiles) : IComparable<MemberModel>
+    List<BattleNetProfileModel>? Profiles) : IComparable<MemberModel>
 {
     public Race Race
     {
