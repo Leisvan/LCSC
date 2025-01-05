@@ -19,10 +19,10 @@ namespace LCSC.Core.Services
         private static readonly TimeSpan RegionUpdateThreshold = TimeSpan.FromHours(12);
 
         private readonly AirtableHttpService _airtableHttpService = airtableHttpService;
+        private readonly LadderService _ladderService = new(pulseHttpService, battleNetHttpService, cacheService);
         private readonly List<MemberModel> _members = [];
         private readonly PulseHttpService _pulseHttpService = pulseHttpService;
         private readonly List<TournamentModel> _tournaments = [];
-        private readonly LadderService _ladderService = new(pulseHttpService, battleNetHttpService, cacheService);
 
         public Task<string?> CreateBattleNetProfile(
             string? battleTag,
@@ -46,130 +46,6 @@ namespace LCSC.Core.Services
             return _airtableHttpService.CreateBattleNetProfile(record);
         }
 
-        private async Task<Dictionary<string, List<BattleNetProfileModel>>> GetBattleNetProfilesAsync()
-        {
-            var bnetProfiles = await _airtableHttpService.GetBattleNetProfilesAsync();
-            if (bnetProfiles != null)
-            {
-                var ladderRegions = await _airtableHttpService.GetLadderRegionsAsync() ?? [];
-                var results = new Dictionary<string, List<BattleNetProfileModel>>();
-
-                var regionsMap = ladderRegions
-                    .Where(x => x.BattleNetProfiles?.Length > 0)
-                    .ToDictionary(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
-
-                foreach (var item in bnetProfiles)
-                {
-                    regionsMap.TryGetValue(item.Id, out var region);
-                    var id = item.Members?.FirstOrDefault();
-                    if (id != null)
-                    {
-                        if (!results.TryGetValue(id, out List<BattleNetProfileModel>? value))
-                        {
-                            value = [];
-                            results[id] = value;
-                        }
-                        value.Add(new BattleNetProfileModel(item, region));
-                    }
-                }
-                return results;
-            }
-            return [];
-        }
-
-        private async Task RefreshAllAsync()
-        {
-            //Refresh members:
-            var members = await _airtableHttpService.GetMemberRecordsAsync();
-            if (members != null && members.Any())
-            {
-                _members.Clear();
-                var bnetProfiles = await GetBattleNetProfilesAsync();
-                if (bnetProfiles.Count == 0)
-                {
-                    _members.AddRange(members
-                        .Select(m => new MemberModel(m, []))
-                        .OrderBy(x => x.Record.Nick));
-                }
-                else
-                {
-                    foreach (var member in members)
-                    {
-                        bnetProfiles.TryGetValue(member.Id, out var profiles);
-                        profiles?.Sort();
-                        _members.Add(new MemberModel(member, profiles));
-                    }
-                    _members.Sort();
-                }
-            }
-
-            //Refresh tournaments:
-            var tournaments = await _airtableHttpService.GetTournamentRecordsAsync();
-            if (tournaments != null && tournaments.Any())
-            {
-                var results = new List<TournamentModel>();
-                foreach (var item in tournaments)
-                {
-                    var p1 = GetMemberById(GetFirstItemFromArray(item.Place1));
-                    var p2 = GetMemberById(GetFirstItemFromArray(item.Place2));
-                    var p3 = GetMemberById(GetFirstItemFromArray(item.Place3));
-                    var p4 = GetMemberById(GetFirstItemFromArray(item.Place4));
-                    var participants = GetAllParticipants(item);
-                    var matches = GetMatchModels(item);
-                    var tournament = new TournamentModel(item, p1, p2, p3, p4, participants, matches);
-                    results.Add(tournament);
-                }
-                _tournaments.Clear();
-                _tournaments.AddRange(results.OrderByDescending(t => t.Record.Date));
-            }
-        }
-
-
-        public async Task UpdateAllRegionsAsync(bool forceUpdate = false, Action<int, int, string?>? progressReport = null)
-        {
-            var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
-            for (int i = 0; i < profilesList.Count; i++)
-            {
-                var profile = profilesList[0];
-
-                progressReport?.Invoke(i+1, profilesList.Count, profile.Record.BattleTag);
-
-                if (!forceUpdate)
-                {
-                    if (profile.LadderRegion != null &&
-                        profile.LadderRegion.LastUpdated + RegionUpdateThreshold > DateTime.UtcNow)
-                    {
-                        continue;
-                    }
-                }
-
-                var id = profile.LadderRegion?.Id ?? string.Empty;
-
-                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
-
-                var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
-                if (team == null)
-                {
-                    continue;
-                }
-                var race = LadderHelper.GetRaceFromTeamResult(team);
-                string raceText = race == Race.Unknown ? string.Empty : race.ToString();
-
-                var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
-                    id,
-                    team.Season,
-                    team.Region,
-                    raceText,
-                    team.Rating,
-                    previousMMR,
-                    team.LeagueType,
-                    team.TierType,
-                    team.Wins,
-                    (team.Wins + team.Losses + team.Ties),
-                    profile.Record.Id);
-            }
-        }
-
         public async Task<List<MemberModel>> GetMembersAsync(bool forceRefresh = false)
         {
             if (forceRefresh || _members.Count == 0)
@@ -181,6 +57,40 @@ namespace LCSC.Core.Services
                 }
             }
             return _members;
+        }
+
+        public LeagueStatsModel? GetMemberStats(string? memberId)
+        {
+            if (string.IsNullOrWhiteSpace(memberId))
+            {
+                return null;
+            }
+            var member = GetMemberById(memberId);
+            if (member is null)
+            {
+                return null;
+            }
+
+            var p1 = _tournaments.Where(x => x.Place1?.Record.Id == memberId).Count();
+            var p2 = _tournaments.Where(x => x.Place2?.Record.Id == memberId).Count();
+            var p3 = _tournaments.Where(x => x.Place3?.Record.Id == memberId).Count();
+            var p4 = _tournaments.Where(x => x.Place4?.Record.Id == memberId).Count();
+            var pcount = _tournaments
+                .Where(x => x.Participants != null && x.Participants.Any(m => m.Record.Id == memberId))
+                .Count();
+
+            var allMatches = _tournaments.SelectMany(m => m.Matches ?? []);
+            var membermatches = allMatches.Where(m => m.Winner.Record.Id == memberId || m.Loser.Record.Id == memberId);
+            var winCount = membermatches.Where(m => m.Winner.Record.Id == member.Record.Id).Select(m => m.WinnerScore).Sum();
+            var totalCount = membermatches.Select(m => m.WinnerScore + m.LoserScore).Sum();
+
+            var winrate = totalCount == 0 ? 0 : winCount * 100 / totalCount;
+
+            var twinrate = RacePercent(membermatches, memberId, Race.Terran);
+            var zwinrate = RacePercent(membermatches, memberId, Race.Zerg);
+            var pwinrate = RacePercent(membermatches, memberId, Race.Protoss);
+
+            return new LeagueStatsModel(p1, p2, p3, p4, pcount, winrate, twinrate, zwinrate, pwinrate);
         }
 
         public async Task<List<TournamentModel>> GetTournamentsAsync(bool forceRefresh = false)
@@ -218,6 +128,62 @@ namespace LCSC.Core.Services
             return null;
         }
 
+        public async Task<int> UpdateAllRegionsAsync(bool forceUpdate = false, Action<int, int, string?>? progressReport = null)
+        {
+            var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
+            int updatedProfilesCount = 0;
+            for (int i = 0; i < profilesList.Count; i++)
+            {
+                var profile = profilesList[0];
+
+                progressReport?.Invoke(i + 1, profilesList.Count, profile.Record.BattleTag);
+
+                if (!forceUpdate)
+                {
+                    if (profile.LadderRegion != null &&
+                        profile.LadderRegion.LastUpdated + RegionUpdateThreshold > DateTime.UtcNow)
+                    {
+                        continue;
+                    }
+                }
+
+                var id = profile.LadderRegion?.Id ?? string.Empty;
+
+                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
+
+                var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
+                if (team == null)
+                {
+                    continue;
+                }
+
+                var race = LadderHelper.GetRaceFromTeamResult(team);
+                string raceText = race == Race.Unknown ? string.Empty : race.ToString();
+
+                var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
+                    id,
+                    team.Season,
+                    team.Region,
+                    raceText,
+                    team.Rating,
+                    previousMMR,
+                    team.LeagueType,
+                    team.TierType,
+                    team.Wins,
+                    (team.Wins + team.Losses + team.Ties),
+                    profile.Record.Id);
+                if (result != null)
+                {
+                    updatedProfilesCount++;
+                }
+            }
+            if (updatedProfilesCount > 0)
+            {
+                await RefreshAllAsync();
+            }
+            return updatedProfilesCount;
+        }
+
         public async Task UpdateTournamentMatchesAsync(string tournamentId, List<MatchModel>? matches)
         {
             if (string.IsNullOrWhiteSpace(tournamentId) || matches == null || matches.Count == 0)
@@ -246,40 +212,6 @@ namespace LCSC.Core.Services
             }
         }
 
-        public LeagueStatsModel? GetMemberStats(string? memberId)
-        {
-            if (string.IsNullOrWhiteSpace(memberId))
-            {
-                return null;
-            }
-            var member = GetMemberById(memberId);
-            if (member is null)
-            {
-                return null;
-            }
-
-            var p1 = _tournaments.Where(x => x.Place1?.Record.Id == memberId).Count();
-            var p2 = _tournaments.Where(x => x.Place2?.Record.Id == memberId).Count();
-            var p3 = _tournaments.Where(x => x.Place3?.Record.Id == memberId).Count();
-            var p4 = _tournaments.Where(x => x.Place4?.Record.Id == memberId).Count();
-            var pcount = _tournaments
-                .Where(x => x.Participants != null && x.Participants.Any(m => m.Record.Id == memberId))
-                .Count();
-
-            var allMatches = _tournaments.SelectMany(m => m.Matches ?? []);
-            var membermatches = allMatches.Where(m => m.Winner.Record.Id == memberId || m.Loser.Record.Id == memberId);
-            var winCount = membermatches.Where(m => m.Winner.Record.Id == member.Record.Id).Select(m => m.WinnerScore).Sum();
-            var totalCount = membermatches.Select(m => m.WinnerScore + m.LoserScore).Sum();
-
-            var winrate = totalCount == 0 ? 0 : winCount * 100 / totalCount;
-
-            var twinrate = RacePercent(membermatches, memberId, Race.Terran);
-            var zwinrate = RacePercent(membermatches, memberId, Race.Zerg);
-            var pwinrate = RacePercent(membermatches, memberId, Race.Protoss);
-
-            return new LeagueStatsModel(p1, p2, p3, p4, pcount, winrate, twinrate, zwinrate, pwinrate);
-        }
-
         private static string? GetFirstItemFromArray(string[]? array)
         {
             if (array == null || array.Length == 0)
@@ -305,6 +237,37 @@ namespace LCSC.Core.Services
                 }
             }
             return list;
+        }
+
+        private async Task<Dictionary<string, List<BattleNetProfileModel>>> GetBattleNetProfilesAsync()
+        {
+            var bnetProfiles = await _airtableHttpService.GetBattleNetProfilesAsync();
+            if (bnetProfiles != null)
+            {
+                var ladderRegions = await _airtableHttpService.GetLadderRegionsAsync() ?? [];
+                var results = new Dictionary<string, List<BattleNetProfileModel>>();
+
+                var regionsMap = ladderRegions
+                    .Where(x => x.BattleNetProfiles?.Length > 0)
+                    .ToDictionary(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
+
+                foreach (var item in bnetProfiles)
+                {
+                    regionsMap.TryGetValue(item.Id, out var region);
+                    var id = item.Members?.FirstOrDefault();
+                    if (id != null)
+                    {
+                        if (!results.TryGetValue(id, out List<BattleNetProfileModel>? value))
+                        {
+                            value = [];
+                            results[id] = value;
+                        }
+                        value.Add(new BattleNetProfileModel(item, region));
+                    }
+                }
+                return results;
+            }
+            return [];
         }
 
         private List<MatchModel> GetMatchModels(TournamentRecord record)
@@ -367,6 +330,53 @@ namespace LCSC.Core.Services
             int allCount = matches.Where(x => (x.Winner.Record.Id == playerId && x.LoserRace == race) || (x.Loser.Record.Id == playerId && x.WinnerRace == race))
                 .Select(x => x.WinnerScore + x.LoserScore).Sum();
             return allCount == 0 ? 0 : (winCount * 100) / allCount;
+        }
+
+        private async Task RefreshAllAsync()
+        {
+            //Refresh members:
+            var members = await _airtableHttpService.GetMemberRecordsAsync();
+            if (members != null && members.Any())
+            {
+                _members.Clear();
+                var bnetProfiles = await GetBattleNetProfilesAsync();
+                if (bnetProfiles.Count == 0)
+                {
+                    _members.AddRange(members
+                        .Select(m => new MemberModel(m, []))
+                        .OrderBy(x => x.Record.Nick));
+                }
+                else
+                {
+                    foreach (var member in members)
+                    {
+                        bnetProfiles.TryGetValue(member.Id, out var profiles);
+                        profiles?.Sort();
+                        _members.Add(new MemberModel(member, profiles));
+                    }
+                    _members.Sort();
+                }
+            }
+
+            //Refresh tournaments:
+            var tournaments = await _airtableHttpService.GetTournamentRecordsAsync();
+            if (tournaments != null && tournaments.Any())
+            {
+                var results = new List<TournamentModel>();
+                foreach (var item in tournaments)
+                {
+                    var p1 = GetMemberById(GetFirstItemFromArray(item.Place1));
+                    var p2 = GetMemberById(GetFirstItemFromArray(item.Place2));
+                    var p3 = GetMemberById(GetFirstItemFromArray(item.Place3));
+                    var p4 = GetMemberById(GetFirstItemFromArray(item.Place4));
+                    var participants = GetAllParticipants(item);
+                    var matches = GetMatchModels(item);
+                    var tournament = new TournamentModel(item, p1, p2, p3, p4, participants, matches);
+                    results.Add(tournament);
+                }
+                _tournaments.Clear();
+                _tournaments.AddRange(results.OrderByDescending(t => t.Record.Date));
+            }
         }
     }
 }

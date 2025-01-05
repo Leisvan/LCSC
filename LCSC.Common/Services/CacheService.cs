@@ -1,5 +1,4 @@
-﻿
-namespace LCSC.Core.Services;
+﻿namespace LCSC.Core.Services;
 
 public class CacheService
 {
@@ -14,7 +13,7 @@ public class CacheService
         }
     }
 
-    public async Task CacheFileAsync(string fileName, string content)
+    public async Task CacheTextFileAsync(string fileName, string content)
     {
         var filePath = Path.Combine(_cacheDirectory, fileName);
         await File.WriteAllTextAsync(filePath, content);

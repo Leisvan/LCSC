@@ -107,7 +107,7 @@ namespace LCSC.Core.Services
                 {
                     var dataToCache = new TierCacheData(_seasonId, list, DateTime.Now);
                     var text = JsonConvert.SerializeObject(dataToCache);
-                    await _cacheService.CacheFileAsync(TiersCacheFileName, text);
+                    await _cacheService.CacheTextFileAsync(TiersCacheFileName, text);
                     _tiers = list;
                     return _tiers;
 
@@ -160,7 +160,7 @@ namespace LCSC.Core.Services
                 {
                     currentSeason.LastUpdated = DateTime.UtcNow;
                     var data = JsonConvert.SerializeObject(currentSeason);
-                    await _cacheService.CacheFileAsync(SeasonCacheFileName, data);
+                    await _cacheService.CacheTextFileAsync(SeasonCacheFileName, data);
                 }
                 catch (Exception)
                 {

@@ -32,4 +32,16 @@ public record class MemberModel(
         }
         return Record.Nick.CompareTo(other.Record.Nick);
     }
+
+    public string MMR
+    {
+        get
+        {
+            if (Profiles != null)
+            {
+                return Profiles.Select(x => x.LadderRegion?.CurrentMMR).Max()?.ToString() ?? string.Empty;
+            }
+            return string.Empty;
+        }
+    }
 }

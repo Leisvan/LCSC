@@ -85,6 +85,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid Width="56"
                                       Height="56">
@@ -122,7 +123,12 @@
                                     <TextBlock Style="{StaticResource AppItemSecondaryTextStyle}"
                                                Text="{x:Bind Record.RealName}" />
                                 </StackPanel>
-                                <Grid Grid.Column="2"
+                                <TextBlock Grid.Column="2"
+                                           Margin="16,8"
+                                           VerticalAlignment="Bottom"
+                                           Opacity=".4"
+                                           Text="{x:Bind MMR}" />
+                                <Grid Grid.Column="3"
                                       Width="48"
                                       Height="48"
                                       HorizontalAlignment="Center"
@@ -216,7 +222,6 @@
                         <Run FontWeight="Bold"
                              Text="{x:Bind ViewModel.SelectedMember.Stats.ProtossWinrate, Mode=OneWay}" />
                     </TextBlock>
-
                 </StackPanel>
             </Grid>
 
