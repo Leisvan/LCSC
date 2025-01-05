@@ -1,15 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.App.Services;
+using LCSC.Discord.Services;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels;
 
-public partial class BotViewModel : ObservableObject
+public partial class DiscordBotViewModel : ObservableObject
 {
-    private readonly BotService _botService;
+    private readonly DiscordBotService _botService;
 
-    public BotViewModel(BotService botService)
+    public DiscordBotViewModel(DiscordBotService botService)
     {
         _botService = botService;
     }

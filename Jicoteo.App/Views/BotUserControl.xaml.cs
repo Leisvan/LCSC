@@ -10,8 +10,8 @@ public sealed partial class BotUserControl : UserControl
     public BotUserControl()
     {
         this.InitializeComponent();
-        ViewModel = App.Current.Services.GetService<BotViewModel>();
+        ViewModel = App.Current.Services.GetService<DiscordBotViewModel>();
     }
 
-    public BotViewModel? ViewModel { get; }
+    public DiscordBotViewModel? ViewModel { get; }
 }

@@ -40,9 +40,6 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="Bot\Config\dconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -60,9 +57,6 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.241112-preview1" />
-    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02436" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02436" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02436" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
@@ -71,6 +65,7 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LCSC.Bot\LCSC.Discord.csproj" />
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Http\LCSC.Http.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />

@@ -1,5 +1,4 @@
-﻿using LCSC.App.Services;
-using LCSC.App.ViewModels;
+﻿using LCSC.App.ViewModels;
 using LCSC.Core.Services;
 using LCSC.Http.Services;
 using LCSC.Manager.Services;
@@ -7,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage;
+using LCSC.Discord.Services;
 using System;
-using System.IO;
 using Windows.ApplicationModel;
 
 
@@ -55,13 +54,13 @@ namespace LCSC.App
             .AddSingleton<PulseHttpService>()
             .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
             .AddSingleton(new BattleNetHttpService(configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
+            .AddSingleton(new DiscordBotService(configuration["DiscordSettings:token"], ulong.Parse(configuration["DiscordSettings:appId"] ?? "0")))
             .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
             .AddSingleton<MembersService>()
-            .AddSingleton<BotService>()
             .AddSingleton<MessageHandlingService>()
             //ViewModels
             .AddSingleton<MainViewModel>()
-            .AddTransient<BotViewModel>()
+            .AddTransient<DiscordBotViewModel>()
             .AddTransient<MembersViewModel>()
             .AddTransient<TournamentsViewModel>()
             .BuildServiceProvider();

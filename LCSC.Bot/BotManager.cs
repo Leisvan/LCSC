@@ -1,24 +1,32 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using LCSC.Manager.Services;
-using System;
-using System.Threading.Tasks;
 
-namespace LCSC.App.Bot;
+namespace LCSC.Discord;
 
-public class BotManager
+internal class BotManager
 {
-    private const ulong DiscordBotUserId = 1303150451893600276;
+    private readonly ulong _appUserId = 1325549763856306206;
 
-    public BotManager()
+    public BotManager(string token, ulong userId)
     {
-        //_messageListener = listener;
+        ConfigureBot(token);
     }
 
     public DiscordClient? Client { get; private set; }
 
-    public void ConfigureBot(string token)
+    public async Task ConnectAsync()
     {
+        if (Client == null)
+        {
+            return;
+        }
+        await Client.ConnectAsync();
+        await Task.Delay(-1);
+    }
+
+    private void ConfigureBot(string token)
+    {
+        LogNotifier.Notify("Configuring bot");
         var builder = DiscordClientBuilder.CreateDefault(token, DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents);
         builder.ConfigureEventHandlers
         (
@@ -34,20 +42,9 @@ public class BotManager
         Client = builder.Build();
     }
 
-    public async Task ConnectAsync()
-    {
-        if (Client == null)
-        {
-            return;
-        }
-        await Client.ConnectAsync();
-        await Task.Delay(-1);
-    }
-
-
     private Task OnClientMessageCreated(DiscordClient sender, MessageCreatedEventArgs args)
     {
-        if (args.Author.Id != DiscordBotUserId)
+        if (args.Author.Id != _appUserId)
         {
             //_messageListener?.HandleMessageAsync(sender, args);
         }
