@@ -9,6 +9,9 @@ using Microsoft.Windows.Storage;
 using LCSC.Discord.Services;
 using System;
 using Windows.ApplicationModel;
+using DSharpPlus.Extensions;
+using LCSC.Discord.Extensions;
+using LCSC.Discord.Commands;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -50,19 +53,27 @@ namespace LCSC.App
 
         private static ServiceProvider ConfigureServices(IConfiguration configuration)
             => new ServiceCollection()
+
             //Services
             .AddSingleton<PulseHttpService>()
             .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
             .AddSingleton(new BattleNetHttpService(configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
-            .AddSingleton(new DiscordBotService(configuration["DiscordSettings:token"], ulong.Parse(configuration["DiscordSettings:appId"] ?? "0")))
             .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
             .AddSingleton<MembersService>()
             .AddSingleton<MessageHandlingService>()
+
+            //Discord bot
+            .AddSingleton<DiscordBotService>()
+            .AddSingleton<DiscordBotSettingsService>()
+            .AddDiscordClient(configuration["DiscordSettings:token"])
+
             //ViewModels
             .AddSingleton<MainViewModel>()
             .AddTransient<DiscordBotViewModel>()
             .AddTransient<MembersViewModel>()
             .AddTransient<TournamentsViewModel>()
+
+            //Build:
             .BuildServiceProvider();
 
         private IConfiguration ReadConfigurations()

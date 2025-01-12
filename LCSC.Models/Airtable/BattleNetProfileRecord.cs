@@ -10,6 +10,4 @@ public record class BattleNetProfileRecord(
     bool MainProfile = false,
     string? Notes = null,
     string[]? Members = null,
-    string[]? LadderRegion = null)
-{
-}
+    string[]? LadderRegion = null);

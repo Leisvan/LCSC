@@ -18,8 +18,28 @@ public static class AirtableExtensions
         return fields;
     }
 
-    public static LadderRegionRecord ToLadderRegionRecord(this AirtableRecord record)
+    public static BattleNetProfileRecord ToBattleNetProfileRecord(this AirtableRecord record)
+            => new(record.Id,
+            Number: record.GetField<int>(nameof(BattleNetProfileRecord.Number)),
+            BattleTag: record.GetField<string>(nameof(BattleNetProfileRecord.BattleTag)),
+            PulseId: record.GetField<string>(nameof(BattleNetProfileRecord.PulseId)),
+            ProfileRealm: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileRealm)),
+            ProfileId: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileId)),
+            MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
+            Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)),
+            Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)),
+            LadderRegion: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderRegion)));
+
+    public static DiscordBotSettingsRecord ToDiscordBotSettings(this AirtableRecord record)
         => new(record.Id,
+            Number: record.GetField<int>(nameof(DiscordBotSettingsRecord.Number)),
+            Key: record.GetField<string>(nameof(DiscordBotSettingsRecord.Key)),
+            Value: record.GetField<string>(nameof(DiscordBotSettingsRecord.Value)),
+            GuildId: record.GetField<string>(nameof(DiscordBotSettingsRecord.GuildId)),
+            Description: record.GetField<string>(nameof(DiscordBotSettingsRecord.Description)));
+
+    public static LadderRegionRecord ToLadderRegionRecord(this AirtableRecord record)
+                => new(record.Id,
             Number: record.GetField<int>(nameof(LadderRegionRecord.Number)),
             LastUpdated: record.GetField<DateTime>(nameof(LadderRegionRecord.LastUpdated)),
             SeasonId: record.GetField<int>(nameof(LadderRegionRecord.SeasonId)),
@@ -32,18 +52,6 @@ public static class AirtableExtensions
             Wins: record.GetField<int>(nameof(LadderRegionRecord.Wins)),
             TotalMatches: record.GetField<int>(nameof(LadderRegionRecord.TotalMatches)),
             BattleNetProfiles: record.GetField<string[], string>(nameof(LadderRegionRecord.BattleNetProfiles)));
-
-    public static BattleNetProfileRecord ToBattleNetProfileRecord(this AirtableRecord record)
-            => new(record.Id,
-            Number: record.GetField<int>(nameof(BattleNetProfileRecord.Number)),
-            BattleTag: record.GetField<string>(nameof(BattleNetProfileRecord.BattleTag)),
-            PulseId: record.GetField<string>(nameof(BattleNetProfileRecord.PulseId)),
-            ProfileRealm: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileRealm)),
-            ProfileId: record.GetField<string>(nameof(BattleNetProfileRecord.ProfileId)),
-            MainProfile: record.GetField<bool>(nameof(BattleNetProfileRecord.MainProfile)),
-            Notes: record.GetField<string>(nameof(BattleNetProfileRecord.Notes)),
-            Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)),
-            LadderRegion: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderRegion)));
 
     public static MemberRecord ToMemberRecord(this AirtableRecord record)
         => new(

@@ -8,7 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02445" />
+    <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02445" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02445" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
+    <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
 
 </Project>

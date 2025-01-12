@@ -1,19 +1,56 @@
-﻿namespace LCSC.Discord.Services
-{
-    public class DiscordBotService
-    {
-        private readonly BotManager _bot;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
+using LCSC.Core.Services;
+using LCSC.Discord.Models;
 
-        public DiscordBotService(string? discordToken, ulong appId)
+namespace LCSC.Discord.Services
+{
+    public partial class DiscordBotService
+    {
+        private readonly DiscordClient _client;
+        private readonly MembersService _membersService;
+        private readonly DiscordBotSettingsService _settingsService;
+
+        public DiscordBotService(
+            DiscordClient client,
+            DiscordBotSettingsService settingsService,
+            MembersService membersService)
         {
-            if (string.IsNullOrWhiteSpace(discordToken))
-            {
-                throw new ArgumentException(null, nameof(discordToken));
-            }
-            _bot = new BotManager(discordToken, appId);
+            _client = client;
+            _settingsService = settingsService;
+            _membersService = membersService;
         }
 
+        public DiscordClient Client => _client;
+
         public Task ConnectAsync()
-            => _bot.ConnectAsync();
+            => _client.ConnectAsync();
+
+        public async Task DisconnectAsync()
+        {
+            await _client.DisconnectAsync();
+            LogNotifier.Notify("Bot Disconnected");
+        }
+
+        public IEnumerable<DiscordGuildModel> GetSettingServers()
+            => _settingsService.GetAllGuilds();
+
+        private async Task<DiscordMessage?> SendMessageAsync(string content, ulong channelId, DiscordMessage? message = null)
+        {
+            try
+            {
+                if (message == null)
+                {
+                    var channel = await Client.GetChannelAsync(channelId);
+                    return await channel.SendMessageAsync(content);
+                }
+                return await message.ModifyAsync(content);
+            }
+            catch (Exception e)
+            {
+                LogNotifier.Notify(e.Message);
+                return null;
+            }
+        }
     }
 }

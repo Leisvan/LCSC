@@ -2,32 +2,80 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:appBehaviors="using:LCSC.App.Behaviors"
+             xmlns:controls="using:CommunityToolkit.WinUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
              xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
              xmlns:local="using:LCSC.App.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="using:CommunityToolkit.WinUI"
              mc:Ignorable="d">
 
-    <Grid Padding="16"
-          RowSpacing="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical"
-                    Spacing="4">
-            <Button Command="{x:Bind ViewModel.ConnectBotCommand, Mode=OneWay}"
-                    Content="Iniciar" />
-        </StackPanel>
-        <Grid Grid.Row="1">
-            <RichTextBlock HorizontalAlignment="Stretch"
-                           VerticalAlignment="Stretch"
-                           FontFamily="Cascadia Mono">
-                <interactivity:Interaction.Behaviors>
-                    <appBehaviors:ConsoleMirrorBehavior />
-                </interactivity:Interaction.Behaviors>
-            </RichTextBlock>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Padding="16"
+              RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal"
+                        Spacing="4">
+                <Button Command="{x:Bind ViewModel.ConnectBotCommand, Mode=OneWay}"
+                        Content="Iniciar" />
+                <Button Command="{x:Bind ViewModel.DisconnectBotCommand, Mode=OneWay}"
+                        Content="Terminar" />
+            </StackPanel>
+            <Grid Grid.Row="1"
+                  Padding="16"
+                  Background="#101010">
+                <RichTextBlock HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               FontFamily="Cascadia Mono">
+                    <interactivity:Interaction.Behaviors>
+                        <appBehaviors:ConsoleMirrorBehavior />
+                    </interactivity:Interaction.Behaviors>
+                </RichTextBlock>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1"
+              RowSpacing="8"
+              Visibility="{x:Bind ViewModel.IsConnected, Mode=OneWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <controls:SettingsExpander Description="Lista de configuraciones en uso por el bot"
+                                       Header="Config">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock VerticalAlignment="Center"
+                               Text="Guild:" />
+                    <ComboBox MinWidth="220"
+                              ItemsSource="{x:Bind ViewModel.Guilds, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedGuild, Mode=TwoWay}" />
+                </StackPanel>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander Grid.Row="1"
+                                       Description="Lista de acciones que el bot puede ejecutar"
+                                       Header="Acciones"
+                                       IsExpanded="True">
+                <controls:SettingsExpander.Items>
+                    <StackPanel Margin="16"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                        <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
+                                Content="Update rank" />
+                        <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
+                                Content="Update rank (forced)" />
+                    </StackPanel>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
         </Grid>
     </Grid>
 </UserControl>

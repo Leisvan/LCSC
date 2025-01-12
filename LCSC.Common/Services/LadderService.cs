@@ -13,14 +13,13 @@ namespace LCSC.Core.Services
 {
     internal class LadderService
     {
-        private int _seasonId = 0;
-        private List<LadderTierModel> _tiers = [];
-        private readonly PulseHttpService _pulseHttpService;
-        private readonly CacheService _cacheService;
-        private readonly BattleNetHttpService _battleNetHttpService;
-
         private const string SeasonCacheFileName = "Seasons.json";
         private const string TiersCacheFileName = "Tiers.json";
+        private readonly BattleNetHttpService _battleNetHttpService;
+        private readonly CacheService _cacheService;
+        private readonly PulseHttpService _pulseHttpService;
+        private int _seasonId = 0;
+        private List<LadderTierModel> _tiers = [];
 
         public LadderService(
             PulseHttpService pulseHttpService,
@@ -68,14 +67,14 @@ namespace LCSC.Core.Services
 
             TierCacheData? cachedData = null;
             var loadedCacheData = await _cacheService.GetCachedTextAsync(TiersCacheFileName);
-            
+
             //Load from cache:
             if (!string.IsNullOrEmpty(loadedCacheData))
             {
                 try
                 {
                     cachedData = JsonConvert.DeserializeObject<TierCacheData>(loadedCacheData);
-                    if (cachedData != null 
+                    if (cachedData != null
                         && cachedData.SeasonId == seasonId
                         && (cachedData.LastUpdated + TimeSpan.FromDays(2)) > DateTime.Now
                         && cachedData.Tiers.Count > 0)
@@ -92,7 +91,7 @@ namespace LCSC.Core.Services
             //Load from API:
             var values = Enum.GetValues<LadderLeague>().Except([LadderLeague.Grandmaster]);
             var list = new List<LadderTierModel>();
-            foreach (var value in values) 
+            foreach (var value in values)
             {
                 var tiers = await _battleNetHttpService.GetLadderTiersForLeague(_seasonId, (int)value);
                 if (tiers != null && tiers.Count > 0)
@@ -110,7 +109,6 @@ namespace LCSC.Core.Services
                     await _cacheService.CacheTextFileAsync(TiersCacheFileName, text);
                     _tiers = list;
                     return _tiers;
-
                 }
                 catch (Exception)
                 {
@@ -149,7 +147,7 @@ namespace LCSC.Core.Services
                 {
                 }
             }
-           
+
             //Retrieve API data:
             var seasons = await _pulseHttpService.GetSeasonsDataAsync();
             var currentSeason = seasons?.OrderByDescending(season => season.BattlenetId)
@@ -176,7 +174,7 @@ namespace LCSC.Core.Services
         }
 
         private record class TierCacheData(
-            int SeasonId, 
+            int SeasonId,
             List<LadderTierModel> Tiers,
             DateTime LastUpdated);
     }

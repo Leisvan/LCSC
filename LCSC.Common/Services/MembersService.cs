@@ -16,7 +16,6 @@ namespace LCSC.Core.Services
        CacheService cacheService)
     {
         private const string DefaultRegionParameter = "US";
-        private static readonly TimeSpan RegionUpdateThreshold = TimeSpan.FromHours(12);
 
         private readonly AirtableHttpService _airtableHttpService = airtableHttpService;
         private readonly LadderService _ladderService = new(pulseHttpService, battleNetHttpService, cacheService);
@@ -128,20 +127,22 @@ namespace LCSC.Core.Services
             return null;
         }
 
-        public async Task<int> UpdateAllRegionsAsync(bool forceUpdate = false, Action<int, int, string?>? progressReport = null)
+        public async Task<int> UpdateAllRegionsAsync(
+            TimeSpan? regionUpdateThreshold = null,
+            Action<int, int, string?>? progressReport = null)
         {
             var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
             int updatedProfilesCount = 0;
             for (int i = 0; i < profilesList.Count; i++)
             {
-                var profile = profilesList[0];
+                var profile = profilesList[i];
 
                 progressReport?.Invoke(i + 1, profilesList.Count, profile.Record.BattleTag);
 
-                if (!forceUpdate)
+                if (regionUpdateThreshold != null)
                 {
                     if (profile.LadderRegion != null &&
-                        profile.LadderRegion.LastUpdated + RegionUpdateThreshold > DateTime.UtcNow)
+                        profile.LadderRegion.LastUpdated + regionUpdateThreshold > DateTime.UtcNow)
                     {
                         continue;
                     }
