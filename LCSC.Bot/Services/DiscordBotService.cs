@@ -2,26 +2,28 @@
 using DSharpPlus.Entities;
 using LCSC.Core.Services;
 using LCSC.Discord.Models;
+using LCSC.Discord.Services.Internal;
 
 namespace LCSC.Discord.Services
 {
-    public partial class DiscordBotService
+    public class DiscordBotService
     {
         private readonly DiscordClient _client;
-        private readonly MembersService _membersService;
-        private readonly DiscordBotSettingsService _settingsService;
+        private readonly GuildActionsService _guildActions;
+        private readonly SettingsService _settingsService;
 
         public DiscordBotService(
             DiscordClient client,
-            DiscordBotSettingsService settingsService,
             MembersService membersService)
         {
             _client = client;
-            _settingsService = settingsService;
-            _membersService = membersService;
+            _settingsService = new SettingsService(membersService);
+            _guildActions = new GuildActionsService(membersService, this, _settingsService);
         }
 
         public DiscordClient Client => _client;
+
+        internal GuildActionsService Actions => _guildActions;
 
         public Task ConnectAsync()
             => _client.ConnectAsync();
@@ -35,22 +37,7 @@ namespace LCSC.Discord.Services
         public IEnumerable<DiscordGuildModel> GetSettingServers()
             => _settingsService.GetAllGuilds();
 
-        private async Task<DiscordMessage?> SendMessageAsync(string content, ulong channelId, DiscordMessage? message = null)
-        {
-            try
-            {
-                if (message == null)
-                {
-                    var channel = await Client.GetChannelAsync(channelId);
-                    return await channel.SendMessageAsync(content);
-                }
-                return await message.ModifyAsync(content);
-            }
-            catch (Exception e)
-            {
-                LogNotifier.Notify(e.Message);
-                return null;
-            }
-        }
+        public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
+            => _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId);
     }
 }

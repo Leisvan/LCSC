@@ -1,59 +1,22 @@
 ﻿using LCSC.Http.Services;
 using LCSC.Models;
-using LCSC.Models.BattleNet;
 using LCSC.Models.Pulse;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LCSC.Core.Services
 {
-    internal class LadderService
+    public class LadderService(CacheService cacheService, string? clientId, string? clientSecret)
     {
         private const string SeasonCacheFileName = "Seasons.json";
         private const string TiersCacheFileName = "Tiers.json";
-        private readonly BattleNetHttpService _battleNetHttpService;
-        private readonly CacheService _cacheService;
-        private readonly PulseHttpService _pulseHttpService;
+        private static readonly TimeSpan TiersCacheTimout = TimeSpan.FromDays(1);
+        private readonly BattleNetHttpService _battleNetHttpService = new(clientId, clientSecret);
+        private readonly CacheService _cacheService = cacheService;
+        private readonly PulseHttpService _pulseHttpService = new();
         private int _seasonId = 0;
         private List<LadderTierModel> _tiers = [];
 
-        public LadderService(
-            PulseHttpService pulseHttpService,
-            BattleNetHttpService battleNetHttpService,
-            CacheService cacheService)
-        {
-            _pulseHttpService = pulseHttpService;
-            _cacheService = cacheService;
-            _battleNetHttpService = battleNetHttpService;
-        }
-
-        public async Task<Team?> Get1v1TeamAsync(string? pulseId)
-        {
-            if (string.IsNullOrEmpty(pulseId))
-            {
-                return null;
-            }
-            var result = await _pulseHttpService.GetCharacterCommonDataAsync(pulseId);
-            if (result == null)
-            {
-                return null;
-            }
-            var seasonId = await GetSeasonIdAsync();
-            var validTeam = result.Teams?
-                .Where(t => t.QueueType == 201 && t.Season == seasonId)
-                .FirstOrDefault();
-            if (validTeam == null)
-            {
-                return null;
-            }
-            return validTeam;
-        }
-
-        private async Task<List<LadderTierModel>?> GetLadderTiersAsync()
+        public async Task<List<LadderTierModel>?> GetLadderTiersAsync()
         {
             if (_tiers.Count != 0)
             {
@@ -76,7 +39,7 @@ namespace LCSC.Core.Services
                     cachedData = JsonConvert.DeserializeObject<TierCacheData>(loadedCacheData);
                     if (cachedData != null
                         && cachedData.SeasonId == seasonId
-                        && (cachedData.LastUpdated + TimeSpan.FromDays(2)) > DateTime.Now
+                        && (cachedData.LastUpdated + TiersCacheTimout) > DateTime.Now
                         && cachedData.Tiers.Count > 0)
                     {
                         _tiers = new List<LadderTierModel>(cachedData.Tiers);
@@ -123,7 +86,7 @@ namespace LCSC.Core.Services
             return null;
         }
 
-        private async Task<int> GetSeasonIdAsync()
+        public async Task<int> GetSeasonIdAsync()
         {
             if (_seasonId != 0)
             {
@@ -171,6 +134,28 @@ namespace LCSC.Core.Services
                 return season.BattlenetId;
             }
             return 0;
+        }
+
+        internal async Task<Team?> Get1v1TeamAsync(string? pulseId)
+        {
+            if (string.IsNullOrEmpty(pulseId))
+            {
+                return null;
+            }
+            var result = await _pulseHttpService.GetCharacterCommonDataAsync(pulseId);
+            if (result == null)
+            {
+                return null;
+            }
+            var seasonId = await GetSeasonIdAsync();
+            var validTeam = result.Teams?
+                .Where(t => t.QueueType == 201 && t.Season == seasonId)
+                .FirstOrDefault();
+            if (validTeam == null)
+            {
+                return null;
+            }
+            return validTeam;
         }
 
         private record class TierCacheData(

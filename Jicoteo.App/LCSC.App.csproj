@@ -63,6 +63,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02445" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.241114004-experimental1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -71,7 +72,6 @@
   <ItemGroup>
     <ProjectReference Include="..\LCSC.Bot\LCSC.Discord.csproj" />
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
-    <ProjectReference Include="..\LCSC.Http\LCSC.Http.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
   <ItemGroup>

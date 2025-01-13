@@ -7,6 +7,7 @@
   </PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\LCSC.Http\LCSC.Http.csproj" />
+		<ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
 	</ItemGroup>
 
 </Project>

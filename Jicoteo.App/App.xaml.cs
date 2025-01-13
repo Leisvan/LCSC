@@ -1,17 +1,16 @@
 ﻿using LCSC.App.ViewModels;
 using LCSC.Core.Services;
-using LCSC.Http.Services;
 using LCSC.Manager.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage;
 using LCSC.Discord.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using Windows.ApplicationModel;
-using DSharpPlus.Extensions;
 using LCSC.Discord.Extensions;
-using LCSC.Discord.Commands;
+using LCSC.App.Logging;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -53,19 +52,19 @@ namespace LCSC.App
 
         private static ServiceProvider ConfigureServices(IConfiguration configuration)
             => new ServiceCollection()
-
             //Services
-            .AddSingleton<PulseHttpService>()
-            .AddSingleton(new AirtableHttpService(configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
-            .AddSingleton(new BattleNetHttpService(configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
             .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
-            .AddSingleton<MembersService>()
-            .AddSingleton<MessageHandlingService>()
+            .AddSingleton(sp => new LadderService(sp.GetRequiredService<CacheService>(), configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
+            .AddSingleton(sp => new MembersService(sp.GetRequiredService<LadderService>(), configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
 
             //Discord bot
+            .AddLogging(config =>
+            {
+                config.AddConsole();
+                config.AddProvider(new ConsoleLoggerProvider());
+            })
             .AddSingleton<DiscordBotService>()
-            .AddSingleton<DiscordBotSettingsService>()
-            .AddDiscordClient(configuration["DiscordSettings:token"])
+            .ConfigureDiscordClient(configuration["DiscordSettings:token"])
 
             //ViewModels
             .AddSingleton<MainViewModel>()
@@ -74,7 +73,7 @@ namespace LCSC.App
             .AddTransient<TournamentsViewModel>()
 
             //Build:
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         private IConfiguration ReadConfigurations()
         {

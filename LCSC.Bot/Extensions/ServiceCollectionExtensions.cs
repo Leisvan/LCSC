@@ -2,6 +2,7 @@
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Extensions;
 using LCSC.Discord.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,27 +10,32 @@ namespace LCSC.Discord.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDiscordClient(
+        public static IServiceCollection ConfigureDiscordClient(
                     this IServiceCollection services, string? token)
         {
             ArgumentNullException.ThrowIfNull(token);
 
-            var builder = DiscordClientBuilder.CreateDefault(token,
-                DiscordIntents.Guilds |
-                DiscordIntents.AllUnprivileged |
-                DiscordIntents.MessageContents |
-                SlashCommandProcessor.RequiredIntents,
-                services);
-            builder.UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+            services.AddDiscordClient(token, DiscordIntents.Guilds | DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents | SlashCommandProcessor.RequiredIntents);
+
+            services.AddCommandsExtension((IServiceProvider serviceProvider, CommandsExtension extension) =>
             {
                 extension.AddCommands([typeof(LadderCommand)]);
             });
+            //var builder = DiscordClientBuilder.CreateDefault(token,
+            //    DiscordIntents.Guilds |
+            //    DiscordIntents.AllUnprivileged |
+            //    DiscordIntents.MessageContents |
+            //    SlashCommandProcessor.RequiredIntents,
+            //    services);
 
-            var client = builder.Build();
+            //builder.UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+            //{
+            //    extension.AddCommands([typeof(LadderCommand)]);
+            //});
 
-            return services
-                .AddSingleton(client)
-                .AddTransient<LadderCommand>();
+            //services
+            //    .AddSingleton(builder.Build());
+            return services;
         }
 
         private static Task OnClientMessageCreated(DiscordClient sender, MessageCreatedEventArgs args)

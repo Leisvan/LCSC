@@ -2,25 +2,23 @@
 using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
-using LCSC.Models.Pulse;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {
     public class MembersService(
-       AirtableHttpService airtableHttpService,
-       PulseHttpService pulseHttpService,
-       BattleNetHttpService battleNetHttpService,
-       CacheService cacheService)
+       LadderService ladderService,
+       string? airtableToken,
+       string? baseId)
     {
         private const string DefaultRegionParameter = "US";
 
-        private readonly AirtableHttpService _airtableHttpService = airtableHttpService;
-        private readonly LadderService _ladderService = new(pulseHttpService, battleNetHttpService, cacheService);
+        private readonly AirtableHttpService _airtableHttpService = new AirtableHttpService(airtableToken, baseId);
+
+        private readonly LadderService _ladderService = ladderService;
         private readonly List<MemberModel> _members = [];
-        private readonly PulseHttpService _pulseHttpService = pulseHttpService;
+
+        private readonly PulseHttpService _pulseHttpService = new PulseHttpService();
         private readonly List<TournamentModel> _tournaments = [];
 
         public Task<string?> CreateBattleNetProfile(
@@ -44,6 +42,9 @@ namespace LCSC.Core.Services
                 [memberId]);
             return _airtableHttpService.CreateBattleNetProfile(record);
         }
+
+        public Task<IEnumerable<DiscordBotSettingsRecord>?> GetDiscordBotSettingsAsync()
+            => _airtableHttpService.GetDiscordBotSettingsAsync();
 
         public async Task<List<MemberModel>> GetMembersAsync(bool forceRefresh = false)
         {
