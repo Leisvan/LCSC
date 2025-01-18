@@ -1,4 +1,6 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus.Commands;
+using DSharpPlus.Entities;
+using LCSC.Core.Models;
 using LCSC.Core.Services;
 
 namespace LCSC.Discord.Services.Internal
@@ -8,13 +10,28 @@ namespace LCSC.Discord.Services.Internal
         private readonly DiscordBotService _botService = botService;
         private readonly MembersService _membersService = membersService;
         private readonly SettingsService _settingsService = settingsService;
+        private CancellationTokenSource? _updateLadderTokenSource;
 
-        public async Task UpdateMemberRegionsAsync(
+        public void CancelUpdateMemberRegions()
+            => _updateLadderTokenSource?.Cancel();
+
+        /// <returns>
+        /// Null: Cancelled
+        /// False: Error
+        /// True: Finished
+        /// </returns>
+        public async Task<string> UpdateMemberRegionsAsync(
             bool forceUpdate = false,
             ulong guildId = 0,
             ulong channelId = 0,
-            DiscordMessage? message = null)
+            CommandContext? context = null)
         {
+            if (_updateLadderTokenSource != null)
+            {
+                return "La operación ya está en progreso.";
+            }
+            _updateLadderTokenSource = new CancellationTokenSource();
+
             TimeSpan? updateTime = null;
             if (!forceUpdate)
             {
@@ -29,17 +46,27 @@ namespace LCSC.Discord.Services.Internal
                 var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
                 if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out channelId) || channelId == 0)
                 {
-                    LogNotifier.NotifyError("ChannelId not found in UpdateMemberRegionsAsync");
-                    return;
+                    var errorMessage = "Id del canal no encontrado";
+                    LogNotifier.NotifyError(errorMessage);
+                    return errorMessage;
                 }
             }
-
-            await _membersService.UpdateAllRegionsAsync(updateTime,
-                async (number, count, tag) =>
+            DiscordMessage? message = context != null ? await context.FollowupAsync("...") : null;
+            RegionUpdateProgressReportData? lastUpdate = null;
+            var result = await _membersService.UpdateAllRegionsAsync(
+                updateTime, async (data) =>
                 {
-                    string content = $"Actualizando {number} de {count} perfiles: {tag}";
+                    lastUpdate = data;
+                    var content = data.ErrorMessage ?? $"Actualizando {data.Number} de {data.Total} perfiles: {data.EntryName}";
                     message = await UpdateMessageAsync(content, channelId, message);
-                });
+                }, _updateLadderTokenSource.Token);
+
+            if (lastUpdate?.ErrorMessage == null)
+            {
+                await UpdateMessageAsync($"{result} perfiles actualizados.", channelId, message);
+            }
+
+            return string.Empty;
         }
 
         private async Task<DiscordMessage?> UpdateMessageAsync(string content, ulong channelId, DiscordMessage? message = null)
@@ -51,7 +78,7 @@ namespace LCSC.Discord.Services.Internal
                     var channel = await _botService.Client.GetChannelAsync(channelId);
                     return await channel.SendMessageAsync(content);
                 }
-                return await message.ModifyAsync(content);
+                return message = await message.ModifyAsync(content);
             }
             catch (Exception e)
             {

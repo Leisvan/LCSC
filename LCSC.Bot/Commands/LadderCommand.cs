@@ -11,9 +11,14 @@ namespace LCSC.Discord.Commands
     {
         private readonly DiscordBotService _service;
 
-        public LadderCommand(DiscordBotService service)
+        public LadderCommand(DiscordBotService service) => _service = service;
+
+        [Command("cancel")]
+        public async ValueTask CancelAsync(CommandContext context)
         {
-            _service = service;
+            _service.Actions.CancelUpdateMemberRegions();
+            await context.DeferResponseAsync();
+            await context.FollowupAsync("Solicitud de cancelación enviada");
         }
 
         [Command("rank")]
@@ -26,11 +31,9 @@ namespace LCSC.Discord.Commands
         {
             var guildId = context.Guild?.Id ?? 0;
 
-            await context.RespondAsync("...");
+            await context.DeferResponseAsync();
 
-            var message = await context.GetResponseAsync();
-
-            await _service.Actions.UpdateMemberRegionsAsync(forceUpdate, guildId, context.Channel.Id, message);
+            await _service.Actions.UpdateMemberRegionsAsync(forceUpdate, guildId, context.Channel.Id, context);
         }
 
         private async Task Emojis(DiscordBotService service)

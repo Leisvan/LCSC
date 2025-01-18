@@ -10,20 +10,14 @@ using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels;
 
-public partial class DiscordBotViewModel : ObservableObject
+public partial class DiscordBotViewModel(DiscordBotService botService) : ObservableObject
 {
-    private readonly DiscordBotService _botService;
+    private readonly DiscordBotService _botService = botService;
 
     private bool _isConnected;
     private DiscordGuildModel? _selectedGuild;
 
-    public DiscordBotViewModel(DiscordBotService botService)
-    {
-        _botService = botService;
-        Guilds = [];
-    }
-
-    public ObservableCollection<DiscordGuildModel> Guilds { get; }
+    public ObservableCollection<DiscordGuildModel> Guilds { get; } = [];
 
     public bool IsConnected
     {
@@ -36,6 +30,10 @@ public partial class DiscordBotViewModel : ObservableObject
         get => _selectedGuild;
         set => SetProperty(ref _selectedGuild, value);
     }
+
+    [RelayCommand]
+    public void CancelUpdateRank()
+        => _botService.CancelUpdateMemberRegions();
 
     [RelayCommand]
     public async Task UpdateRank()

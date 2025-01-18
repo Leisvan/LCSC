@@ -1,7 +1,9 @@
 ﻿using LCSC.Core.Helpers;
+using LCSC.Core.Models;
 using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
+using LCSC.Models.Pulse;
 using Newtonsoft.Json;
 
 namespace LCSC.Core.Services
@@ -130,15 +132,26 @@ namespace LCSC.Core.Services
 
         public async Task<int> UpdateAllRegionsAsync(
             TimeSpan? regionUpdateThreshold = null,
-            Action<int, int, string?>? progressReport = null)
+            Func<RegionUpdateProgressReportData, Task>? progressReport = null,
+            CancellationToken? token = null)
         {
             var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
             int updatedProfilesCount = 0;
             for (int i = 0; i < profilesList.Count; i++)
             {
+                if (token?.IsCancellationRequested == true)
+                {
+                    if (progressReport != null)
+                    {
+                        await progressReport.Invoke(RegionUpdateProgressReportData.FromError("Operación cancelada"));
+                    }
+                    return 0;
+                }
                 var profile = profilesList[i];
-
-                progressReport?.Invoke(i + 1, profilesList.Count, profile.Record.BattleTag);
+                if (progressReport != null)
+                {
+                    await progressReport.Invoke(new RegionUpdateProgressReportData(i + 1, profilesList.Count, $"`{profile.Record.BattleTag}`"));
+                }
 
                 if (regionUpdateThreshold != null)
                 {
@@ -151,13 +164,18 @@ namespace LCSC.Core.Services
 
                 var id = profile.LadderRegion?.Id ?? string.Empty;
 
-                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
-
                 var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
                 if (team == null)
                 {
                     continue;
                 }
+
+                if (AreRegionsEqual(profile.LadderRegion, team))
+                {
+                    continue;
+                }
+
+                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
 
                 var race = LadderHelper.GetRaceFromTeamResult(team);
                 string raceText = race == Race.Unknown ? string.Empty : race.ToString();
@@ -221,6 +239,19 @@ namespace LCSC.Core.Services
                 return null;
             }
             return array[0];
+        }
+
+        private bool AreRegionsEqual(LadderRegionRecord? ladderRegion, Team team)
+        {
+            if (ladderRegion == null)
+            {
+                return false;
+            }
+            if (ladderRegion.SeasonId != team.Season)
+            {
+                return false;
+            }
+            return ladderRegion.TotalMatches == (team.Wins + team.Losses + team.Ties);
         }
 
         private List<MemberModel>? GetAllParticipants(TournamentRecord record)

@@ -1,5 +1,4 @@
 ﻿using DSharpPlus;
-using DSharpPlus.Entities;
 using LCSC.Core.Services;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services.Internal;
@@ -25,8 +24,11 @@ namespace LCSC.Discord.Services
 
         internal GuildActionsService Actions => _guildActions;
 
+        public void CancelUpdateMemberRegions()
+            => _guildActions.CancelUpdateMemberRegions();
+
         public Task ConnectAsync()
-            => _client.ConnectAsync();
+                    => _client.ConnectAsync();
 
         public async Task DisconnectAsync()
         {

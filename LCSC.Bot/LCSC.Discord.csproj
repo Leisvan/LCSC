@@ -17,8 +17,4 @@
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="InternalServices\" />
-  </ItemGroup>
-
 </Project>

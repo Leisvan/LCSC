@@ -73,6 +73,8 @@
                                 Content="Update rank" />
                         <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
                                 Content="Update rank (forced)" />
+                        <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
+                                Content="Cancel update" />
                     </StackPanel>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
