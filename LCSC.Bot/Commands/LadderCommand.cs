@@ -11,14 +11,9 @@ namespace LCSC.Discord.Commands
     {
         private readonly DiscordBotService _service;
 
-        public LadderCommand(DiscordBotService service) => _service = service;
-
-        [Command("cancel")]
-        public async ValueTask CancelAsync(CommandContext context)
+        public LadderCommand(DiscordBotService service)
         {
-            _service.Actions.CancelUpdateMemberRegions();
-            await context.DeferResponseAsync();
-            await context.FollowupAsync("Solicitud de cancelación enviada");
+            _service = service;
         }
 
         [Command("rank")]

@@ -1,13 +1,25 @@
 ﻿using DSharpPlus.Commands;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using LCSC.Core.Models;
 using LCSC.Core.Services;
+using LCSC.Discord.Helpers;
+using LCSC.Models;
+using LCSC.Models.Airtable;
 
 namespace LCSC.Discord.Services.Internal
 {
-    internal class GuildActionsService(MembersService membersService, DiscordBotService botService, SettingsService settingsService)
+    internal class GuildActionsService(
+        MembersService membersService,
+        DiscordBotService botService,
+        SettingsService settingsService,
+        LadderService ladderService,
+        InteractivityExtension interactivity)
     {
         private readonly DiscordBotService _botService = botService;
+        private readonly InteractivityExtension _interactivity = interactivity;
+        private readonly LadderService _ladderService = ladderService;
         private readonly MembersService _membersService = membersService;
         private readonly SettingsService _settingsService = settingsService;
         private CancellationTokenSource? _updateLadderTokenSource;
@@ -15,16 +27,32 @@ namespace LCSC.Discord.Services.Internal
         public void CancelUpdateMemberRegions()
             => _updateLadderTokenSource?.Cancel();
 
-        /// <returns>
-        /// Null: Cancelled
-        /// False: Error
-        /// True: Finished
-        /// </returns>
+        public async Task<string?> DisplayRank()
+        {
+            var seasonId = await _ladderService.GetSeasonIdAsync();
+            if (seasonId == 0)
+            {
+                return "No se puede acceder a la información de temporada";
+            }
+            var members = await _membersService.GetMembersAsync();
+            var entries = new List<(string, LadderRegionRecord)>();
+            foreach (var member in members)
+            {
+                var region = GetLadderRegion(member, seasonId);
+            }
+
+            if (entries.Count == 0)
+            {
+                return "No hay perfiles que mostrar";
+            }
+            return null;
+        }
+
         public async Task<string> UpdateMemberRegionsAsync(
-            bool forceUpdate = false,
-            ulong guildId = 0,
-            ulong channelId = 0,
-            CommandContext? context = null)
+                    bool forceUpdate = false,
+                    ulong guildId = 0,
+                    ulong channelId = 0,
+                    CommandContext? context = null)
         {
             if (_updateLadderTokenSource != null)
             {
@@ -51,7 +79,14 @@ namespace LCSC.Discord.Services.Internal
                     return errorMessage;
                 }
             }
-            DiscordMessage? message = context != null ? await context.FollowupAsync("...") : null;
+            DiscordMessage? message = null;
+            if (context != null)
+            {
+                var builder = new DiscordMessageBuilder()
+                    .WithContent("Accediendo a la lista de miembros")
+                    .AddComponents(InteractionsHelper.GetCancelUpdateRankButton());
+                message = await context.FollowupAsync(builder);
+            }
             RegionUpdateProgressReportData? lastUpdate = null;
             var result = await _membersService.UpdateAllRegionsAsync(
                 updateTime, async (data) =>
@@ -67,6 +102,21 @@ namespace LCSC.Discord.Services.Internal
             }
 
             return string.Empty;
+        }
+
+        private LadderRegionRecord? GetLadderRegion(MemberModel? model, int seasonId)
+        {
+            if (model?.Profiles == null)
+            {
+                return null;
+            }
+            var profile = model.Profiles
+                .Where(p => p.LadderRegion != null)
+                .Select(p => p.LadderRegion)
+                .OrderBy(r => r?.CurrentMMR ?? 0)
+                .FirstOrDefault();
+
+            return profile;
         }
 
         private async Task<DiscordMessage?> UpdateMessageAsync(string content, ulong channelId, DiscordMessage? message = null)

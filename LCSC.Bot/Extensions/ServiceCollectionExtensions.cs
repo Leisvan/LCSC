@@ -3,7 +3,9 @@ using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Extensions;
+using DSharpPlus.Interactivity.Extensions;
 using LCSC.Discord.Commands;
+using LCSC.Discord.EventHandlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LCSC.Discord.Extensions
@@ -15,36 +17,16 @@ namespace LCSC.Discord.Extensions
         {
             ArgumentNullException.ThrowIfNull(token);
 
-            services.AddDiscordClient(token, DiscordIntents.Guilds | DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents | SlashCommandProcessor.RequiredIntents);
+            services
+                .AddDiscordClient(token, DiscordIntents.Guilds | DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents | SlashCommandProcessor.RequiredIntents)
+                .AddCommandsExtension((IServiceProvider serviceProvider, CommandsExtension extension) =>
+                {
+                    extension.AddCommands([typeof(LadderCommand)]);
+                })
+                .AddInteractivityExtension()
+                .ConfigureEventHandlers(b => b.AddEventHandlers<ComponentInteractionCreatedEventHandler>(ServiceLifetime.Singleton));
 
-            services.AddCommandsExtension((IServiceProvider serviceProvider, CommandsExtension extension) =>
-            {
-                extension.AddCommands([typeof(LadderCommand)]);
-            });
-            //var builder = DiscordClientBuilder.CreateDefault(token,
-            //    DiscordIntents.Guilds |
-            //    DiscordIntents.AllUnprivileged |
-            //    DiscordIntents.MessageContents |
-            //    SlashCommandProcessor.RequiredIntents,
-            //    services);
-
-            //builder.UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
-            //{
-            //    extension.AddCommands([typeof(LadderCommand)]);
-            //});
-
-            //services
-            //    .AddSingleton(builder.Build());
             return services;
-        }
-
-        private static Task OnClientMessageCreated(DiscordClient sender, MessageCreatedEventArgs args)
-        {
-            //if (args.Author.Id != _appUserId)
-            //{
-            //    //_messageListener?.HandleMessageAsync(sender, args);
-            //}
-            return Task.CompletedTask;
         }
     }
 }
