@@ -6,6 +6,7 @@ using LCSC.Core.Services;
 using LCSC.Discord.Helpers;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services.Internal;
+using LCSC.Discord.Strings;
 
 namespace LCSC.Discord.Services
 {
@@ -53,7 +54,7 @@ namespace LCSC.Discord.Services
             {
                 CancelUpdateMemberRegions();
                 var builder = new DiscordInteractionResponseBuilder()
-                    .WithContent("Operación cancelada")
+                    .WithContent(MessageResources.OperationCancelledMessage)
                     .AddComponents(InteractionsHelper.GetCancelUpdateRankButton(true));
 
                 await args.Interaction.CreateResponseAsync(DiscordInteractionResponseType.UpdateMessage, builder);

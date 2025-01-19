@@ -19,6 +19,10 @@ namespace LCSC.Discord.Commands
         [Command("rank")]
         public async ValueTask RankAsync(CommandContext context)
         {
+            var guildId = context.Guild?.Id ?? 0;
+            await context.DeferResponseAsync();
+
+            await _service.Actions.DisplayRankAsync(guildId, context.Channel.Id, context);
         }
 
         [Command("update")]
@@ -26,9 +30,11 @@ namespace LCSC.Discord.Commands
         {
             var guildId = context.Guild?.Id ?? 0;
 
-            await context.DeferResponseAsync();
-
-            await _service.Actions.UpdateMemberRegionsAsync(forceUpdate, guildId, context.Channel.Id, context);
+            var result = await _service.Actions.UpdateMemberRegionsAsync(forceUpdate, guildId, context.Channel.Id, context);
+            if (result != null)
+            {
+                await context.EditResponseAsync(result);
+            }
         }
 
         private async Task Emojis(DiscordBotService service)
