@@ -8,7 +8,7 @@ namespace LCSC.Discord.Helpers;
 
 public class StringLengthCapTool(int length, bool invertFormat = false)
 {
-    private const int MaxLength = 10;
+    private const int MaxLength = 12;
     private const string ThreeDots = "…";
     private readonly bool invertedFormat = invertFormat;
 
@@ -21,6 +21,7 @@ public class StringLengthCapTool(int length, bool invertFormat = false)
 
     #region Static
 
+    private static readonly StringLengthCapTool _default;
     private static readonly StringLengthCapTool _i2spaces;
     private static readonly StringLengthCapTool _i3spaces;
     private static readonly StringLengthCapTool _i4spaces;
@@ -32,7 +33,10 @@ public class StringLengthCapTool(int length, bool invertFormat = false)
         _i3spaces = new StringLengthCapTool(3, true);
         _i4spaces = new StringLengthCapTool(4, true);
         _i5spaces = new StringLengthCapTool(5, true);
+        _default = new StringLengthCapTool(10, false);
     }
+
+    public static StringLengthCapTool Default => _default;
 
     public static StringLengthCapTool InvertedFiveSpaces => _i5spaces;
 

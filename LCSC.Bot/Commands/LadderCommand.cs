@@ -39,7 +39,7 @@ namespace LCSC.Discord.Commands
 
         private async Task Emojis(DiscordBotService service)
         {
-            var xx = await service.Client.GetApplicationEmojisAsync();
+            //var xx = await service.Client.GetApplicationEmojiAsync()
         }
     }
 }

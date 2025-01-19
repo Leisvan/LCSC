@@ -59,5 +59,284 @@ namespace LCSC.Discord.Strings {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850884910153778.
+        /// </summary>
+        internal static string LadderBronze {
+            get {
+                return ResourceManager.GetString("LadderBronze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850903117758535.
+        /// </summary>
+        internal static string LadderBronze1 {
+            get {
+                return ResourceManager.GetString("LadderBronze1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850913603260456.
+        /// </summary>
+        internal static string LadderBronze2 {
+            get {
+                return ResourceManager.GetString("LadderBronze2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850926278447199.
+        /// </summary>
+        internal static string LadderBronze3 {
+            get {
+                return ResourceManager.GetString("LadderBronze3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850938785861765.
+        /// </summary>
+        internal static string LadderDiamond {
+            get {
+                return ResourceManager.GetString("LadderDiamond", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850951054196797.
+        /// </summary>
+        internal static string LadderDiamond1 {
+            get {
+                return ResourceManager.GetString("LadderDiamond1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850962571890780.
+        /// </summary>
+        internal static string LadderDiamond2 {
+            get {
+                return ResourceManager.GetString("LadderDiamond2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850973023961169.
+        /// </summary>
+        internal static string LadderDiamond3 {
+            get {
+                return ResourceManager.GetString("LadderDiamond3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850983048478761.
+        /// </summary>
+        internal static string LadderGold {
+            get {
+                return ResourceManager.GetString("LadderGold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327850994465243246.
+        /// </summary>
+        internal static string LadderGold1 {
+            get {
+                return ResourceManager.GetString("LadderGold1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851004858728519.
+        /// </summary>
+        internal static string LadderGold2 {
+            get {
+                return ResourceManager.GetString("LadderGold2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851014879186944.
+        /// </summary>
+        internal static string LadderGold3 {
+            get {
+                return ResourceManager.GetString("LadderGold3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851025394303046.
+        /// </summary>
+        internal static string LadderGrandmaster {
+            get {
+                return ResourceManager.GetString("LadderGrandmaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851054099857500.
+        /// </summary>
+        internal static string LadderMaster {
+            get {
+                return ResourceManager.GetString("LadderMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851064514449489.
+        /// </summary>
+        internal static string LadderMaster1 {
+            get {
+                return ResourceManager.GetString("LadderMaster1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851074471727145.
+        /// </summary>
+        internal static string LadderMaster2 {
+            get {
+                return ResourceManager.GetString("LadderMaster2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851084789710869.
+        /// </summary>
+        internal static string LadderMaster3 {
+            get {
+                return ResourceManager.GetString("LadderMaster3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851101944545402.
+        /// </summary>
+        internal static string LadderPlacement {
+            get {
+                return ResourceManager.GetString("LadderPlacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851114292449290.
+        /// </summary>
+        internal static string LadderPlatinum {
+            get {
+                return ResourceManager.GetString("LadderPlatinum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851124991987873.
+        /// </summary>
+        internal static string LadderPlatinum1 {
+            get {
+                return ResourceManager.GetString("LadderPlatinum1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851134433361920.
+        /// </summary>
+        internal static string LadderPlatinum2 {
+            get {
+                return ResourceManager.GetString("LadderPlatinum2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851145896398931.
+        /// </summary>
+        internal static string LadderPlatinum3 {
+            get {
+                return ResourceManager.GetString("LadderPlatinum3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851158387298385.
+        /// </summary>
+        internal static string LadderSilver {
+            get {
+                return ResourceManager.GetString("LadderSilver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851167560105994.
+        /// </summary>
+        internal static string LadderSilver1 {
+            get {
+                return ResourceManager.GetString("LadderSilver1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851176934510642.
+        /// </summary>
+        internal static string LadderSilver2 {
+            get {
+                return ResourceManager.GetString("LadderSilver2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1327851186576949278.
+        /// </summary>
+        internal static string LadderSilver3 {
+            get {
+                return ResourceManager.GetString("LadderSilver3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330623501199085658.
+        /// </summary>
+        internal static string RaceProtoss {
+            get {
+                return ResourceManager.GetString("RaceProtoss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330622129741234296.
+        /// </summary>
+        internal static string RaceRandom {
+            get {
+                return ResourceManager.GetString("RaceRandom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330622141388951733.
+        /// </summary>
+        internal static string RaceTerran {
+            get {
+                return ResourceManager.GetString("RaceTerran", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330622526753345577.
+        /// </summary>
+        internal static string RaceUnknown {
+            get {
+                return ResourceManager.GetString("RaceUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330622514715557960.
+        /// </summary>
+        internal static string RaceZerg {
+            get {
+                return ResourceManager.GetString("RaceZerg", resourceCulture);
+            }
+        }
     }
 }

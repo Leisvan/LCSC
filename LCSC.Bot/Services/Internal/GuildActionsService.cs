@@ -1,7 +1,6 @@
 ﻿using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
 using LCSC.Core.Models;
 using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
@@ -9,6 +8,7 @@ using LCSC.Discord.Helpers;
 using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
+using LCSC.Models.Pulse;
 using System.Text;
 
 namespace LCSC.Discord.Services.Internal
@@ -22,7 +22,6 @@ namespace LCSC.Discord.Services.Internal
     {
         private const string BlankSpace = " ";
         private const string DoubleSpaceCode = "`  `";
-        private const int NickTrimSizeInRanking = 10;
         private const int RankingMessageChunkSize = 8;
         private readonly DiscordBotService _botService = botService;
         private readonly InteractivityExtension _interactivity = interactivity;
@@ -45,7 +44,7 @@ namespace LCSC.Discord.Services.Internal
                 return MessageResources.SeasonInfoNotAvailableErrorMessage;
             }
             var members = await _membersService.GetMembersAsync();
-            var entries = new List<(string Nick, LadderRegionRecord Region)>();
+            var entries = new List<(MemberRecord Member, LadderRegionRecord Region)>();
             foreach (var member in members)
             {
                 if (member.Record?.Nick == null)
@@ -55,7 +54,7 @@ namespace LCSC.Discord.Services.Internal
                 var region = GetValidLadderRegion(member, seasonId);
                 if (region != null)
                 {
-                    entries.Add((member.Record.Nick, region));
+                    entries.Add((member.Record, region));
                 }
             }
 
@@ -64,14 +63,18 @@ namespace LCSC.Discord.Services.Internal
                 return MessageResources.NoProfileToShowErrorMessage;
             }
 
+            if (context != null)
+            {
+                await context.FollowupAsync(MessageResources.AccessingMembersListMessage);
+            }
+
             //Setup ranking messages
             var channel = context == null
                 ? await _botService.Client.GetChannelAsync(channelId)
                 : context.Channel;
 
             int seqNumber = 1;
-            var nameCapTool = new StringLengthCapTool(NickTrimSizeInRanking);//entries.Select(x => x.Nick)
-            var header = GetRankingHeaderString(nameCapTool);
+            var header = GetRankingHeaderString();
 
             //1. Ranking header:
             await channel.SendMessageAsync(header);
@@ -79,9 +82,9 @@ namespace LCSC.Discord.Services.Internal
             foreach (var sublist in entries.OrderByDescending(e => e.Region.CurrentMMR).Chunk(RankingMessageChunkSize))
             {
                 var stringBuilder = new StringBuilder();
-                foreach (var (Nick, Region) in sublist)
+                foreach (var (Record, Region) in sublist)
                 {
-                    var line = GetRankingEntryLine(Nick, Region, seqNumber++, ref nameCapTool);
+                    var line = await GetRankingEntryLineAsync(Record, Region, seqNumber++);
                     stringBuilder.AppendLine(line);
                 }
                 await channel.SendMessageAsync(stringBuilder.ToString());
@@ -148,18 +151,53 @@ namespace LCSC.Discord.Services.Internal
             return null;
         }
 
-        private string GetRankingEntryLine(string nick, LadderRegionRecord region, int seqNumber, ref StringLengthCapTool nameCapTool)
+        private async Task<string> GetRankingEntryLineAsync(MemberRecord record, LadderRegionRecord region, int seqNumber)
         {
-            return string.Empty;
+            if (record.Nick == null || region == null)
+            {
+                return string.Empty;
+            }
+
+            var raceEmoji = await EmojisHelper.GetRaceEmojiStringAsync(botService.Client, region.Race);
+            var flagEmoji = EmojisHelper.GetFlagEmojiString(record.CountryTag);
+            var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(botService.Client, region.League, region.Tier);
+
+            var newPlayer = (region.PreviousMMR == 0);
+            var mmrDiffValue = newPlayer ? 0 : region.CurrentMMR - region.PreviousMMR;
+            var mmrsign = mmrDiffValue == 0 ? " " : (mmrDiffValue > 0) ? "↑" : "↓";
+            string mmrDifText = mmrsign + StringLengthCapTool.InvertedFourSpaces.GetString(mmrDiffValue == 0 ? " " : Math.Abs(mmrDiffValue));
+            var winrate = (double)region.Wins / region.TotalMatches * 100;
+
+            var builder = new StringBuilder();
+            var i3ct = StringLengthCapTool.InvertedThreeSpaces;
+            var i5ct = StringLengthCapTool.InvertedFiveSpaces;
+
+            builder.Append($"`{seqNumber:00}` ");
+            builder.Append($"{raceEmoji} ");
+            builder.Append($"`{StringLengthCapTool.Default.GetString(record.Nick)}` ");
+            builder.Append($"{flagEmoji} | ");
+            builder.Append($"`{region.CurrentMMR}` ");
+            builder.Append($"`{mmrDifText}` ");
+            builder.Append($"{leagueEmoji} ");
+            builder.Append($"`{i3ct.GetString((int)winrate)}%` ");
+            builder.Append($"`{i5ct.GetString(region.TotalMatches)}` ");
+
+
+            if (newPlayer)
+            {
+                builder.Append(":new: ");
+            }
+
+            return builder.ToString();
         }
 
-        private string GetRankingHeaderString(StringLengthCapTool nameCapTool)
+        private string GetRankingHeaderString()
         {
             return
                 "`##`" + BlankSpace //Number
                 + DoubleSpaceCode + BlankSpace // Race logo
-                + $"`{nameCapTool.GetString("NICK")}`" + BlankSpace + BlankSpace // Nick
-                + "`  ` | " // Country flag
+                + $"`{StringLengthCapTool.Default.GetString("NICK")}`" + BlankSpace // Nick
+                + "`  `| " // Country flag
                 + "` MMR`" + BlankSpace // MMR
                 + "` ↕MMR`" + BlankSpace // MMR Diff
                 + DoubleSpaceCode + BlankSpace //League icon

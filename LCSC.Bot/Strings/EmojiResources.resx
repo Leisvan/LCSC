@@ -1,101 +1,213 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LadderPlatinum3" xml:space="preserve">
+    <value>1327851145896398931</value>
+  </data>
+  <data name="LadderBronze" xml:space="preserve">
+    <value>1327850884910153778</value>
+  </data>
+  <data name="LadderDiamond" xml:space="preserve">
+    <value>1327850938785861765</value>
+  </data>
+  <data name="LadderDiamond1" xml:space="preserve">
+    <value>1327850951054196797</value>
+  </data>
+  <data name="LadderDiamond2" xml:space="preserve">
+    <value>1327850962571890780</value>
+  </data>
+  <data name="LadderDiamond3" xml:space="preserve">
+    <value>1327850973023961169</value>
+  </data>
+  <data name="LadderGold" xml:space="preserve">
+    <value>1327850983048478761</value>
+  </data>
+  <data name="LadderGrandmaster" xml:space="preserve">
+    <value>1327851025394303046</value>
+  </data>
+  <data name="LadderMaster" xml:space="preserve">
+    <value>1327851054099857500</value>
+  </data>
+  <data name="LadderMaster1" xml:space="preserve">
+    <value>1327851064514449489</value>
+  </data>
+  <data name="LadderMaster2" xml:space="preserve">
+    <value>1327851074471727145</value>
+  </data>
+  <data name="LadderMaster3" xml:space="preserve">
+    <value>1327851084789710869</value>
+  </data>
+  <data name="LadderPlacement" xml:space="preserve">
+    <value>1327851101944545402</value>
+  </data>
+  <data name="LadderPlatinum" xml:space="preserve">
+    <value>1327851114292449290</value>
+  </data>
+  <data name="LadderPlatinum1" xml:space="preserve">
+    <value>1327851124991987873</value>
+  </data>
+  <data name="LadderPlatinum2" xml:space="preserve">
+    <value>1327851134433361920</value>
+  </data>
+  <data name="LadderSilver" xml:space="preserve">
+    <value>1327851158387298385</value>
+  </data>
+  <data name="RaceProtoss" xml:space="preserve">
+    <value>1330623501199085658</value>
+  </data>
+  <data name="RaceRandom" xml:space="preserve">
+    <value>1330622129741234296</value>
+  </data>
+  <data name="RaceTerran" xml:space="preserve">
+    <value>1330622141388951733</value>
+  </data>
+  <data name="RaceUnknown" xml:space="preserve">
+    <value>1330622526753345577</value>
+  </data>
+  <data name="RaceZerg" xml:space="preserve">
+    <value>1330622514715557960</value>
+  </data>
+  <data name="LadderGold3" xml:space="preserve">
+    <value>1327851014879186944</value>
+  </data>
+  <data name="LadderGold2" xml:space="preserve">
+    <value>1327851004858728519</value>
+  </data>
+  <data name="LadderGold1" xml:space="preserve">
+    <value>1327850994465243246</value>
+  </data>
+  <data name="LadderSilver3" xml:space="preserve">
+    <value>1327851186576949278</value>
+  </data>
+  <data name="LadderSilver2" xml:space="preserve">
+    <value>1327851176934510642</value>
+  </data>
+  <data name="LadderSilver1" xml:space="preserve">
+    <value>1327851167560105994</value>
+  </data>
+  <data name="LadderBronze3" xml:space="preserve">
+    <value>1327850926278447199</value>
+  </data>
+  <data name="LadderBronze2" xml:space="preserve">
+    <value>1327850913603260456</value>
+  </data>
+  <data name="LadderBronze1" xml:space="preserve">
+    <value>1327850903117758535</value>
+  </data>
 </root>
