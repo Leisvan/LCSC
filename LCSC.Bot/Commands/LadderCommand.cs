@@ -22,7 +22,7 @@ namespace LCSC.Discord.Commands
             var guildId = context.Guild?.Id ?? 0;
             await context.DeferResponseAsync();
 
-            await _service.Actions.DisplayRankAsync(guildId, context.Channel.Id, context);
+            await _service.Actions.DisplayRankAsync(false, guildId, context.Channel.Id, context);
         }
 
         [Command("update")]
@@ -35,11 +35,6 @@ namespace LCSC.Discord.Commands
             {
                 await context.EditResponseAsync(result);
             }
-        }
-
-        private async Task Emojis(DiscordBotService service)
-        {
-            //var xx = await service.Client.GetApplicationEmojiAsync()
         }
     }
 }

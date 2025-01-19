@@ -58,6 +58,7 @@ namespace LCSC.Core.Services
                     member.Stats = GetMemberStats(member.Record.Id);
                 }
             }
+
             return _members;
         }
 
@@ -131,11 +132,15 @@ namespace LCSC.Core.Services
         }
 
         public async Task<int> UpdateAllRegionsAsync(
+            bool includeBannedPlayers = true,
             TimeSpan? regionUpdateThreshold = null,
             Func<RegionUpdateProgressReportData, Task>? progressReport = null,
             CancellationToken? token = null)
         {
-            var profilesList = _members.SelectMany(m => m.Profiles!).ToList();
+            var profilesList = _members
+                .Where(m => includeBannedPlayers || !m.Record.Banned)
+                .SelectMany(m => m.Profiles!)
+                .ToList();
             int updatedProfilesCount = 0;
             for (int i = 0; i < profilesList.Count; i++)
             {

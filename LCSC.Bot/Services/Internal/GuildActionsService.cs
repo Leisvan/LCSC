@@ -34,6 +34,7 @@ namespace LCSC.Discord.Services.Internal
             => _updateLadderTokenSource?.Cancel();
 
         public async Task<string?> DisplayRankAsync(
+            bool includeBanned = false,
             ulong guildId = 0,
             ulong channelId = 0,
             CommandContext? context = null)
@@ -45,7 +46,7 @@ namespace LCSC.Discord.Services.Internal
             }
             var members = await _membersService.GetMembersAsync();
             var entries = new List<(MemberRecord Member, LadderRegionRecord Region)>();
-            foreach (var member in members)
+            foreach (var member in members.Where(x => includeBanned || !x.Record.Banned))
             {
                 if (member.Record?.Nick == null)
                 {
@@ -135,8 +136,8 @@ namespace LCSC.Discord.Services.Internal
                 message = await context.FollowupAsync(builder);
             }
             RegionUpdateProgressReportData? lastUpdate = null;
-            var result = await _membersService.UpdateAllRegionsAsync(
-                updateTime, async (data) =>
+            var result = await _membersService.UpdateAllRegionsAsync(false, updateTime,
+                async (data) =>
                 {
                     lastUpdate = data;
                     var content = data.ErrorMessage ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
@@ -158,9 +159,9 @@ namespace LCSC.Discord.Services.Internal
                 return string.Empty;
             }
 
-            var raceEmoji = await EmojisHelper.GetRaceEmojiStringAsync(botService.Client, region.Race);
+            var raceEmoji = await EmojisHelper.GetRaceEmojiStringAsync(_botService.Client, region.Race);
             var flagEmoji = EmojisHelper.GetFlagEmojiString(record.CountryTag);
-            var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(botService.Client, region.League, region.Tier);
+            var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, region.League, region.Tier);
 
             var newPlayer = (region.PreviousMMR == 0);
             var mmrDiffValue = newPlayer ? 0 : region.CurrentMMR - region.PreviousMMR;
@@ -181,7 +182,6 @@ namespace LCSC.Discord.Services.Internal
             builder.Append($"{leagueEmoji} ");
             builder.Append($"`{i3ct.GetString((int)winrate)}%` ");
             builder.Append($"`{i5ct.GetString(region.TotalMatches)}` ");
-
 
             if (newPlayer)
             {
