@@ -1,9 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.Discord.Commands;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,6 +66,16 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
     {
         await _botService.DisconnectAsync();
         IsConnected = false;
+    }
+
+    [RelayCommand]
+    private Task DisplayRank(bool includeBanned)
+    {
+        if (SelectedGuild == null)
+        {
+            return Task.CompletedTask;
+        }
+        return _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
     }
 
     private void Load()

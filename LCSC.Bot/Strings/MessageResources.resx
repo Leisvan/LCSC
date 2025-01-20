@@ -132,6 +132,21 @@
   <data name="OperationCancelledMessage" xml:space="preserve">
     <value>Operación cancelada.</value>
   </data>
+  <data name="RankingDisclaimerContentLine1" xml:space="preserve">
+    <value>Información del Ladder cortesía de [SC2 Pulse](https://www.nephest.com/sc2/)</value>
+  </data>
+  <data name="RankingDisclaimerContentLine2" xml:space="preserve">
+    <value>*ℹ️ Las medallas se basan en el MMR actual, no en el más alto de la temporada.*</value>
+  </data>
+  <data name="RankingDisclaimerContentLine3" xml:space="preserve">
+    <value>ℹ️ Las banderas representan el país de donde juegan, todos los jugadores en el ranking son cubanos verificados.*</value>
+  </data>
+  <data name="RankingDisclaimerImageUrl" xml:space="preserve">
+    <value>https://res.cloudinary.com/leisvan/image/upload/v1669254529/SC2%20Community/Badges%20and%20Logos/LCSC-II-5_rzllt3.png</value>
+  </data>
+  <data name="RankingDisclaimerTitle" xml:space="preserve">
+    <value>Liga Cubana de StarCraft II</value>
+  </data>
   <data name="SeasonInfoNotAvailableErrorMessage" xml:space="preserve">
     <value>No se puede acceder a la información de temporada.</value>
   </data>

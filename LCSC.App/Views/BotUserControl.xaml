@@ -75,6 +75,18 @@
                                 Content="Update rank (forced)" />
                         <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
                                 Content="Cancel update" />
+                        <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                Content="Display Ranking">
+                            <Button.CommandParameter>
+                                <x:Boolean>False</x:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
+                        <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                Content="Display Ranking (Banned)">
+                            <Button.CommandParameter>
+                                <x:Boolean>True</x:Boolean>
+                            </Button.CommandParameter>
+                        </Button>
                     </StackPanel>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>

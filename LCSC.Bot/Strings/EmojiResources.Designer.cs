@@ -338,5 +338,14 @@ namespace LCSC.Discord.Strings {
                 return ResourceManager.GetString("RaceZerg", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1330710108367487073.
+        /// </summary>
+        internal static string Reaction_GG {
+            get {
+                return ResourceManager.GetString("Reaction_GG", resourceCulture);
+            }
+        }
     }
 }

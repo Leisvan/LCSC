@@ -106,6 +106,51 @@ namespace LCSC.Discord.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Información del Ladder cortesía de [SC2 Pulse](https://www.nephest.com/sc2/).
+        /// </summary>
+        internal static string RankingDisclaimerContentLine1 {
+            get {
+                return ResourceManager.GetString("RankingDisclaimerContentLine1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *ℹ️ Las medallas se basan en el MMR actual, no en el más alto de la temporada.*.
+        /// </summary>
+        internal static string RankingDisclaimerContentLine2 {
+            get {
+                return ResourceManager.GetString("RankingDisclaimerContentLine2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ℹ️ Las banderas representan el país de donde juegan, todos los jugadores en el ranking son cubanos verificados.*.
+        /// </summary>
+        internal static string RankingDisclaimerContentLine3 {
+            get {
+                return ResourceManager.GetString("RankingDisclaimerContentLine3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://res.cloudinary.com/leisvan/image/upload/v1669254529/SC2%20Community/Badges%20and%20Logos/LCSC-II-5_rzllt3.png.
+        /// </summary>
+        internal static string RankingDisclaimerImageUrl {
+            get {
+                return ResourceManager.GetString("RankingDisclaimerImageUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Liga Cubana de StarCraft II.
+        /// </summary>
+        internal static string RankingDisclaimerTitle {
+            get {
+                return ResourceManager.GetString("RankingDisclaimerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No se puede acceder a la información de temporada..
         /// </summary>
         internal static string SeasonInfoNotAvailableErrorMessage {

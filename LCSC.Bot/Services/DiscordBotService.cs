@@ -7,6 +7,7 @@ using LCSC.Discord.Helpers;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services.Internal;
 using LCSC.Discord.Strings;
+using System.Threading.Channels;
 
 namespace LCSC.Discord.Services
 {
@@ -42,11 +43,32 @@ namespace LCSC.Discord.Services
             await _client.DisconnectAsync();
         }
 
+        public Task DisplayRankAsync(bool includeBanned = false, ulong guildId = 0)
+        {
+            var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
+            if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out ulong channelId) || channelId == 0)
+            {
+                var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
+                LogNotifier.NotifyError(errorMessage);
+                return Task.CompletedTask;
+            }
+            return _guildActions.DisplayRankAsync(includeBanned, guildId, channelId);
+        }
+
         public IEnumerable<DiscordGuildModel> GetSettingServers()
-            => _settingsService.GetAllGuilds();
+                    => _settingsService.GetAllGuilds();
 
         public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
-            => _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId);
+        {
+            var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
+            if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out ulong channelId) || channelId == 0)
+            {
+                var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
+                LogNotifier.NotifyError(errorMessage);
+                return Task.CompletedTask;
+            }
+            return _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId, channelId);
+        }
 
         internal async Task RespondToInteractionAsync(ComponentInteractionCreatedEventArgs args)
         {

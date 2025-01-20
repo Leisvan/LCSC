@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using LCSC.Discord.Strings;
 using LCSC.Models;
 
@@ -40,6 +41,15 @@ namespace LCSC.Discord.Helpers
             { "Alemania", ":flag_de:"},
             { "Holanda", ":flag_nl:"},
         };
+
+        public static async Task<DiscordEmoji?> GetDiscordEmojiAsync(DiscordClient client, string emojiId)
+        {
+            if (ulong.TryParse(emojiId, out ulong id))
+            {
+                return await client.GetApplicationEmojiAsync(id);
+            }
+            return null;
+        }
 
         public static string GetFlagEmojiString(string? countryTag)
         {
@@ -104,9 +114,9 @@ namespace LCSC.Discord.Helpers
             {
                 return value;
             }
-            if (ulong.TryParse(emojiId, out ulong id))
+            var emoji = await GetDiscordEmojiAsync(client, emojiId);
+            if (emoji is not null)
             {
-                var emoji = await client.GetApplicationEmojiAsync(id);
                 var messageFormat = emoji.ToString();
                 CacheMap.TryAdd(emojiId, messageFormat);
                 return messageFormat;

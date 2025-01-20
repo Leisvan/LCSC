@@ -9,6 +9,7 @@ using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
+using System.Globalization;
 using System.Text;
 
 namespace LCSC.Discord.Services.Internal
@@ -23,6 +24,7 @@ namespace LCSC.Discord.Services.Internal
         private const string BlankSpace = " ";
         private const string DoubleSpaceCode = "`  `";
         private const int RankingMessageChunkSize = 8;
+        private static readonly CultureInfo CultureInfo = new CultureInfo("es-ES");
         private readonly DiscordBotService _botService = botService;
         private readonly InteractivityExtension _interactivity = interactivity;
         private readonly LadderService _ladderService = ladderService;
@@ -69,7 +71,7 @@ namespace LCSC.Discord.Services.Internal
                 await context.FollowupAsync(MessageResources.AccessingMembersListMessage);
             }
 
-            //Setup ranking messages
+            //0. Setup ranking messages
             var channel = context == null
                 ? await _botService.Client.GetChannelAsync(channelId)
                 : context.Channel;
@@ -79,6 +81,7 @@ namespace LCSC.Discord.Services.Internal
 
             //1. Ranking header:
             await channel.SendMessageAsync(header);
+
             //2. Ranking lines:
             foreach (var sublist in entries.OrderByDescending(e => e.Region.CurrentMMR).Chunk(RankingMessageChunkSize))
             {
@@ -90,8 +93,33 @@ namespace LCSC.Discord.Services.Internal
                 }
                 await channel.SendMessageAsync(stringBuilder.ToString());
             }
-            //3. Embedded
+
+            //3. Disclaimer embed
+            var sb = new StringBuilder();
+            sb.AppendLine(MessageResources.RankingDisclaimerContentLine1);
+            sb.AppendLine();
+            sb.AppendLine(MessageResources.RankingDisclaimerContentLine2);
+            sb.AppendLine(MessageResources.RankingDisclaimerContentLine3);
+            var now = DateTime.Now.Date.ToString("MMMM dd", CultureInfo);
+
+            var disclaimerEmbedBuilder = new DiscordEmbedBuilder()
+            {
+                Title = MessageResources.RankingDisclaimerTitle,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = MessageResources.RankingDisclaimerImageUrl },
+                Description = sb.ToString(),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"🗓 {now}",
+                }
+            };
+            var disclaimerEmbed = await channel.SendMessageAsync(disclaimerEmbedBuilder);
+
             //4. Emoji reaction (GG)
+            var emoji = await EmojisHelper.GetDiscordEmojiAsync(_botService.Client, EmojiResources.Reaction_GG);
+            if (emoji is not null)
+            {
+                await disclaimerEmbed.CreateReactionAsync(emoji);
+            }
 
             return null;
         }
@@ -117,16 +145,7 @@ namespace LCSC.Discord.Services.Internal
                     updateTime = TimeSpan.FromMinutes(regionUpdateMinutesThreshold.Value);
                 }
             }
-            if (channelId == 0)
-            {
-                var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
-                if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out channelId) || channelId == 0)
-                {
-                    var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
-                    LogNotifier.NotifyError(errorMessage);
-                    return errorMessage;
-                }
-            }
+
             DiscordMessage? message = null;
             if (context != null)
             {
