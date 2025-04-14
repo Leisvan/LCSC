@@ -9,6 +9,7 @@ namespace LCSC.Core.Services
     {
         private const string SeasonCacheFileName = "Seasons.json";
         private const string TiersCacheFileName = "Tiers.json";
+        private static readonly TimeSpan SeasonCacheTimeout = TimeSpan.FromDays(1);
         private static readonly TimeSpan TiersCacheTimout = TimeSpan.FromDays(1);
         private readonly BattleNetHttpService _battleNetHttpService = new(clientId, clientSecret);
         private readonly CacheService _cacheService = cacheService;
@@ -101,7 +102,7 @@ namespace LCSC.Core.Services
                 try
                 {
                     season = JsonConvert.DeserializeObject<Season>(loadedCacheData);
-                    if (season != null && (season.LastUpdated + TimeSpan.FromDays(30)) > DateTime.Now)
+                    if (season != null && (season.LastUpdated + SeasonCacheTimeout) > DateTime.Now)
                     {
                         return _seasonId = season.BattlenetId;
                     }

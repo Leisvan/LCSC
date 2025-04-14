@@ -169,7 +169,7 @@ namespace LCSC.Discord.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;Actualizando {0} de {1} perfiles: {2}..
+        ///   Looks up a localized string similar to Actualizando {0} de {1} perfiles: {2}..
         /// </summary>
         internal static string UpdatingProfilesReportFormat {
             get {

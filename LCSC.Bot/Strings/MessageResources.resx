@@ -154,6 +154,6 @@
     <value>{0} perfiles actualizados.</value>
   </data>
   <data name="UpdatingProfilesReportFormat" xml:space="preserve">
-    <value>"Actualizando {0} de {1} perfiles: {2}.</value>
+    <value>Actualizando {0} de {1} perfiles: {2}.</value>
   </data>
 </root>
