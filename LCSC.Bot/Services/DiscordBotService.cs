@@ -36,7 +36,7 @@ namespace LCSC.Discord.Services
             => _guildActions.CancelUpdateMemberRegions();
 
         public Task ConnectAsync()
-            => _client.ConnectAsync();
+            => throw new Exception("Cannot Init"); //_client.ConnectAsync();
 
         public async Task DisconnectAsync()
         {

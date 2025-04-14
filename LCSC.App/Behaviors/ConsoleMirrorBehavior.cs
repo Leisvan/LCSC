@@ -52,7 +52,7 @@ namespace LCSC.App.Behaviors
             if (ccolor != _lastConsoleColor)
             {
                 _lastConsoleColor = ccolor;
-                _colorBrush = new SolidColorBrush(ConvertConsoleColorToColor(ccolor));
+                //_colorBrush = new SolidColorBrush(ConvertConsoleColorToColor(ccolor));
             }
         }
 

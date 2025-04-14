@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adapters="using:LCSC.App.Adapters"
              xmlns:airtableModels="using:LCSC.Models.Airtable"
-             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+             xmlns:core="using:Microsoft.Xaml.Interactivity"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="using:Microsoft.Xaml.Interactivity"
              xmlns:local="using:LCSC.App.Views"
