@@ -16,7 +16,6 @@
     <Content Remove="Assets\UnknownPortrait.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\Config\appsettings.json" />
     <None Remove="Assets\Fonts\MaterialIcons-Regular.ttf" />
     <None Remove="Assets\Images\bnet.png" />
     <None Remove="Assets\Images\LCSC.png" />
@@ -68,14 +67,17 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LCTWorks.Common\LCTWorks.Common.Services\LCTWorks.Common.Services.csproj" />
-    <ProjectReference Include="..\..\LCTWorks.Common\LCTWorks.Common.WinUI\LCTWorks.Common.WinUI.csproj" />
-    <ProjectReference Include="..\..\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
+    <ProjectReference Include="..\..\LCTWorks\LCTWorks.Common\LCTWorks.Common.Services\LCTWorks.Common.Services.csproj" />
+    <ProjectReference Include="..\..\LCTWorks\LCTWorks.Common\LCTWorks.Common.WinUI\LCTWorks.Common.WinUI.csproj" />
+    <ProjectReference Include="..\..\LCTWorks\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
     <ProjectReference Include="..\LCSC.Bot\LCSC.Discord.csproj" />
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\Config\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\Config\appsettings-demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
