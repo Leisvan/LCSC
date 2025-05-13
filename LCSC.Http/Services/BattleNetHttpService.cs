@@ -13,14 +13,67 @@ public class BattleNetHttpService
     private const string AccessTokenUrl = "https://us.battle.net/oauth/token";
     private const string LeagueData1v1NAUrl = @"https://us.api.blizzard.com/data/sc2/league/{0}/201/0/{1}";
 
-    private BattleNetToken? _token;
     private readonly string? _clientId;
     private readonly string? _clientSecret;
+    private BattleNetToken? _token;
 
     public BattleNetHttpService(string? clientId, string? clientSecret)
     {
         _clientId = clientId;
         _clientSecret = clientSecret;
+    }
+
+    public async Task<List<LadderTierModel>?> GetLadderTiersForLeague(int season, int leagueId)
+    {
+        var list = new List<LadderTierModel>();
+        try
+        {
+            if (!await UpdateAccessTokenAsync())
+            {
+                return null;
+            }
+
+            string url = string.Format(LeagueData1v1NAUrl, season, leagueId);
+            var result = await GetAsync<LadderTierList>(url);
+            if (result == null || result.Tier == null || result.Tier.Count == 0)
+            {
+                return null;
+            }
+            foreach (var item in result.Tier)
+            {
+                list.Add(new LadderTierModel(
+                    (LadderLeague)(result.Key?.League_Id ?? 0),
+                    (LadderTier)item.Id,
+                    item.Min_Rating,
+                    item.Max_Rating));
+            }
+            list.Reverse();
+        }
+        catch (Exception)
+        {
+        }
+        return list;
+    }
+
+    private async Task<T?> GetAsync<T>(string url)
+    {
+        if (_token == null || _token.IsTokenExpired())
+        {
+            return default;
+        }
+        using var httpClient = new HttpClient();
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.Access_Token);
+            HttpResponseMessage response = await httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(content);
+        }
+        catch (Exception)
+        {
+        }
+        return default;
     }
 
     private async Task<bool> UpdateAccessTokenAsync()
@@ -59,58 +112,5 @@ public class BattleNetHttpService
         {
         }
         return false;
-    }
-
-    private async Task<T?> GetAsync<T>(string url)
-    {
-        if (_token == null || _token.IsTokenExpired())
-        {
-            return default;
-        }
-        using var httpClient = new HttpClient();
-        try
-        {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.Access_Token);
-            HttpResponseMessage response = await httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(content);
-        }
-        catch (Exception)
-        {
-        }
-        return default;
-    }
-
-    public async Task<List<LadderTierModel>?> GetLadderTiersForLeague(int season, int leagueId)
-    {
-        var list = new List<LadderTierModel>();
-        try
-        {
-            if(!await UpdateAccessTokenAsync())
-            {
-                return null;
-            }
-
-            string url = string.Format(LeagueData1v1NAUrl, season, leagueId);
-            var result = await GetAsync<LadderTierList>(url);
-            if (result == null || result.Tier == null || result.Tier.Count == 0)
-            {
-                return null;
-            }
-            foreach (var item in result.Tier)
-            {
-                list.Add(new LadderTierModel(
-                    (LadderLeague)(result.Key?.League_Id ?? 0),
-                    (LadderTier)item.Id + 1,
-                    item.Min_Rating,
-                    item.Max_Rating));
-            }
-            list.Reverse();
-        }
-        catch (Exception)
-        {
-        }
-        return list;
     }
 }

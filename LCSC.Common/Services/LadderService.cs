@@ -172,6 +172,10 @@ namespace LCSC.Core.Services
             {
                 return;
             }
+            if (team.LeagueType == (int)LadderLeague.Grandmaster)
+            {
+                return;
+            }
             bnetTiers.Reverse();
             foreach (var tier in bnetTiers)
             {

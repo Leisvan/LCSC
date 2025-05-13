@@ -95,14 +95,10 @@ namespace LCSC.App
         }
 
         private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-        {
-            _telemetryService?.ReportUnhandledException(e.Exception);
-        }
+            => _telemetryService?.ReportUnhandledException(e.Exception);
 
         private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
-        {
-            _telemetryService.ReportUnhandledException(e.ExceptionObject as Exception ?? new Exception("Unknown exception"));
-        }
+            => _telemetryService?.ReportUnhandledException(e.ExceptionObject as Exception ?? new Exception("Unknown exception"));
 
         private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs? e)
         {
