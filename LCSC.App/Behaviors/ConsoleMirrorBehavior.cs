@@ -58,13 +58,19 @@ namespace LCSC.App.Behaviors
 
         private void TextWritten(object? sender, TextWriterEventArgs e)
         {
-            if (AssociatedObject != null)
+            try
             {
-                SetColor();
-                var p = new Paragraph();
-                var r = new Run { Text = e.Text };
-                p.Inlines.Add(r);
-                AssociatedObject.Blocks.Add(p);
+                if (AssociatedObject != null)
+                {
+                    SetColor();
+                    var p = new Paragraph();
+                    var r = new Run { Text = e.Text };
+                    p.Inlines.Add(r);
+                    AssociatedObject.Blocks.Add(p);
+                }
+            }
+            catch (Exception)
+            {
             }
         }
     }

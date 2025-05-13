@@ -24,7 +24,7 @@ namespace LCSC.Discord.Services.Internal
         private const string BlankSpace = " ";
         private const string DoubleSpaceCode = "`  `";
         private const int RankingMessageChunkSize = 8;
-        private static readonly CultureInfo CultureInfo = new CultureInfo("es-ES");
+        private static readonly CultureInfo CultureInfo = new("es-ES");
         private readonly DiscordBotService _botService = botService;
         private readonly InteractivityExtension _interactivity = interactivity;
         private readonly LadderService _ladderService = ladderService;
@@ -171,6 +171,36 @@ namespace LCSC.Discord.Services.Internal
             return null;
         }
 
+        private static string GetRankingHeaderString()
+        {
+            return
+                "`##`" + BlankSpace //Number
+                + DoubleSpaceCode + BlankSpace // Race logo
+                + $"`{StringLengthCapTool.Default.GetString("NICK")}`" + BlankSpace // Nick
+                + "`  `| " // Country flag
+                + "` MMR`" + BlankSpace // MMR
+                + "` ↕MMR`" + BlankSpace // MMR Diff
+                + DoubleSpaceCode + BlankSpace //League icon
+                + "`  WR`" + BlankSpace // Winrate
+                + "`TOTAL`"; //Total games played
+        }
+
+        private static LadderRegionRecord? GetValidLadderRegion(MemberModel? model, int seasonId)
+        {
+            if (model?.Profiles == null)
+            {
+                return null;
+            }
+            var profile = model.Profiles
+                .Where(p => p.LadderRegion != null)
+                .Where(p => p.LadderRegion?.SeasonId == seasonId)
+                .Select(p => p.LadderRegion)
+                .OrderBy(r => r?.CurrentMMR ?? 0)
+                .FirstOrDefault();
+
+            return profile;
+        }
+
         private async Task<string> GetRankingEntryLineAsync(MemberRecord record, LadderRegionRecord region, int seqNumber)
         {
             if (record.Nick == null || region == null)
@@ -185,7 +215,7 @@ namespace LCSC.Discord.Services.Internal
             var newPlayer = (region.PreviousMMR == 0);
             var mmrDiffValue = newPlayer ? 0 : region.CurrentMMR - region.PreviousMMR;
             var mmrsign = mmrDiffValue == 0 ? " " : (mmrDiffValue > 0) ? "↑" : "↓";
-            string mmrDifText = mmrsign + StringLengthCapTool.InvertedFourSpaces.GetString(mmrDiffValue == 0 ? " " : Math.Abs(mmrDiffValue));
+            string mmrDifText = newPlayer ? " NEW " : mmrsign + StringLengthCapTool.InvertedFourSpaces.GetString(mmrDiffValue == 0 ? " " : Math.Abs(mmrDiffValue));
             var winrate = (double)region.Wins / region.TotalMatches * 100;
 
             var builder = new StringBuilder();
@@ -202,42 +232,7 @@ namespace LCSC.Discord.Services.Internal
             builder.Append($"`{i3ct.GetString((int)winrate)}%` ");
             builder.Append($"`{i5ct.GetString(region.TotalMatches)}` ");
 
-            if (newPlayer)
-            {
-                builder.Append(":new: ");
-            }
-
             return builder.ToString();
-        }
-
-        private string GetRankingHeaderString()
-        {
-            return
-                "`##`" + BlankSpace //Number
-                + DoubleSpaceCode + BlankSpace // Race logo
-                + $"`{StringLengthCapTool.Default.GetString("NICK")}`" + BlankSpace // Nick
-                + "`  `| " // Country flag
-                + "` MMR`" + BlankSpace // MMR
-                + "` ↕MMR`" + BlankSpace // MMR Diff
-                + DoubleSpaceCode + BlankSpace //League icon
-                + "`  WR`" + BlankSpace // Winrate
-                + "`TOTAL`"; //Total games played
-        }
-
-        private LadderRegionRecord? GetValidLadderRegion(MemberModel? model, int seasonId)
-        {
-            if (model?.Profiles == null)
-            {
-                return null;
-            }
-            var profile = model.Profiles
-                .Where(p => p.LadderRegion != null)
-                .Where(p => p.LadderRegion?.SeasonId == seasonId)
-                .Select(p => p.LadderRegion)
-                .OrderBy(r => r?.CurrentMMR ?? 0)
-                .FirstOrDefault();
-
-            return profile;
         }
 
         private async Task<DiscordMessage?> UpdateMessageAsync(string content, ulong channelId, DiscordMessage? message = null)

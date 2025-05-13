@@ -52,21 +52,42 @@
             <controls:SettingsExpander Description="Lista de configuraciones en uso por el bot"
                                        Header="Config">
 
-                <StackPanel Orientation="Horizontal"
-                            Spacing="8">
-                    <TextBlock VerticalAlignment="Center"
-                               Text="Guild:" />
-                    <ComboBox MinWidth="220"
-                              ItemsSource="{x:Bind ViewModel.Guilds, Mode=OneWay}"
-                              SelectedItem="{x:Bind ViewModel.SelectedGuild, Mode=TwoWay}" />
-                </StackPanel>
+                <ComboBox MinWidth="220"
+                          ItemsSource="{x:Bind ViewModel.Guilds, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedGuild, Mode=TwoWay}" />
             </controls:SettingsExpander>
             <controls:SettingsExpander Grid.Row="1"
                                        Description="Lista de acciones que el bot puede ejecutar"
                                        Header="Acciones"
                                        IsExpanded="True">
                 <controls:SettingsExpander.Items>
-                    <StackPanel Margin="16"
+                    <controls:SettingsCard>
+                        <controls:SettingsCard.Header>
+                            <StackPanel Margin="0,16"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
+                                        Content="Update rank" />
+                                <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
+                                        Content="Update rank (forced)" />
+                                <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
+                                        Content="Cancel update" />
+                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                        Content="Display Ranking">
+                                    <Button.CommandParameter>
+                                        <x:Boolean>False</x:Boolean>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                        Content="Display Ranking (Banned)">
+                                    <Button.CommandParameter>
+                                        <x:Boolean>True</x:Boolean>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </controls:SettingsCard.Header>
+                    </controls:SettingsCard>
+                    <!--<StackPanel Margin="16"
                                 Orientation="Horizontal"
                                 Spacing="8">
                         <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
@@ -87,7 +108,7 @@
                                 <x:Boolean>True</x:Boolean>
                             </Button.CommandParameter>
                         </Button>
-                    </StackPanel>
+                    </StackPanel>-->
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
         </Grid>

@@ -15,7 +15,6 @@ using LCTWorks.Common.WinUI;
 using LCSC.App.Helpers;
 using System.Threading.Tasks;
 
-
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -41,6 +40,7 @@ namespace LCSC.App
             _telemetryService = Services.GetService<ITelemetryService>();
             UnhandledException += App_UnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
         public new static App Current => (App)Application.Current;
@@ -95,7 +95,14 @@ namespace LCSC.App
         }
 
         private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-            => _telemetryService?.ReportUnhandledException(e.Exception);
+        {
+            _telemetryService?.ReportUnhandledException(e.Exception);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+        {
+            _telemetryService.ReportUnhandledException(e.ExceptionObject as Exception ?? new Exception("Unknown exception"));
+        }
 
         private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs? e)
         {

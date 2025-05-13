@@ -175,10 +175,7 @@ namespace LCSC.Core.Services
                     continue;
                 }
 
-                if (AreRegionsEqual(profile.LadderRegion, team))
-                {
-                    continue;
-                }
+                var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
 
                 var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
 
@@ -197,7 +194,7 @@ namespace LCSC.Core.Services
                     team.Wins,
                     (team.Wins + team.Losses + team.Ties),
                     profile.Record.Id);
-                if (result != null)
+                if (regionUpdated && result != null)
                 {
                     updatedProfilesCount++;
                 }

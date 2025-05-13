@@ -17,76 +17,6 @@ namespace LCSC.Core.Services
         private int _seasonId = 0;
         private List<LadderTierModel> _tiers = [];
 
-        public async Task<List<LadderTierModel>?> GetLadderTiersAsync()
-        {
-            if (_tiers.Count != 0)
-            {
-                return _tiers;
-            }
-            var seasonId = await GetSeasonIdAsync();
-            if (seasonId == 0)
-            {
-                return null;
-            }
-
-            TierCacheData? cachedData = null;
-            var loadedCacheData = await _cacheService.GetCachedTextAsync(TiersCacheFileName);
-
-            //Load from cache:
-            if (!string.IsNullOrEmpty(loadedCacheData))
-            {
-                try
-                {
-                    cachedData = JsonConvert.DeserializeObject<TierCacheData>(loadedCacheData);
-                    if (cachedData != null
-                        && cachedData.SeasonId == seasonId
-                        && (cachedData.LastUpdated + TiersCacheTimout) > DateTime.Now
-                        && cachedData.Tiers.Count > 0)
-                    {
-                        _tiers = new List<LadderTierModel>(cachedData.Tiers);
-                        return _tiers;
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            //Load from API:
-            var values = Enum.GetValues<LadderLeague>().Except([LadderLeague.Grandmaster]);
-            var list = new List<LadderTierModel>();
-            foreach (var value in values)
-            {
-                var tiers = await _battleNetHttpService.GetLadderTiersForLeague(_seasonId, (int)value);
-                if (tiers != null && tiers.Count > 0)
-                {
-                    list.AddRange(tiers);
-                }
-            }
-            //Cache results:
-            if (list.Count > 0)
-            {
-                try
-                {
-                    var dataToCache = new TierCacheData(_seasonId, list, DateTime.Now);
-                    var text = JsonConvert.SerializeObject(dataToCache);
-                    await _cacheService.CacheTextFileAsync(TiersCacheFileName, text);
-                    _tiers = list;
-                    return _tiers;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-
-            if (cachedData != null && cachedData.SeasonId == _seasonId)
-            {
-                return cachedData.Tiers;
-            }
-            return null;
-        }
-
         public async Task<int> GetSeasonIdAsync()
         {
             if (_seasonId != 0)
@@ -152,11 +82,105 @@ namespace LCSC.Core.Services
             var validTeam = result.Teams?
                 .Where(t => t.QueueType == 201 && t.Season == seasonId)
                 .FirstOrDefault();
+
             if (validTeam == null)
             {
                 return null;
             }
+            await SetLadderTiersAsync(validTeam);
             return validTeam;
+        }
+
+        private async Task<List<LadderTierModel>?> GetLadderTiersAsync()
+        {
+            if (_tiers.Count != 0)
+            {
+                return _tiers;
+            }
+            var seasonId = await GetSeasonIdAsync();
+            if (seasonId == 0)
+            {
+                return null;
+            }
+
+            TierCacheData? cachedData = null;
+            var loadedCacheData = await _cacheService.GetCachedTextAsync(TiersCacheFileName);
+
+            //Load from cache:
+            if (!string.IsNullOrEmpty(loadedCacheData))
+            {
+                try
+                {
+                    cachedData = JsonConvert.DeserializeObject<TierCacheData>(loadedCacheData);
+                    if (cachedData != null
+                        && cachedData.SeasonId == seasonId
+                        && (cachedData.LastUpdated + TiersCacheTimout) > DateTime.Now
+                        && cachedData.Tiers.Count > 0)
+                    {
+                        _tiers = [.. cachedData.Tiers];
+                        return _tiers;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            //Load from API:
+            var values = Enum.GetValues<LadderLeague>().Except([LadderLeague.Grandmaster]);
+            var list = new List<LadderTierModel>();
+            foreach (var value in values)
+            {
+                var tiers = await _battleNetHttpService.GetLadderTiersForLeague(_seasonId, (int)value);
+                if (tiers != null && tiers.Count > 0)
+                {
+                    list.AddRange(tiers);
+                }
+            }
+            //Cache results:
+            if (list.Count > 0)
+            {
+                try
+                {
+                    var dataToCache = new TierCacheData(_seasonId, list, DateTime.Now);
+                    var text = JsonConvert.SerializeObject(dataToCache);
+                    await _cacheService.CacheTextFileAsync(TiersCacheFileName, text);
+                    _tiers = list;
+                    return _tiers;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            if (cachedData != null && cachedData.SeasonId == _seasonId)
+            {
+                return cachedData.Tiers;
+            }
+            return null;
+        }
+
+        private async Task SetLadderTiersAsync(Team? team)
+        {
+            if (team == null)
+            {
+                return;
+            }
+            var bnetTiers = await GetLadderTiersAsync();
+            if (bnetTiers == null)
+            {
+                return;
+            }
+            bnetTiers.Reverse();
+            foreach (var tier in bnetTiers)
+            {
+                if (team.Rating > tier.MinMMR && team.Rating <= tier.MaxMMR)
+                {
+                    team.LeagueType = (int)tier.League;
+                    team.TierType = (int)tier.Tier;
+                }
+            }
         }
 
         private record class TierCacheData(
