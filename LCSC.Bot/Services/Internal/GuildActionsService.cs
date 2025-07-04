@@ -68,6 +68,7 @@ namespace LCSC.Discord.Services.Internal
 
             if (context != null)
             {
+                Console.WriteLine(MessageResources.AccessingMembersListMessage);
                 await context.FollowupAsync(MessageResources.AccessingMembersListMessage);
             }
 
@@ -80,6 +81,7 @@ namespace LCSC.Discord.Services.Internal
             var header = GetRankingHeaderString();
 
             //1. Ranking header:
+            Console.WriteLine(header);
             await channel.SendMessageAsync(header);
 
             //2. Ranking lines:
@@ -91,7 +93,10 @@ namespace LCSC.Discord.Services.Internal
                     var line = await GetRankingEntryLineAsync(Record, Region, seqNumber++);
                     stringBuilder.AppendLine(line);
                 }
-                await channel.SendMessageAsync(stringBuilder.ToString());
+                var allLines = stringBuilder.ToString();
+
+                Console.WriteLine(allLines);
+                await channel.SendMessageAsync(allLines);
             }
 
             //3. Disclaimer embed
@@ -102,11 +107,13 @@ namespace LCSC.Discord.Services.Internal
             sb.AppendLine(MessageResources.RankingDisclaimerContentLine3);
             var now = DateTime.Now.Date.ToString("MMMM dd", CultureInfo);
 
+            var disclaimerText = sb.ToString();
+            Console.WriteLine(disclaimerText);
             var disclaimerEmbedBuilder = new DiscordEmbedBuilder()
             {
                 Title = MessageResources.RankingDisclaimerTitle,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = MessageResources.RankingDisclaimerImageUrl },
-                Description = sb.ToString(),
+                Description = disclaimerText,
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"🗓 {now}",
@@ -152,6 +159,7 @@ namespace LCSC.Discord.Services.Internal
                 var builder = new DiscordMessageBuilder()
                     .WithContent(MessageResources.AccessingMembersListMessage)
                     .AddComponents(InteractionsHelper.GetCancelUpdateRankButton());
+                Console.WriteLine(MessageResources.AccessingMembersListMessage);
                 message = await context.FollowupAsync(builder);
             }
             RegionUpdateProgressReportData? lastUpdate = null;
@@ -239,6 +247,7 @@ namespace LCSC.Discord.Services.Internal
         {
             try
             {
+                Console.WriteLine(content);
                 if (message == null)
                 {
                     var channel = await _botService.Client.GetChannelAsync(channelId);

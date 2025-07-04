@@ -32,13 +32,15 @@
             <Grid Grid.Row="1"
                   Padding="16"
                   Background="#101010">
-                <RichTextBlock HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"
-                               FontFamily="Cascadia Mono">
-                    <interactivity:Interaction.Behaviors>
-                        <appBehaviors:ConsoleMirrorBehavior />
-                    </interactivity:Interaction.Behaviors>
-                </RichTextBlock>
+                <ScrollView>
+                    <RichTextBlock HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   FontFamily="Cascadia Mono">
+                        <interactivity:Interaction.Behaviors>
+                            <appBehaviors:ConsoleMirrorBehavior />
+                        </interactivity:Interaction.Behaviors>
+                    </RichTextBlock>
+                </ScrollView>
             </Grid>
         </Grid>
         <Grid Grid.Column="1"

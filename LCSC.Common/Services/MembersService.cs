@@ -139,6 +139,7 @@ namespace LCSC.Core.Services
         {
             var profilesList = _members
                 .Where(m => includeBannedPlayers || !m.Record.Banned)
+                .Where(m => m.Profiles != null && m.Profiles.Count > 0)
                 .SelectMany(m => m.Profiles!)
                 .ToList();
             int updatedProfilesCount = 0;
