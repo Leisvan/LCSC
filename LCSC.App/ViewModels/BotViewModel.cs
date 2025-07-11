@@ -34,6 +34,17 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         => _botService.CancelUpdateMemberRegions();
 
     [RelayCommand]
+    public async Task UpdateAndDisplayRank(bool includeBanned)
+    {
+        if (SelectedGuild == null)
+        {
+            return;
+        }
+        await _botService.UpdateMemberRegionsAsync(false, SelectedGuild.Id);
+        await _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
+    }
+
+    [RelayCommand]
     public async Task UpdateRank()
     {
         if (SelectedGuild == null)

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.WinUI.Behaviors;
 using LCSC.Manager.Tools;
 using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -11,14 +13,15 @@ namespace LCSC.App.Behaviors
 {
     public class ConsoleMirrorBehavior : BehaviorBase<RichTextBlock>
     {
-        private SolidColorBrush? _colorBrush;
+        private readonly TextWriterNotifier _notifier;
+        private SolidColorBrush _colorBrush;
         private ConsoleColor? _lastConsoleColor;
-        private TextWriterNotifier _notifier;
 
         public ConsoleMirrorBehavior()
         {
             _notifier = new TextWriterNotifier();
             _notifier.TextWritten += TextWritten;
+            _colorBrush = new SolidColorBrush(Colors.White);
             Console.SetOut(_notifier);
         }
 
@@ -52,7 +55,7 @@ namespace LCSC.App.Behaviors
             if (ccolor != _lastConsoleColor)
             {
                 _lastConsoleColor = ccolor;
-                //_colorBrush = new SolidColorBrush(ConvertConsoleColorToColor(ccolor));
+                _colorBrush = new SolidColorBrush(ConvertConsoleColorToColor(ccolor));
             }
         }
 
@@ -64,7 +67,7 @@ namespace LCSC.App.Behaviors
                 {
                     SetColor();
                     var p = new Paragraph();
-                    var r = new Run { Text = e.Text };
+                    var r = new Run { Text = e.Text, Foreground = _colorBrush };
                     p.Inlines.Add(r);
                     AssociatedObject.Blocks.Add(p);
                 }

@@ -29,10 +29,11 @@
                 <Button Command="{x:Bind ViewModel.DisconnectBotCommand, Mode=OneWay}"
                         Content="Terminar" />
             </StackPanel>
-            <Grid Grid.Row="1"
+            <Grid x:Name="TextContainer"
+                  Grid.Row="1"
                   Padding="16"
                   Background="#101010">
-                <ScrollView>
+                <ScrollView x:Name="TextScrollViewer">
                     <RichTextBlock HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    FontFamily="Cascadia Mono">
@@ -66,51 +67,40 @@
                     <controls:SettingsCard>
                         <controls:SettingsCard.Header>
                             <StackPanel Margin="0,16"
-                                        Orientation="Horizontal"
                                         Spacing="8">
-                                <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
-                                        Content="Update rank" />
-                                <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
-                                        Content="Update rank (forced)" />
-                                <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
-                                        Content="Cancel update" />
-                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                        Content="Display Ranking">
-                                    <Button.CommandParameter>
-                                        <x:Boolean>False</x:Boolean>
-                                    </Button.CommandParameter>
-                                </Button>
-                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                        Content="Display Ranking (Banned)">
-                                    <Button.CommandParameter>
-                                        <x:Boolean>True</x:Boolean>
-                                    </Button.CommandParameter>
-                                </Button>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="8">
+                                    <Button Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
+                                            Content="Update and Display Rank"
+                                            Style="{ThemeResource AccentButtonStyle}">
+                                        <Button.CommandParameter>
+                                            <x:Boolean>False</x:Boolean>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                    <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
+                                            Content="Update rank" />
+                                    <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
+                                            Content="Update rank (forced)" />
+                                    <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
+                                            Content="Cancel update" />
+                                    <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                            Content="Display Ranking">
+                                        <Button.CommandParameter>
+                                            <x:Boolean>False</x:Boolean>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                    <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                            Content="Display Ranking (Banned)">
+                                        <Button.CommandParameter>
+                                            <x:Boolean>True</x:Boolean>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="8" />
                             </StackPanel>
                         </controls:SettingsCard.Header>
                     </controls:SettingsCard>
-                    <!--<StackPanel Margin="16"
-                                Orientation="Horizontal"
-                                Spacing="8">
-                        <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
-                                Content="Update rank" />
-                        <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
-                                Content="Update rank (forced)" />
-                        <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
-                                Content="Cancel update" />
-                        <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                Content="Display Ranking">
-                            <Button.CommandParameter>
-                                <x:Boolean>False</x:Boolean>
-                            </Button.CommandParameter>
-                        </Button>
-                        <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                Content="Display Ranking (Banned)">
-                            <Button.CommandParameter>
-                                <x:Boolean>True</x:Boolean>
-                            </Button.CommandParameter>
-                        </Button>
-                    </StackPanel>-->
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
         </Grid>
