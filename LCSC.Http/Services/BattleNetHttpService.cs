@@ -10,7 +10,7 @@ namespace LCSC.Http.Services;
 
 public class BattleNetHttpService
 {
-    private const string AccessTokenUrl = "https://us.battle.net/oauth/token";
+    private const string AccessTokenUrl = "https://oauth.battle.net/token";
     private const string LeagueData1v1NAUrl = @"https://us.api.blizzard.com/data/sc2/league/{0}/201/0/{1}";
 
     private readonly string? _clientId;
