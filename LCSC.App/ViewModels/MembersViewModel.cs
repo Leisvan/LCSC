@@ -1,30 +1,41 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using LCSC.App.Helpers;
+using LCSC.App.Models.Messages;
 using LCSC.App.ObservableObjects;
-using LCSC.Models;
 using LCSC.Core.Services;
+using LCSC.Models;
+using LCSC.Models.Airtable;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
-using Microsoft.UI.Xaml.Controls;
-using LCSC.Models.Airtable;
-using LCSC.App.Helpers;
 
 namespace LCSC.App.ViewModels;
 
-public partial class MembersViewModel(MembersService membersService) : ObservableObject
+public partial class MembersViewModel(MembersService membersService) : ObservableRecipient
 {
     private readonly MembersService _membersService = membersService;
 
-    [ObservableProperty]
     private bool _isLoading;
-
-    private string? _searchTerm;
-
+    private string? _searchTerm = string.Empty;
     private MemberModel? _selectedMember;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (SetProperty(ref _isLoading, value))
+            {
+                Messenger.Send(new LoadingChangedMessage(value));
+            }
+        }
+    }
 
     public ObservableCollection<MemberModel> Members { get; set; } = [];
 
@@ -36,8 +47,10 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
 
         set
         {
-            SetProperty(ref _searchTerm, value);
-            RefreshMembersAsync();
+            if (SetProperty(ref _searchTerm, value))
+            {
+                FilterMembersAsync().ConfigureAwait(false);
+            }
         }
     }
 
@@ -70,6 +83,16 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
     }
 
     [RelayCommand]
+    public void CopyBattleTag(object item)
+    {
+        if (item is ItemClickEventArgs e
+            && e.ClickedItem is BattleNetProfileRecord profile)
+        {
+            ClipboardHelper.Copy(profile.BattleTag);
+        }
+    }
+
+    [RelayCommand]
     public async Task NavigateToProfilePage(string pulseId)
     {
         if (string.IsNullOrEmpty(pulseId))
@@ -87,23 +110,11 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
         RefreshMembersAsync(force);
     }
 
-    [RelayCommand]
-    public void CopyBattleTag(object item)
+    private async Task FilterMembersAsync(bool forceRefresh = false)
     {
-        if (item is ItemClickEventArgs e 
-            && e.ClickedItem is BattleNetProfileRecord profile)
-        {
-            ClipboardHelper.Copy(profile.BattleTag);
-        }
-    }
+        //Wait for the UI to update before fetching members
+        await Task.Delay(120);
 
-    private async void RefreshMembersAsync(bool forceRefresh = false)
-    {
-        if (IsLoading)
-        {
-            return;
-        }
-        IsLoading = true;
         IEnumerable<MemberModel> source = await _membersService.GetMembersAsync(forceRefresh);
         if (!string.IsNullOrWhiteSpace(_searchTerm))
         {
@@ -116,6 +127,16 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
         {
             Members.Add(item);
         }
+    }
+
+    private async void RefreshMembersAsync(bool forceRefresh = false)
+    {
+        if (IsLoading)
+        {
+            return;
+        }
+        IsLoading = true;
+        await FilterMembersAsync(forceRefresh);
         IsLoading = false;
     }
 }

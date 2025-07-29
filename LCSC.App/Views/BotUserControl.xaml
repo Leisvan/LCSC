@@ -68,29 +68,30 @@
                         <controls:SettingsCard.Header>
                             <StackPanel Margin="0,16"
                                         Spacing="8">
+                                <TextBlock Text="Ranking:" />
                                 <StackPanel Orientation="Horizontal"
                                             Spacing="8">
                                     <Button Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
-                                            Content="Update and Display Rank"
+                                            Content="Actualizar y mostrar"
                                             Style="{ThemeResource AccentButtonStyle}">
                                         <Button.CommandParameter>
                                             <x:Boolean>False</x:Boolean>
                                         </Button.CommandParameter>
                                     </Button>
                                     <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
-                                            Content="Update rank" />
+                                            Content="Actualizar" />
                                     <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
-                                            Content="Update rank (forced)" />
+                                            Content="Actualizar (forzado)" />
                                     <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
-                                            Content="Cancel update" />
+                                            Content="Cancelar" />
                                     <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                            Content="Display Ranking">
+                                            Content="Mostrar">
                                         <Button.CommandParameter>
                                             <x:Boolean>False</x:Boolean>
                                         </Button.CommandParameter>
                                     </Button>
                                     <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                            Content="Display Ranking (Banned)">
+                                            Content="Mostrar (Banned)">
                                         <Button.CommandParameter>
                                             <x:Boolean>True</x:Boolean>
                                         </Button.CommandParameter>

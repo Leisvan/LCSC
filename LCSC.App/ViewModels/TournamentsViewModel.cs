@@ -1,27 +1,41 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using LCSC.App.Helpers;
+using LCSC.App.Models.Messages;
 using LCSC.App.ObservableObjects;
-using LCSC.Models;
 using LCSC.Core.Services;
+using LCSC.Models;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
 {
-    public partial class TournamentsViewModel(MembersService membersService) : ObservableObject
+    public partial class TournamentsViewModel(MembersService membersService) : ObservableRecipient
     {
         private readonly MembersService _membersService = membersService;
 
-        [ObservableProperty]
         private bool _isLoading;
 
-        [ObservableProperty]
-        private bool _isUploading;
-
         private MatchModel? _selectedMatch;
+
         private TournamentModel? _selectedTournament;
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                if (SetProperty(ref _isLoading, value))
+                {
+                    Messenger.Send(new LoadingChangedMessage(value));
+                }
+            }
+        }
+
+        [ObservableProperty]
+        public partial bool IsUploading { get; set; }
 
         public MatchCreatorObservableObject MatchCreator { get; } = new MatchCreatorObservableObject();
 

@@ -56,7 +56,7 @@
                   CornerRadius="8">
                 <Button HorizontalAlignment="Right"
                         Command="{x:Bind ViewModel.RefreshCommand}"
-                        Content="Refresh">
+                        Content="Actualizar">
                     <Button.CommandParameter>
                         <x:Boolean>True</x:Boolean>
                     </Button.CommandParameter>
@@ -193,7 +193,6 @@
                 </Border>
             </Grid>
         </Grid>
-
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>

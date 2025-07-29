@@ -61,7 +61,7 @@
                     <Button Grid.Column="1"
                             VerticalAlignment="Stretch"
                             Command="{x:Bind ViewModel.RefreshCommand}"
-                            Content="Refresh">
+                            Content="Actualizar">
                         <Button.CommandParameter>
                             <x:Boolean>True</x:Boolean>
                         </Button.CommandParameter>

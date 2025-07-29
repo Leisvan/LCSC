@@ -12,12 +12,12 @@
         Title="LCSC"
         mc:Ignorable="d">
 
-
     <Grid Background="{StaticResource AppColor2}">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition />
         </Grid.RowDefinitions>
+
         <!--  Title bar  -->
         <Grid x:Name="TitleBar"
               Background="{StaticResource AppColor1}">
@@ -27,15 +27,19 @@
                    VerticalAlignment="Center"
                    Source="ms-appx:///Assets/Images/LCSC.png" />
         </Grid>
-        <Pivot Grid.Row="1">
-            <PivotItem Header="Miembros">
+        <Pivot Grid.Row="1"
+               IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+            <PivotItem Header="Miembros"
+                       Visibility="{x:Bind ViewModel.IsMembersViewEnabled, Mode=OneWay}">
                 <views:MembersUserControl />
             </PivotItem>
 
-            <PivotItem Header="Torneos">
+            <PivotItem Header="Torneos"
+                       Visibility="{x:Bind ViewModel.IsTournamentsViewEnabled, Mode=OneWay}">
                 <views:TournamentsUserControl />
             </PivotItem>
-            <PivotItem Header="Bot">
+            <PivotItem Header="Bot"
+                       Visibility="{x:Bind ViewModel.IsBotViewEnabled, Mode=OneWay}">
                 <views:BotUserControl />
             </PivotItem>
         </Pivot>
