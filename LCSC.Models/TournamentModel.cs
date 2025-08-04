@@ -11,6 +11,17 @@ public record class TournamentModel(
     List<MemberModel>? Participants = null,
     List<MatchModel>? Matches = null)
 {
+    public TournamentAffiliation Affiliation
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Record.Affiliation))
+            {
+                return TournamentAffiliation.Community;
+            }
+            return Enum.Parse<TournamentAffiliation>(Record.Affiliation, true);
+        }
+    }
     public bool HasPlace1 => Place1 != null;
 
     public bool HasPlace2 => Place2 != null;

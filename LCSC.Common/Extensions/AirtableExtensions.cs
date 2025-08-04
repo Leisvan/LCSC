@@ -78,6 +78,7 @@ internal static class AirtableExtensions
             record.GetField<string>(nameof(TournamentRecord.SeriesName)),
             record.GetField<string>(nameof(TournamentRecord.SeriesNumber)),
             record.GetField<DateTime>(nameof(TournamentRecord.Date)),
+            record.GetField<string>(nameof(TournamentRecord.Affiliation)),
             record.GetField<string>(nameof(TournamentRecord.BracketsUrl)),
             record.GetField<string>(nameof(TournamentRecord.Description)),
             record.GetField<string>(nameof(TournamentRecord.DetailsUrl)),

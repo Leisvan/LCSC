@@ -99,7 +99,7 @@
                                             Height="24"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
-                                            Background="{x:Bind adapters:VisualAdapters.ToMemberStateBackgroundBrush(Record.Verified, Record.Banned), Mode=OneWay}"
+                                            Background="{x:Bind adapters:VisualAdapters.ToMemberStateBackgroundBrush(Record, ValidProfiles), Mode=OneWay}"
                                             BorderBrush="{StaticResource AppColor4}"
                                             BorderThickness="2"
                                             CornerRadius="16"
@@ -109,7 +109,7 @@
                                                    VerticalAlignment="Center"
                                                    FontFamily="{StaticResource MaterialIconsRegular}"
                                                    FontSize="16"
-                                                   Text="{x:Bind adapters:VisualAdapters.ToMemberStateIconGlyph(Record.Verified, Record.Banned), Mode=OneWay}"
+                                                   Text="{x:Bind adapters:VisualAdapters.ToMemberStateIconGlyph(Record.Verified, Record.Banned, ValidProfiles), Mode=OneWay}"
                                                    TextAlignment="Center"
                                                    TextLineBounds="Tight" />
                                     </Border>

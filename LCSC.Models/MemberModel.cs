@@ -18,6 +18,8 @@ public record class MemberModel(
         }
     }
 
+    public bool ValidProfiles => Profiles != null && Profiles.Count > 0;
+
     public LeagueStatsModel? Stats { get; set; }
 
     public int CompareTo(MemberModel? other)
@@ -41,7 +43,7 @@ public record class MemberModel(
             {
                 return Profiles.Select(x => x.LadderRegion?.CurrentMMR).Max()?.ToString() ?? string.Empty;
             }
-            return "Sin cuenta";
+            return string.Empty;
         }
     }
 }

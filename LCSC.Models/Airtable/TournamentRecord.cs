@@ -6,6 +6,7 @@ public record class TournamentRecord(
     string? SeriesName = null,
     string? SeriesNumber = null,
     DateTime? Date = null,
+    string? Affiliation = null,
     string? BracketsUrl = null,
     string? Description = null,
     string? DetailsUrl = null,

@@ -83,16 +83,40 @@
                                       Height="56">
                                     <Image Source="{x:Bind adapters:VisualAdapters.ToImageSource(Record.LogoUrl, 128), Mode=OneWay}" />
                                 </Grid>
-                                <StackPanel Grid.Column="1"
-                                            Grid.ColumnSpan="2"
-                                            Margin="16,0,0,8"
-                                            VerticalAlignment="Center"
-                                            Orientation="Vertical">
-                                    <TextBlock Style="{StaticResource AppItemMainTextStyle}"
+                                <Grid Grid.Column="1"
+                                      Grid.ColumnSpan="2"
+                                      Margin="16,0,0,8"
+                                      VerticalAlignment="Center"
+                                      ColumnSpacing="8"
+                                      RowSpacing="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.ColumnSpan="2"
+                                               Style="{StaticResource AppItemMainTextStyle}"
                                                Text="{x:Bind adapters:StringAdapters.TournamentDisplayName(Record.SeriesName, Record.SeriesNumber)}" />
-                                    <TextBlock Style="{StaticResource AppItemSecondaryTextStyle}"
+                                    <TextBlock Grid.Row="1"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontFamily="{StaticResource MaterialIconsRegular}"
+                                               FontSize="16"
+                                               Foreground="{x:Bind adapters:VisualAdapters.ToTournamentAffiliationForegroundBrush(Affiliation), Mode=OneWay}"
+                                               Text="{x:Bind adapters:VisualAdapters.ToTournamentAffiliationGlyph(Affiliation), Mode=OneWay}"
+                                               TextAlignment="Center"
+                                               TextLineBounds="Full"
+                                               ToolTipService.ToolTip="{x:Bind Affiliation, Mode=OneWay}" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               Style="{StaticResource AppItemSecondaryTextStyle}"
                                                Text="{x:Bind adapters:StringAdapters.TournamentDate(Record.Date)}" />
-                                </StackPanel>
+                                </Grid>
+
                                 <Grid Grid.Column="2"
                                       HorizontalAlignment="Right"
                                       VerticalAlignment="Bottom"

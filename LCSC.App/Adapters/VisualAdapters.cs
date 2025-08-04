@@ -1,5 +1,6 @@
-﻿using LCSC.App.Models;
+﻿using CommunityToolkit.WinUI.Helpers;
 using LCSC.Models;
+using LCSC.Models.Airtable;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -11,6 +12,13 @@ namespace LCSC.App.Adapters
 {
     public static class VisualAdapters
     {
+        private static readonly Color CommunityColor = "#ffd4e0".ToColor();
+        private static readonly Color ErrorColor = "#A70000".ToColor();
+        private static readonly Color OfficialColor = "#76f480".ToColor();
+        private static readonly Color PartnerColor = "#feeab6".ToColor();
+        private static readonly Color SuccessColor = "#008a00".ToColor();
+        private static readonly Color WarningColor = "#e0aa21".ToColor();
+
         public static Visibility StringToVisibility(string value)
             => string.IsNullOrWhiteSpace(value) ? Visibility.Collapsed : Visibility.Visible;
 
@@ -50,25 +58,33 @@ namespace LCSC.App.Adapters
             return bitmapImage;
         }
 
-        public static SolidColorBrush ToMemberStateBackgroundBrush(bool isVerified, bool isBanned)
+        public static SolidColorBrush ToMemberStateBackgroundBrush(MemberRecord record, bool validProfiles)
         {
             Color color = Colors.Transparent;
-            if (isBanned)
+            if (record.Banned)
             {
-                color = Color.FromArgb(255, 167, 0, 0);
+                color = ErrorColor;
             }
-            else if (isVerified)
+            else if (!validProfiles)
             {
-                color = Color.FromArgb(255, 0, 138, 0);
+                color = WarningColor;
+            }
+            else if (record.Verified)
+            {
+                color = SuccessColor;
             }
             return new SolidColorBrush(color);
         }
 
-        public static string ToMemberStateIconGlyph(bool isVerified, bool isBanned)
+        public static string ToMemberStateIconGlyph(bool isVerified, bool isBanned, bool validProfiles)
         {
             if (isBanned)
             {
                 return "block";
+            }
+            if (!validProfiles)
+            {
+                return "person_off";
             }
             if (isVerified)
             {
@@ -106,5 +122,28 @@ namespace LCSC.App.Adapters
 
         public static Visibility ToReverseBoolVisibility(bool value)
             => value ? Visibility.Collapsed : Visibility.Visible;
+
+        public static Brush ToTournamentAffiliationForegroundBrush(TournamentAffiliation affiliation)
+        {
+            var color = affiliation switch
+            {
+                TournamentAffiliation.Official => OfficialColor,
+                TournamentAffiliation.Partner => PartnerColor,
+                TournamentAffiliation.Community => CommunityColor,
+                _ => Colors.Transparent,
+            };
+            return new SolidColorBrush(color);
+        }
+
+        public static string ToTournamentAffiliationGlyph(TournamentAffiliation affiliation)
+        {
+            return affiliation switch
+            {
+                TournamentAffiliation.Official => "verified",
+                TournamentAffiliation.Partner => "handshake",
+                TournamentAffiliation.Community => "home",
+                _ => string.Empty,
+            };
+        }
     }
 }

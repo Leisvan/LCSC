@@ -63,7 +63,11 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
     [RelayCommand]
     public async Task AddProfile()
     {
-        if (SelectedMember?.Profiles == null)
+        if (SelectedMember == null)
+        {
+            return;
+        }
+        if (!await ProfileCreator.ValidateAsync())
         {
             return;
         }
@@ -73,12 +77,15 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
             ProfileCreator.PulseId,
             ProfileCreator.ProfileRealm,
             ProfileCreator.ProfileId,
-            SelectedMember.Profiles.Count == 0,
+            SelectedMember.Profiles?.Count == 0,
             ProfileCreator.Notes,
             SelectedMember.Record.Id);
 
         if (result != null)
         {
+            var selectedId = SelectedMember.Record.Id;
+            RefreshMembersAsync(true);
+            SelectedMember = Members.FirstOrDefault(m => m.Record.Id == selectedId);
         }
     }
 

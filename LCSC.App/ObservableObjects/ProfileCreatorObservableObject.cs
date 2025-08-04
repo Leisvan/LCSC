@@ -71,4 +71,21 @@ public partial class ProfileCreatorObservableObject : ObservableObject
 
         IsSearching = false;
     }
+
+    public async Task<bool> ValidateAsync()
+    {
+        if (IsSearching)
+        {
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(PulseId))
+        {
+            await Search();
+        }
+        if (string.IsNullOrWhiteSpace(PulseId))
+        {
+            return false;
+        }
+        return true;
+    }
 }
