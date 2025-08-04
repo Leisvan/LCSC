@@ -123,6 +123,7 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
             m.Record.RealName?.Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true);
         }
         Members.Clear();
+
         foreach (var item in source)
         {
             Members.Add(item);

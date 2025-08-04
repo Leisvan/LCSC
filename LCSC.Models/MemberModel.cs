@@ -41,7 +41,7 @@ public record class MemberModel(
             {
                 return Profiles.Select(x => x.LadderRegion?.CurrentMMR).Max()?.ToString() ?? string.Empty;
             }
-            return string.Empty;
+            return "Sin cuenta";
         }
     }
 }
