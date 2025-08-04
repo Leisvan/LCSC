@@ -321,7 +321,14 @@
                                            Text="add" />
                             </Button.Content>
                         </Button>
-                        <Grid />
+                        <Button VerticalAlignment="Stretch"
+                                Command="{x:Bind ViewModel.UpdateRegionsCommand}"
+                                ToolTipService.ToolTip="Actualizar MMR en las cuentas de este jugador">
+                            <Button.Content>
+                                <TextBlock FontFamily="{StaticResource MaterialIconsRegular}"
+                                           Text="metabolism" />
+                            </Button.Content>
+                        </Button>
                     </StackPanel>
                 </Grid>
                 <ListView Grid.Row="1"
@@ -412,6 +419,11 @@
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
+                <Grid Grid.RowSpan="2"
+                      Background="{StaticResource AppColor3}"
+                      Visibility="{x:Bind ViewModel.IsLoadingCurrentMember, Mode=OneWay}">
+                    <ProgressRing IsActive="True" />
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

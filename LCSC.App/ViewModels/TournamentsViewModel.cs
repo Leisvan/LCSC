@@ -7,6 +7,7 @@ using LCSC.App.ObservableObjects;
 using LCSC.Core.Services;
 using LCSC.Models;
 using Microsoft.UI.Xaml.Controls;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -45,6 +46,9 @@ namespace LCSC.App.ViewModels
             set => SetProperty(ref _selectedMatch, value);
         }
 
+        public ObservableCollection<MatchModel>? SelectedMatches
+            => new(SelectedTournament?.Matches ?? []);
+
         public TournamentModel? SelectedTournament
         {
             get => _selectedTournament;
@@ -56,6 +60,7 @@ namespace LCSC.App.ViewModels
                 {
                     MatchCreator.Update(_selectedTournament.Participants);
                 }
+                OnPropertyChanged(nameof(SelectedMatches));
             }
         }
 
@@ -70,6 +75,7 @@ namespace LCSC.App.ViewModels
                 return;
             }
             SelectedTournament.Matches?.Add(match);
+            OnPropertyChanged(nameof(SelectedMatches));
         }
 
         [RelayCommand]

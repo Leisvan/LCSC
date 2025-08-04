@@ -84,8 +84,7 @@
                                     <Image Source="{x:Bind adapters:VisualAdapters.ToImageSource(Record.LogoUrl, 128), Mode=OneWay}" />
                                 </Grid>
                                 <Grid Grid.Column="1"
-                                      Grid.ColumnSpan="2"
-                                      Margin="16,0,0,8"
+                                      Margin="16,0,16,8"
                                       VerticalAlignment="Center"
                                       ColumnSpacing="8"
                                       RowSpacing="4">
@@ -110,7 +109,8 @@
                                                Text="{x:Bind adapters:VisualAdapters.ToTournamentAffiliationGlyph(Affiliation), Mode=OneWay}"
                                                TextAlignment="Center"
                                                TextLineBounds="Full"
-                                               ToolTipService.ToolTip="{x:Bind Affiliation, Mode=OneWay}" />
+                                               TextTrimming="WordEllipsis"
+                                               ToolTipService.ToolTip="{x:Bind adapters:StringAdapters.ToTournamentAffiliationDescription(Affiliation), Mode=OneWay}" />
                                     <TextBlock Grid.Row="1"
                                                Grid.Column="1"
                                                Style="{StaticResource AppItemSecondaryTextStyle}"
@@ -334,7 +334,7 @@
                 </StackPanel>
             </Grid>
             <ListView Grid.Row="1"
-                      ItemsSource="{x:Bind ViewModel.SelectedTournament.Matches, Mode=OneWay}"
+                      ItemsSource="{x:Bind ViewModel.SelectedMatches, Mode=OneWay}"
                       SelectedItem="{x:Bind ViewModel.SelectedMatch, Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:MatchModel">

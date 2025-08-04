@@ -22,6 +22,8 @@ public record class MemberModel(
 
     public LeagueStatsModel? Stats { get; set; }
 
+    public string Nick => Record.Nick ?? string.Empty;
+
     public int CompareTo(MemberModel? other)
     {
         if (other == null)

@@ -141,7 +141,7 @@ namespace LCSC.App.Adapters
             {
                 TournamentAffiliation.Official => "verified",
                 TournamentAffiliation.Partner => "handshake",
-                TournamentAffiliation.Community => "home",
+                TournamentAffiliation.Community => "partner_exchange",
                 _ => string.Empty,
             };
         }

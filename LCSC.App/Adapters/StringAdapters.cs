@@ -26,6 +26,17 @@ public static class StringAdapters
         return participants?.Count > 0 ? $"{participants.Count} participantes" : "0 participantes";
     }
 
+    public static string ToTournamentAffiliationDescription(TournamentAffiliation affiliation)
+    {
+        return affiliation switch
+        {
+            TournamentAffiliation.Official => "Torneo oficial",
+            TournamentAffiliation.Partner => "Torneo en colaboración",
+            TournamentAffiliation.Community => "Torneo de la comunidad",
+            _ => string.Empty,
+        };
+    }
+
     public static string TournamentDate(DateTime? date)
                 => date == null ? string.Empty : date.Value.ToShortDateString();
 

@@ -22,6 +22,7 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
     private readonly MembersService _membersService = membersService;
 
     private bool _isLoading;
+    private bool _isLoadingCurrentMember;
     private string? _searchTerm = string.Empty;
     private MemberModel? _selectedMember;
 
@@ -35,6 +36,12 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
                 Messenger.Send(new LoadingChangedMessage(value));
             }
         }
+    }
+
+    public bool IsLoadingCurrentMember
+    {
+        get => _isLoadingCurrentMember;
+        set => SetProperty(ref _isLoadingCurrentMember, value);
     }
 
     public ObservableCollection<MemberModel> Members { get; set; } = [];
@@ -83,9 +90,7 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
 
         if (result != null)
         {
-            var selectedId = SelectedMember.Record.Id;
-            RefreshMembersAsync(true);
-            SelectedMember = Members.FirstOrDefault(m => m.Record.Id == selectedId);
+            RefreshAndReselectCurrentMember();
         }
     }
 
@@ -111,10 +116,26 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
     }
 
     [RelayCommand]
-    public void Refresh(bool force)
+    public async Task Refresh(bool force)
     {
         SearchTerm = string.Empty;
-        RefreshMembersAsync(force);
+        await RefreshMembersAsync(force);
+    }
+
+    [RelayCommand]
+    public async Task UpdateRegions()
+    {
+        if (IsLoading || IsLoadingCurrentMember || SelectedMember == null || SelectedMember.Profiles == null)
+        {
+            return;
+        }
+        IsLoadingCurrentMember = true;
+        foreach (var profile in SelectedMember.Profiles)
+        {
+            await _membersService.UpdateSingleRegionAsync(profile);
+        }
+        RefreshAndReselectCurrentMember();
+        IsLoadingCurrentMember = false;
     }
 
     private async Task FilterMembersAsync(bool forceRefresh = false)
@@ -137,7 +158,14 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
         }
     }
 
-    private async void RefreshMembersAsync(bool forceRefresh = false)
+    private async void RefreshAndReselectCurrentMember()
+    {
+        var selectedId = SelectedMember?.Record.Id;
+        await RefreshMembersAsync(true);
+        SelectedMember = Members.FirstOrDefault(m => m.Record.Id == selectedId);
+    }
+
+    private async Task RefreshMembersAsync(bool forceRefresh = false)
     {
         if (IsLoading)
         {

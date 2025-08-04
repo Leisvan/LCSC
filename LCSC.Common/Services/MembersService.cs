@@ -5,6 +5,7 @@ using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {
@@ -168,34 +169,7 @@ namespace LCSC.Core.Services
                     }
                 }
 
-                var id = profile.LadderRegion?.Id ?? string.Empty;
-
-                var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
-                if (team == null)
-                {
-                    continue;
-                }
-
-                var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
-
-                var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
-
-                var race = LadderHelper.GetRaceFromTeamResult(team);
-                string raceText = race == Race.Unknown ? string.Empty : race.ToString();
-
-                var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
-                    id,
-                    team.Season,
-                    team.Region,
-                    raceText,
-                    team.Rating,
-                    previousMMR,
-                    team.LeagueType,
-                    team.TierType,
-                    team.Wins,
-                    (team.Wins + team.Losses + team.Ties),
-                    profile.Record.Id);
-                if (regionUpdated && result != null)
+                if (await UpdateSingleRegionAsync(profile))
                 {
                     updatedProfilesCount++;
                 }
@@ -205,6 +179,47 @@ namespace LCSC.Core.Services
                 await RefreshAllAsync();
             }
             return updatedProfilesCount;
+        }
+
+        public async Task<bool> UpdateSingleRegionAsync(BattleNetProfileModel profile)
+        {
+            if (profile == null || profile.Record == null)
+            {
+                return false;
+            }
+
+            var id = profile.LadderRegion?.Id ?? string.Empty;
+
+            var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
+            if (team == null)
+            {
+                return false;
+            }
+
+            var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
+
+            var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
+
+            var race = LadderHelper.GetRaceFromTeamResult(team);
+            string raceText = race == Race.Unknown ? string.Empty : race.ToString();
+
+            var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
+                id,
+                team.Season,
+                team.Region,
+                raceText,
+                team.Rating,
+                previousMMR,
+                team.LeagueType,
+                team.TierType,
+                team.Wins,
+                (team.Wins + team.Losses + team.Ties),
+                profile.Record.Id);
+            if (regionUpdated && result != null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public async Task UpdateTournamentMatchesAsync(string tournamentId, List<MatchModel>? matches)
