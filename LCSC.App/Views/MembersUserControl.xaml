@@ -104,8 +104,7 @@
                                             BorderThickness="2"
                                             CornerRadius="16"
                                             Visibility="{x:Bind adapters:VisualAdapters.ToMemberStateVisibility(Record.Verified, Record.Banned), Mode=OneWay}">
-                                        <TextBlock Margin="0,4,0,0"
-                                                   HorizontalAlignment="Center"
+                                        <TextBlock HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    FontFamily="{StaticResource MaterialIconsRegular}"
                                                    FontSize="16"

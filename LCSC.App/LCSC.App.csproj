@@ -18,7 +18,7 @@
     <Content Remove="Assets\UnknownPortrait.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\Fonts\MaterialIcons-Regular.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbols-Outlined-400.ttf" />
     <None Remove="Assets\Images\bnet.png" />
     <None Remove="Assets\Images\LCSC.png" />
     <None Remove="Assets\Images\ProtossPortrait.png" />
@@ -82,9 +82,6 @@
     <Content Update="Assets\Config\appsettings-demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\Fonts\MaterialIcons-Regular.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="Assets\Images\bnet.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -120,6 +117,11 @@
     </Content>
     <Content Update="Assets\Images\ZergRace.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\Fonts\MaterialSymbols-Outlined-400.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
