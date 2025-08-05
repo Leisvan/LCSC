@@ -18,9 +18,29 @@ public record class MemberModel(
         }
     }
 
+    private LadderRegionRecord? _bestRegion;
+
+    public LadderRegionRecord? BestRegion => _bestRegion;
+
     public bool ValidProfiles => Profiles != null && Profiles.Count > 0;
 
     public LeagueStatsModel? Stats { get; set; }
+
+    public bool InvalidBestRegion => _bestRegion == null;
+
+    public void UpdateBestRegion(int seasonId)
+    {
+        if (Profiles == null || Profiles.Count == 0)
+        {
+            _bestRegion = null;
+            return;
+        }
+        _bestRegion = Profiles
+            .Select(x => x.LadderRegion)
+            .Where(x => x != null && x.SeasonId == seasonId)
+            .OrderByDescending(x => x?.CurrentMMR ?? 0)
+            .FirstOrDefault();
+    }
 
     public string Nick => Record.Nick ?? string.Empty;
 

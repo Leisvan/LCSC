@@ -1,4 +1,5 @@
 ﻿using LCSC.Models;
+using LCSC.Models.Airtable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,26 @@ public static class StringAdapters
             return string.Empty;
         }
         return participants?.Count > 0 ? $"{participants.Count} participantes" : "0 participantes";
+    }
+
+    public static string ToRegionDisplayName(LadderRegionRecord? record)
+    {
+        if (record == null)
+        {
+            return string.Empty;
+        }
+        string regionLeague = record.League switch
+        {
+            0 => "Bronce",
+            1 => "Plata",
+            2 => "Oro",
+            3 => "Platino",
+            4 => "Diamante",
+            5 => "Maestro",
+            6 => "Gran maestro",
+            _ => "Desconocido",
+        };
+        return $"{record.Race} | {regionLeague} {record.Tier + 1}";
     }
 
     public static string ToTournamentAffiliationDescription(TournamentAffiliation affiliation)

@@ -3,12 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adapters="using:LCSC.App.Adapters"
              xmlns:airtableModels="using:LCSC.Models.Airtable"
+             xmlns:common="using:LCTWorks.Common.WinUI.Controls"
              xmlns:core="using:Microsoft.Xaml.Interactivity"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ext="using:LCTWorks.Common.WinUI.Controls.Extensions"
              xmlns:i="using:Microsoft.Xaml.Interactivity"
              xmlns:local="using:LCSC.App.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="using:LCSC.Models"
+             xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
              mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -34,7 +37,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500" />
+            <ColumnDefinition Width="500"
+                              MinWidth="340"
+                              MaxWidth="500" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Margin="8"
@@ -85,7 +90,6 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid Width="56"
                                       Height="56">
@@ -122,12 +126,8 @@
                                     <TextBlock Style="{StaticResource AppItemSecondaryTextStyle}"
                                                Text="{x:Bind Record.RealName}" />
                                 </StackPanel>
-                                <TextBlock Grid.Column="2"
-                                           Margin="16,8"
-                                           VerticalAlignment="Bottom"
-                                           Opacity=".4"
-                                           Text="{x:Bind MMR}" />
-                                <Grid Grid.Column="3"
+
+                                <Grid Grid.Column="2"
                                       Width="48"
                                       Height="48"
                                       HorizontalAlignment="Center"
@@ -156,15 +156,116 @@
                 <ColumnDefinition Width=".4*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="1.5*" />
             </Grid.RowDefinitions>
             <Grid Grid.RowSpan="2"
-                  Background="{StaticResource AppColor3}"
-                  CornerRadius="8" />
+                  Padding="32"
+                  RowSpacing="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid Width="128"
+                      Height="128"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+                    <Ellipse Stroke="{StaticResource AppColor1}"
+                             StrokeThickness="4">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="{x:Bind adapters:VisualAdapters.ToMemberPictureImageSource(ViewModel.SelectedMember.Record.PictureUrl, ViewModel.SelectedMember.Race, 128), Mode=OneWay}" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Style="{StaticResource AppHeaderTextStyle}"
+                               Text="{x:Bind ViewModel.SelectedMember.Nick, Mode=OneWay}" />
+                    <TextBlock Grid.Row="1"
+                               ext:TextBlockExtensions.HideIfTextEmpty="True"
+                               FontSize="16"
+                               Style="{StaticResource AppSubheaderTextStyle}"
+                               Text="{x:Bind ViewModel.SelectedMember.Record.RealName, Mode=OneWay}" />
+
+                    <StackPanel Grid.Row="2"
+                                Margin="0,8"
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                        <common:ChipControl Background="{StaticResource Tag2Color}"
+                                            Foreground="{StaticResource TextColorDark1}"
+                                            Text="{x:Bind ViewModel.SelectedMember.Race, Mode=OneWay}" />
+                        <common:ChipControl Background="{StaticResource Tag1Color}"
+                                            Foreground="{StaticResource TextColorDark1}"
+                                            Text="{x:Bind ViewModel.SelectedMember.Record.CountryTag, Mode=OneWay}" />
+                        <common:ChipControl Background="{StaticResource SuccessColor}"
+                                            Text="Verificado"
+                                            Visibility="{x:Bind ViewModel.SelectedMember.Record.Verified, Mode=OneWay}" />
+                        <common:ChipControl Background="{StaticResource ErrorColor}"
+                                            Text="Expulsado"
+                                            Visibility="{x:Bind ViewModel.SelectedMember.Record.Banned, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
             <Grid Grid.Column="1"
-                  Background="{StaticResource AppColor3}"
-                  CornerRadius="8" />
+                  Padding="32"
+                  Background="{StaticResource AppColor1}"
+                  CornerRadius="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Image Width="96"
+                       Height="96"
+                       Source="{x:Bind adapters:VisualAdapters.ToRegionLeagueBadgePath(ViewModel.SelectedMember.BestRegion), Mode=OneWay}" />
+                <TextBlock Grid.Row="1"
+                           Foreground="{StaticResource Tag4Color}"
+                           Style="{StaticResource AppSubheaderTextStyle}"
+                           Text="{x:Bind adapters:StringAdapters.ToRegionDisplayName(ViewModel.SelectedMember.BestRegion), Mode=OneWay}" />
+                <TextBlock Grid.Row="2"
+                           FontWeight="Bold"
+                           Style="{StaticResource AppHeaderTextStyle}"
+                           Text="{x:Bind ViewModel.SelectedMember.BestRegion.CurrentMMR, Mode=OneWay}" />
+                <StackPanel Grid.Row="3"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center"
+                               FontFamily="{StaticResource MaterialIconsRegular}"
+                               Style="{StaticResource AppSubheaderTextStyle}"
+                               Text="expand_all"
+                               TextLineBounds="Tight" />
+                    <TextBlock Style="{StaticResource AppSubheaderTextStyle}"
+                               Text="{x:Bind ViewModel.SelectedMember.BestRegion.PreviousMMR, Mode=OneWay}" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1"
+                  Padding="32"
+                  Background="{StaticResource AppColor1}"
+                  CornerRadius="8"
+                  RowSpacing="24"
+                  Visibility="{x:Bind ViewModel.SelectedMember.InvalidBestRegion, Mode=OneWay}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Image Width="96"
+                       Height="96"
+                       VerticalAlignment="Bottom"
+                       Source="/Assets/Leagues/Placement.png" />
+                <TextBlock Grid.Row="1"
+                           VerticalAlignment="Top"
+                           Style="{StaticResource AppSubheaderTextStyle}"
+                           Text="No hay datos para la temporada actual." />
+            </Grid>
             <Grid Grid.Column="2"
                   Background="{StaticResource AppColor3}"
                   CornerRadius="8">
@@ -367,7 +468,7 @@
                                                    ToolTipService.ToolTip="{x:Bind Record.Notes}" />
                                         <TextBlock VerticalAlignment="Center"
                                                    FontFamily="{StaticResource MaterialIconsRegular}"
-                                                   Foreground="GreenYellow"
+                                                   Foreground="{StaticResource Tag1Color}"
                                                    Text="verified"
                                                    ToolTipService.ToolTip="Perfil principal"
                                                    Visibility="{x:Bind Record.MainProfile}" />
@@ -425,6 +526,25 @@
                     <ProgressRing IsActive="True" />
                 </Grid>
             </Grid>
+        </Grid>
+        <toolkit:GridSplitter Grid.Column="1"
+                              Height="32"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              ResizeBehavior="BasedOnAlignment"
+                              ResizeDirection="Auto">
+            <toolkit:GridSplitter.RenderTransform>
+                <TranslateTransform Y="-7" />
+            </toolkit:GridSplitter.RenderTransform>
+        </toolkit:GridSplitter>
+        <Grid Grid.Column="1"
+              Background="{ThemeResource AppColor2}"
+              Visibility="{x:Bind ViewModel.NoMemberSelected, Mode=OneWay}">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="{StaticResource MaterialIconsRegular}"
+                       Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="select" />
         </Grid>
     </Grid>
 </UserControl>

@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.WinUI.Helpers;
 using LCSC.Models;
 using LCSC.Models.Airtable;
+using LCSC.Models.BattleNet;
+using LCTWorks.Common.WinUI.Extensions;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -12,13 +14,6 @@ namespace LCSC.App.Adapters
 {
     public static class VisualAdapters
     {
-        private static readonly Color CommunityColor = "#ffd4e0".ToColor();
-        private static readonly Color ErrorColor = "#A70000".ToColor();
-        private static readonly Color OfficialColor = "#76f480".ToColor();
-        private static readonly Color PartnerColor = "#feeab6".ToColor();
-        private static readonly Color SuccessColor = "#008a00".ToColor();
-        private static readonly Color WarningColor = "#e0aa21".ToColor();
-
         public static Visibility StringToVisibility(string value)
             => string.IsNullOrWhiteSpace(value) ? Visibility.Collapsed : Visibility.Visible;
 
@@ -63,15 +58,15 @@ namespace LCSC.App.Adapters
             Color color = Colors.Transparent;
             if (record.Banned)
             {
-                color = ErrorColor;
+                color = "ErrorColor".GetAppResource<Color>();
             }
             else if (!validProfiles)
             {
-                color = WarningColor;
+                color = "WarningColor".GetAppResource<Color>();
             }
             else if (record.Verified)
             {
-                color = SuccessColor;
+                color = "SuccessColor".GetAppResource<Color>();
             }
             return new SolidColorBrush(color);
         }
@@ -118,6 +113,45 @@ namespace LCSC.App.Adapters
             return bitmapImage;
         }
 
+        public static ImageSource? ToRegionLeagueBadgePath(LadderRegionRecord? record)
+        {
+            var badgeAssetName = "Placement";
+            if (record != null)
+            {
+                badgeAssetName = (record.League, record.Tier) switch
+                {
+                    //(0, 0) => EmojiResources.LadderBronze1,
+                    //(0, 1) => EmojiResources.LadderBronze2,
+                    //(0, 2) => EmojiResources.LadderBronze3,
+                    //(1, 0) => EmojiResources.LadderSilver1,
+                    //(1, 1) => EmojiResources.LadderSilver2,
+                    //(1, 2) => EmojiResources.LadderSilver3,
+                    //(2, 0) => EmojiResources.LadderGold1,
+                    //(2, 1) => EmojiResources.LadderGold2,
+                    //(2, 2) => EmojiResources.LadderGold3,
+                    //(3, 0) => EmojiResources.LadderPlatinum1,
+                    //(3, 1) => EmojiResources.LadderPlatinum2,
+                    //(3, 2) => EmojiResources.LadderPlatinum3,
+                    (4, 0) => "Diamond1",
+                    (4, 1) => "Diamond2",
+                    (4, 2) => "Diamond3",
+                    //(5, 0) => EmojiResources.LadderMaster1,
+                    //(5, 1) => EmojiResources.LadderMaster2,
+                    //(5, 2) => EmojiResources.LadderMaster3,
+                    //(0, _) => EmojiResources.LadderBronze,
+                    //(1, _) => EmojiResources.LadderSilver,
+                    //(2, _) => EmojiResources.LadderGold,
+                    //(3, _) => EmojiResources.LadderPlatinum,
+                    (4, _) => "Diamond",
+                    //(5, _) => EmojiResources.LadderMaster,
+                    //(6, _) => EmojiResources.LadderGrandmaster,
+                    _ => "Placement",
+                };
+            }
+
+            return new BitmapImage { UriSource = new Uri($"ms-appx:///Assets/Leagues/{badgeAssetName}.png") };
+        }
+
         public static bool ToReverseBool(bool value) => !value;
 
         public static Visibility ToReverseBoolVisibility(bool value)
@@ -127,9 +161,9 @@ namespace LCSC.App.Adapters
         {
             var color = affiliation switch
             {
-                TournamentAffiliation.Official => OfficialColor,
-                TournamentAffiliation.Partner => PartnerColor,
-                TournamentAffiliation.Community => CommunityColor,
+                TournamentAffiliation.Official => "Tag1Color".GetAppResource<Color>(),
+                TournamentAffiliation.Partner => "Tag2Color".GetAppResource<Color>(),
+                TournamentAffiliation.Community => "Tag3Color".GetAppResource<Color>(),
                 _ => Colors.Transparent,
             };
             return new SolidColorBrush(color);

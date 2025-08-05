@@ -17,14 +17,13 @@ using Windows.System;
 
 namespace LCSC.App.ViewModels;
 
-public partial class MembersViewModel(MembersService membersService) : ObservableRecipient
+public partial class MembersViewModel(MembersService membersService, LadderService ladderService) : ObservableRecipient
 {
+    private readonly LadderService _ladderService = ladderService;
     private readonly MembersService _membersService = membersService;
-
     private bool _isLoading;
     private bool _isLoadingCurrentMember;
     private string? _searchTerm = string.Empty;
-    private MemberModel? _selectedMember;
 
     public bool IsLoading
     {
@@ -46,6 +45,8 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
 
     public ObservableCollection<MemberModel> Members { get; set; } = [];
 
+    public bool NoMemberSelected => SelectedMember == null;
+
     public ProfileCreatorObservableObject ProfileCreator { get; } = new ProfileCreatorObservableObject(membersService);
 
     public string? SearchTerm
@@ -61,11 +62,9 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
         }
     }
 
-    public MemberModel? SelectedMember
-    {
-        get => _selectedMember;
-        set => SetProperty(ref _selectedMember, value);
-    }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NoMemberSelected))]
+    public partial MemberModel? SelectedMember { get; set; }
 
     [RelayCommand]
     public async Task AddProfile()
@@ -150,11 +149,23 @@ public partial class MembersViewModel(MembersService membersService) : Observabl
             .Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true ||
             m.Record.RealName?.Contains(_searchTerm, StringComparison.InvariantCultureIgnoreCase) == true);
         }
+        var firstTimeLoad = Members.Count == 0;
         Members.Clear();
 
         foreach (var item in source)
         {
             Members.Add(item);
+        }
+        if (forceRefresh || firstTimeLoad)
+        {
+            var seasonId = await _ladderService.GetSeasonIdAsync();
+            if (seasonId != 0)
+            {
+                foreach (var item in source)
+                {
+                    item.UpdateBestRegion(seasonId);
+                }
+            }
         }
     }
 
