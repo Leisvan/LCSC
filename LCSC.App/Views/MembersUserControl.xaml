@@ -117,15 +117,31 @@
                                                    TextLineBounds="Tight" />
                                     </Border>
                                 </Grid>
-                                <StackPanel Grid.Column="1"
-                                            Margin="16,0,0,8"
-                                            VerticalAlignment="Center"
-                                            Orientation="Vertical">
+                                <Grid Grid.Column="1"
+                                      Margin="16,0,0,8"
+                                      VerticalAlignment="Center"
+                                      ColumnSpacing="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
                                     <TextBlock Style="{StaticResource AppItemMainTextStyle}"
                                                Text="{x:Bind Record.Nick}" />
-                                    <TextBlock Style="{StaticResource AppItemSecondaryTextStyle}"
+                                    <TextBlock Grid.Row="1"
+                                               Grid.ColumnSpan="2"
+                                               Style="{StaticResource AppItemSecondaryTextStyle}"
                                                Text="{x:Bind Record.RealName}" />
-                                </StackPanel>
+                                    <Image Grid.Column="1"
+                                           Width="24"
+                                           Height="24"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Bottom"
+                                           Source="{x:Bind adapters:VisualAdapters.ToRegionLeagueBadgePath(BestRegion, x:False), Mode=OneWay}" />
+                                </Grid>
 
                                 <Grid Grid.Column="2"
                                       Width="48"
@@ -226,7 +242,7 @@
                 </Grid.RowDefinitions>
                 <Image Width="96"
                        Height="96"
-                       Source="{x:Bind adapters:VisualAdapters.ToRegionLeagueBadgePath(ViewModel.SelectedMember.BestRegion), Mode=OneWay}" />
+                       Source="{x:Bind adapters:VisualAdapters.ToRegionLeagueBadgePath(ViewModel.SelectedMember.BestRegion, x:True), Mode=OneWay}" />
                 <TextBlock Grid.Row="1"
                            Foreground="{StaticResource Tag4Color}"
                            Style="{StaticResource AppSubheaderTextStyle}"
@@ -254,7 +270,7 @@
                   RowSpacing="24"
                   Visibility="{x:Bind ViewModel.SelectedMember.InvalidBestRegion, Mode=OneWay}">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <Image Width="96"
@@ -262,9 +278,13 @@
                        VerticalAlignment="Bottom"
                        Source="/Assets/Leagues/Placement.png" />
                 <TextBlock Grid.Row="1"
+                           MaxWidth="220"
                            VerticalAlignment="Top"
                            Style="{StaticResource AppSubheaderTextStyle}"
-                           Text="No hay datos para la temporada actual." />
+                           Text="No hay datos para la temporada actual."
+                           TextAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="WrapWholeWords" />
             </Grid>
             <Grid Grid.Column="2"
                   Background="{StaticResource AppColor3}"

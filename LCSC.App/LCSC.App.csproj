@@ -16,11 +16,32 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\Leagues\Bronze.png" />
+    <Content Remove="Assets\Leagues\Bronze1.png" />
+    <Content Remove="Assets\Leagues\Bronze2.png" />
+    <Content Remove="Assets\Leagues\Bronze3.png" />
     <Content Remove="Assets\Leagues\Diamond.png" />
     <Content Remove="Assets\Leagues\Diamond1.png" />
     <Content Remove="Assets\Leagues\Diamond2.png" />
     <Content Remove="Assets\Leagues\Diamond3.png" />
+    <Content Remove="Assets\Leagues\Gold.png" />
+    <Content Remove="Assets\Leagues\Gold1.png" />
+    <Content Remove="Assets\Leagues\Gold2.png" />
+    <Content Remove="Assets\Leagues\Gold3.png" />
+    <Content Remove="Assets\Leagues\Grandmaster.png" />
+    <Content Remove="Assets\Leagues\Master.png" />
+    <Content Remove="Assets\Leagues\Master1.png" />
+    <Content Remove="Assets\Leagues\Master2.png" />
+    <Content Remove="Assets\Leagues\Master3.png" />
     <Content Remove="Assets\Leagues\Placement.png" />
+    <Content Remove="Assets\Leagues\Platinum.png" />
+    <Content Remove="Assets\Leagues\Platinum1.png" />
+    <Content Remove="Assets\Leagues\Platinum2.png" />
+    <Content Remove="Assets\Leagues\Platinum3.png" />
+    <Content Remove="Assets\Leagues\Silver.png" />
+    <Content Remove="Assets\Leagues\Silver1.png" />
+    <Content Remove="Assets\Leagues\Silver2.png" />
+    <Content Remove="Assets\Leagues\Silver3.png" />
     <Content Remove="Assets\UnknownPortrait.png" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +153,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Assets\Leagues\Bronze.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Bronze1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Bronze2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Bronze3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\Leagues\Diamond.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -144,8 +177,59 @@
     <None Update="Assets\Leagues\Diamond3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\Leagues\Gold.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Gold1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Gold2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Gold3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Grandmaster.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Master.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Master1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Master2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Master3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\Leagues\Placement.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Platinum.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Platinum1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Platinum2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Platinum3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Silver.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Silver1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Silver2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Leagues\Silver3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

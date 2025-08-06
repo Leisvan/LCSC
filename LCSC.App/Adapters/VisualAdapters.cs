@@ -113,42 +113,52 @@ namespace LCSC.App.Adapters
             return bitmapImage;
         }
 
-        public static ImageSource? ToRegionLeagueBadgePath(LadderRegionRecord? record)
+        public static ImageSource? ToRegionLeagueBadgePath(LadderRegionRecord? record, bool useEmptyAsset)
         {
-            var badgeAssetName = "Placement";
+            string? badgeAssetName = null;
             if (record != null)
             {
                 badgeAssetName = (record.League, record.Tier) switch
                 {
-                    //(0, 0) => EmojiResources.LadderBronze1,
-                    //(0, 1) => EmojiResources.LadderBronze2,
-                    //(0, 2) => EmojiResources.LadderBronze3,
-                    //(1, 0) => EmojiResources.LadderSilver1,
-                    //(1, 1) => EmojiResources.LadderSilver2,
-                    //(1, 2) => EmojiResources.LadderSilver3,
-                    //(2, 0) => EmojiResources.LadderGold1,
-                    //(2, 1) => EmojiResources.LadderGold2,
-                    //(2, 2) => EmojiResources.LadderGold3,
-                    //(3, 0) => EmojiResources.LadderPlatinum1,
-                    //(3, 1) => EmojiResources.LadderPlatinum2,
-                    //(3, 2) => EmojiResources.LadderPlatinum3,
+                    (0, 0) => "Bronze1",
+                    (0, 1) => "Bronze2",
+                    (0, 2) => "Bronze3",
+                    (1, 0) => "Silver1",
+                    (1, 1) => "Silver2",
+                    (1, 2) => "Silver3",
+                    (2, 0) => "Gold1",
+                    (2, 1) => "Gold2",
+                    (2, 2) => "Gold3",
+                    (3, 0) => "Platinum1",
+                    (3, 1) => "Platinum2",
+                    (3, 2) => "Platinum3",
                     (4, 0) => "Diamond1",
                     (4, 1) => "Diamond2",
                     (4, 2) => "Diamond3",
-                    //(5, 0) => EmojiResources.LadderMaster1,
-                    //(5, 1) => EmojiResources.LadderMaster2,
-                    //(5, 2) => EmojiResources.LadderMaster3,
-                    //(0, _) => EmojiResources.LadderBronze,
-                    //(1, _) => EmojiResources.LadderSilver,
-                    //(2, _) => EmojiResources.LadderGold,
-                    //(3, _) => EmojiResources.LadderPlatinum,
+                    (5, 0) => "Master1",
+                    (5, 1) => "Master2",
+                    (5, 2) => "Master3",
+                    (0, _) => "Bronze",
+                    (1, _) => "Silver",
+                    (2, _) => "Gold",
+                    (3, _) => "Platinum",
                     (4, _) => "Diamond",
-                    //(5, _) => EmojiResources.LadderMaster,
-                    //(6, _) => EmojiResources.LadderGrandmaster,
-                    _ => "Placement",
+                    (5, _) => "Master",
+                    (6, _) => "Grandmaster",
+                    _ => null,
                 };
             }
-
+            if (badgeAssetName == null)
+            {
+                if (useEmptyAsset)
+                {
+                    badgeAssetName = "Placement";
+                }
+                else
+                {
+                    return null;
+                }
+            }
             return new BitmapImage { UriSource = new Uri($"ms-appx:///Assets/Leagues/{badgeAssetName}.png") };
         }
 
