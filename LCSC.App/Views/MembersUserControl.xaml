@@ -168,7 +168,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".2*"
                                   MinWidth="400" />
-                <ColumnDefinition Width=".4*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width=".4*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -230,6 +230,7 @@
                 </Grid>
             </Grid>
             <Grid Grid.Column="1"
+                  MaxWidth="320"
                   Padding="32"
                   Background="{StaticResource AppColor1}"
                   CornerRadius="8">
@@ -238,7 +239,9 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Image Width="96"
                        Height="96"
@@ -262,6 +265,65 @@
                     <TextBlock Style="{StaticResource AppSubheaderTextStyle}"
                                Text="{x:Bind ViewModel.SelectedMember.BestRegion.PreviousMMR, Mode=OneWay}" />
                 </StackPanel>
+                <TextBlock Grid.Row="4"
+                           Margin="0,32,0,0"
+                           Foreground="{StaticResource Tag1Color}"
+                           Style="{StaticResource AppSubheaderTextStyle}"
+                           Text="{x:Bind ViewModel.SeasonString, Mode=OneWay}"
+                           TextAlignment="Center" />
+                <Grid Grid.Row="5"
+                      Margin="8"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Bottom"
+                      ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="100" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition MinWidth="100" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Padding="16,8"
+                          HorizontalAlignment="Center"
+                          BorderThickness="2"
+                          CornerRadius="8">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock HorizontalAlignment="Center"
+                                   Style="{StaticResource AppItemSecondaryTextStyle}"
+                                   Text="Partidas"
+                                   TextAlignment="Center" />
+                        <TextBlock Grid.Row="1"
+                                   Style="{StaticResource AppHeaderTextStyle}"
+                                   Text="{x:Bind ViewModel.SelectedMember.BestRegion.TotalMatches, Mode=OneWay}" />
+                    </Grid>
+                    <Rectangle Grid.Column="1"
+                               Width="2"
+                               Margin="0,8"
+                               Fill="{StaticResource AppColor4}" />
+                    <Grid Grid.Column="2"
+                          Padding="16,8"
+                          BorderThickness="2"
+                          CornerRadius="8">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock HorizontalAlignment="Center"
+                                   Style="{StaticResource AppItemSecondaryTextStyle}"
+                                   Text="Winrate"
+                                   TextAlignment="Center" />
+                        <TextBlock Grid.Row="1"
+                                   Style="{StaticResource AppHeaderTextStyle}"
+                                   Text="{x:Bind ViewModel.SelectedMember.Winrate, Mode=OneWay}" />
+                    </Grid>
+                </Grid>
             </Grid>
             <Grid Grid.Column="1"
                   Padding="32"

@@ -83,7 +83,7 @@ namespace LCSC.App.Adapters
             }
             if (isVerified)
             {
-                return "done";
+                return "check_small";
             }
             return string.Empty;
         }

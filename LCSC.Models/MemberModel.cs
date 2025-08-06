@@ -20,6 +20,19 @@ public record class MemberModel(
 
     private LadderRegionRecord? _bestRegion;
 
+    public string Winrate
+    {
+        get
+        {
+            if (_bestRegion == null || _bestRegion.TotalMatches == 0)
+            {
+                return "-";
+            }
+            var winrate = _bestRegion.Wins * 100 / _bestRegion.TotalMatches;
+            return winrate.ToString("F0") + "%";
+        }
+    }
+
     public LadderRegionRecord? BestRegion => _bestRegion;
 
     public bool ValidProfiles => Profiles != null && Profiles.Count > 0;

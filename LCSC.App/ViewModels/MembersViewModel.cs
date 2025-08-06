@@ -19,6 +19,7 @@ namespace LCSC.App.ViewModels;
 
 public partial class MembersViewModel(MembersService membersService, LadderService ladderService) : ObservableRecipient
 {
+    public int _seasonId = 0;
     private readonly LadderService _ladderService = ladderService;
     private readonly MembersService _membersService = membersService;
     private bool _isLoading;
@@ -61,6 +62,8 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
             }
         }
     }
+
+    public string SeasonString => _seasonId == 0 ? string.Empty : $"Season {_seasonId}";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NoMemberSelected))]
@@ -158,13 +161,14 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
         }
         if (forceRefresh || firstTimeLoad)
         {
-            var seasonId = await _ladderService.GetSeasonIdAsync();
-            if (seasonId != 0)
+            _seasonId = await _ladderService.GetSeasonIdAsync();
+            if (_seasonId != 0)
             {
                 foreach (var item in source)
                 {
-                    item.UpdateBestRegion(seasonId);
+                    item.UpdateBestRegion(_seasonId);
                 }
+                OnPropertyChanged(nameof(SeasonString));
             }
         }
     }
