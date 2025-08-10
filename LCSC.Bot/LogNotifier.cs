@@ -1,4 +1,6 @@
-﻿namespace LCSC.Discord
+﻿using LCSC.Core.Interactivity;
+
+namespace LCSC.Discord
 {
     internal static class LogNotifier
     {
@@ -6,10 +8,6 @@
             => Console.WriteLine(message);
 
         public static void NotifyError(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ResetColor();
-        }
+            => ConsoleInteractionsHelper.WriteLine(message, ConsoleColor.Red);
     }
 }

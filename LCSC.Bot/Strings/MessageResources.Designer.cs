@@ -70,6 +70,15 @@ namespace LCSC.Discord.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bot desconectado.
+        /// </summary>
+        internal static string BotDisconnectedMessage {
+            get {
+                return ResourceManager.GetString("BotDisconnectedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Id del canal no encontrado..
         /// </summary>
         internal static string ChannelIdNotFoundErrorMessage {

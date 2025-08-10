@@ -120,6 +120,9 @@
   <data name="AccessingMembersListMessage" xml:space="preserve">
     <value>Accediendo a la lista de miembros.</value>
   </data>
+  <data name="BotDisconnectedMessage" xml:space="preserve">
+    <value>Bot desconectado</value>
+  </data>
   <data name="ChannelIdNotFoundErrorMessage" xml:space="preserve">
     <value>Id del canal no encontrado.</value>
   </data>

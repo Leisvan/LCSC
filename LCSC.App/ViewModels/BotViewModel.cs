@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
     private readonly DiscordBotService _botService = botService;
 
     private bool _isConnected;
+
     private DiscordGuildModel? _selectedGuild;
+
+    public event EventHandler? OnDisconnected;
 
     public ObservableCollection<DiscordGuildModel> Guilds { get; } = [];
 
@@ -22,6 +26,9 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         get => _isConnected;
         set => SetProperty(ref _isConnected, value);
     }
+
+    [ObservableProperty]
+    public partial bool IsRankingBusy { get; set; } = false;
 
     public DiscordGuildModel? SelectedGuild
     {
@@ -34,35 +41,16 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         => _botService.CancelUpdateMemberRegions();
 
     [RelayCommand]
-    public async Task UpdateAndDisplayRank(bool includeBanned)
-    {
-        if (SelectedGuild == null)
-        {
-            return;
-        }
-        await _botService.UpdateMemberRegionsAsync(false, SelectedGuild.Id);
-        await _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
-    }
+    public Task UpdateAndDisplayRank(bool includeBanned)
+        => ExcecuteRankingActionAsync(true, true, false, includeBanned);
 
     [RelayCommand]
-    public async Task UpdateRank()
-    {
-        if (SelectedGuild == null)
-        {
-            return;
-        }
-        await _botService.UpdateMemberRegionsAsync(false, SelectedGuild.Id);
-    }
+    public Task UpdateRank()
+        => ExcecuteRankingActionAsync(true, false);
 
     [RelayCommand]
-    public async Task UpdateRankForced()
-    {
-        if (SelectedGuild == null)
-        {
-            return;
-        }
-        await _botService.UpdateMemberRegionsAsync(true, SelectedGuild.Id);
-    }
+    public Task UpdateRankForced()
+        => ExcecuteRankingActionAsync(true, false, true);
 
     [RelayCommand]
     private async Task ConnectBot()
@@ -81,12 +69,28 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     [RelayCommand]
     private Task DisplayRank(bool includeBanned)
+    => ExcecuteRankingActionAsync(false, true, false, includeBanned);
+
+    private async Task ExcecuteRankingActionAsync(
+        bool updateRegions,
+        bool displayRank,
+        bool forceUpdate = false,
+        bool includeBanned = false)
     {
         if (SelectedGuild == null)
         {
-            return Task.CompletedTask;
+            return;
         }
-        return _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
+        IsRankingBusy = true;
+        if (updateRegions)
+        {
+            await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.Id);
+        }
+        if (displayRank)
+        {
+            await _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
+        }
+        IsRankingBusy = false;
     }
 
     private void Load()

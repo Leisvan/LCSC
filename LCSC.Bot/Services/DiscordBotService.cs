@@ -2,12 +2,12 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
+using LCSC.Core.Interactivity;
 using LCSC.Core.Services;
 using LCSC.Discord.Helpers;
 using LCSC.Discord.Models;
 using LCSC.Discord.Services.Internal;
 using LCSC.Discord.Strings;
-using System.Threading.Channels;
 
 namespace LCSC.Discord.Services
 {
@@ -41,6 +41,7 @@ namespace LCSC.Discord.Services
         public async Task DisconnectAsync()
         {
             await _client.DisconnectAsync();
+            ConsoleInteractionsHelper.WriteLine(MessageResources.BotDisconnectedMessage, ConsoleColor.Red);
         }
 
         public Task DisplayRankAsync(bool includeBanned = false, ulong guildId = 0)

@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using LCSC.Core.Interactivity;
 using LCSC.Core.Models;
 using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
@@ -68,8 +69,9 @@ namespace LCSC.Discord.Services.Internal
 
             if (context != null)
             {
-                Console.WriteLine(MessageResources.AccessingMembersListMessage);
-                await context.FollowupAsync(MessageResources.AccessingMembersListMessage);
+                string message = MessageResources.AccessingMembersListMessage;
+                WriteToConsole(message);
+                await context.FollowupAsync(message);
             }
 
             //0. Setup ranking messages
@@ -81,7 +83,7 @@ namespace LCSC.Discord.Services.Internal
             var header = GetRankingHeaderString();
 
             //1. Ranking header:
-            Console.WriteLine(header);
+            WriteToConsole(header);
             await channel.SendMessageAsync(header);
 
             //2. Ranking lines:
@@ -95,7 +97,7 @@ namespace LCSC.Discord.Services.Internal
                 }
                 var allLines = stringBuilder.ToString();
 
-                Console.WriteLine(allLines);
+                WriteToConsole(allLines);
                 await channel.SendMessageAsync(allLines);
             }
 
@@ -108,7 +110,7 @@ namespace LCSC.Discord.Services.Internal
             var now = DateTime.Now.Date.ToString("MMMM dd", CultureInfo);
 
             var disclaimerText = sb.ToString();
-            Console.WriteLine(disclaimerText);
+            ConsoleInteractionsHelper.WriteLine(disclaimerText, ConsoleColor.White);
             var disclaimerEmbedBuilder = new DiscordEmbedBuilder()
             {
                 Title = MessageResources.RankingDisclaimerTitle,
@@ -156,10 +158,11 @@ namespace LCSC.Discord.Services.Internal
             DiscordMessage? message = null;
             if (context != null)
             {
+                string messageContent = MessageResources.AccessingMembersListMessage;
                 var builder = new DiscordMessageBuilder()
-                    .WithContent(MessageResources.AccessingMembersListMessage)
+                    .WithContent(messageContent)
                     .AddComponents(InteractionsHelper.GetCancelUpdateRankButton());
-                Console.WriteLine(MessageResources.AccessingMembersListMessage);
+                WriteToConsole(messageContent);
                 message = await context.FollowupAsync(builder);
             }
             RegionUpdateProgressReportData? lastUpdate = null;
@@ -209,6 +212,11 @@ namespace LCSC.Discord.Services.Internal
             return profile;
         }
 
+        private static void WriteToConsole(string message, ConsoleColor foregroundColor = ConsoleColor.White)
+        {
+            ConsoleInteractionsHelper.WriteLine(message, foregroundColor);
+        }
+
         private async Task<string> GetRankingEntryLineAsync(MemberRecord record, LadderRegionRecord region, int seqNumber)
         {
             if (record.Nick == null || region == null)
@@ -247,7 +255,7 @@ namespace LCSC.Discord.Services.Internal
         {
             try
             {
-                Console.WriteLine(content);
+                WriteToConsole(content);
                 if (message == null)
                 {
                     var channel = await _botService.Client.GetChannelAsync(channelId);
