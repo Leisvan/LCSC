@@ -18,8 +18,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     private GuildSettingsModel? _selectedGuild;
 
-    public event EventHandler? OnDisconnected;
-
     public ObservableCollection<GuildSettingsModel> Guilds { get; } = [];
 
     public bool IsConnected
@@ -31,7 +29,10 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
     #region Ranking commands
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsRankingIdle))]
     public partial bool IsRankingBusy { get; set; } = false;
+
+    public bool IsRankingIdle => !IsRankingBusy;
 
     public GuildSettingsModel? SelectedGuild
     {

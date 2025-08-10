@@ -207,7 +207,7 @@ namespace LCSC.Discord.Services.Internal
                 .Where(p => p.LadderRegion != null)
                 .Where(p => p.LadderRegion?.SeasonId == seasonId)
                 .Select(p => p.LadderRegion)
-                .OrderBy(r => r?.CurrentMMR ?? 0)
+                .OrderByDescending(r => r?.CurrentMMR ?? 0)
                 .FirstOrDefault();
 
             return profile;
