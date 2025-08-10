@@ -1,21 +1,14 @@
 ﻿using LCSC.Core.Services;
-using LCSC.Discord.Models;
+using LCSC.Models;
 using LCSC.Models.Airtable;
 
 namespace LCSC.Discord.Services.Internal;
-
-internal enum SettingKey
-{
-    RankingChannel,
-    GuildName,
-    RegionUpdateThresholdInMinutes,
-}
 
 internal class SettingsService
 {
     private readonly MembersService _membersService;
 
-    private List<DiscordBotSettingsRecord>? _records;
+    private List<DiscordBotGuildSettingsRecord>? _records;
 
     public SettingsService(MembersService membersService)
     {
@@ -23,69 +16,46 @@ internal class SettingsService
         InitializeAsync();
     }
 
-    public IEnumerable<DiscordGuildModel> GetAllGuilds()
+    public IEnumerable<GuildSettingsModel> GetAllGuilds(bool includeDebugGuilds = true)
     {
         if (_records == null)
         {
             return [];
         }
-        var keyText = SettingKey.GuildName.ToString();
-        var matches = _records.Where(r => r.Key == keyText);
-        List<DiscordGuildModel> models = [];
+        var matches = includeDebugGuilds ? _records : [.. _records.Where(x => !x.IsDebugGuild)];
+
+        List<GuildSettingsModel> models = [];
         foreach (var item in matches)
         {
             var id = item.GetIdNumber();
             if (id > 0)
             {
-                models.Add(new DiscordGuildModel(item.Value, id));
+                models.Add(new GuildSettingsModel(item));
             }
         }
         return models;
     }
 
-    public double? GetDoubleValue(SettingKey key, ulong guildId = 0)
-    {
-        var value = GetSettingValue(key.ToString(), guildId);
-        return value != null ? Convert.ToDouble(value) : null;
-    }
-
-    public int? GetIntValue(SettingKey key, ulong guildId = 0)
-    {
-        var value = GetSettingValue(key.ToString(), guildId);
-        return value != null ? Convert.ToInt32(value) : null;
-    }
-
-    public string? GetStringValue(SettingKey key, ulong guildId = 0)
-                => GetSettingValue(key.ToString(), guildId);
-
-    public ulong? GetUlongValue(SettingKey key, ulong guildId = 0)
-    {
-        var value = GetSettingValue(key.ToString(), guildId);
-        return value != null ? Convert.ToUInt64(value) : null;
-    }
-
-    private string? GetSettingValue(string key, ulong guildId = 0)
+    public GuildSettingsModel? GetGuildSettings(ulong guildId)
     {
         if (_records == null)
         {
             return null;
         }
-        var settings = _records.Where(setting => setting.Key == key);
-        if (guildId != 0)
+        var record = _records.FirstOrDefault(x => x.GuildId == guildId.ToString());
+        if (record == null)
         {
-            var guildText = guildId.ToString();
-            settings = settings.Where(setting => setting.GuildId == guildText);
+            return null;
         }
-        var match = settings.FirstOrDefault();
-        return match?.Value;
+        return new GuildSettingsModel(record);
     }
 
     private async void InitializeAsync()
     {
-        var results = await _membersService.GetDiscordBotSettingsAsync();
+        var results = await _membersService.GetDiscordBotGuildsSettingsAsync();
         if (results != null)
         {
-            _records = new List<DiscordBotSettingsRecord>(results);
+            _records = [.. results];
         }
     }
 }

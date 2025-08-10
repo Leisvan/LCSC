@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.Discord.Models;
+using DSharpPlus.Entities;
 using LCSC.Discord.Services;
+using LCSC.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,11 +16,11 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     private bool _isConnected;
 
-    private DiscordGuildModel? _selectedGuild;
+    private GuildSettingsModel? _selectedGuild;
 
     public event EventHandler? OnDisconnected;
 
-    public ObservableCollection<DiscordGuildModel> Guilds { get; } = [];
+    public ObservableCollection<GuildSettingsModel> Guilds { get; } = [];
 
     public bool IsConnected
     {
@@ -27,10 +28,12 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         set => SetProperty(ref _isConnected, value);
     }
 
+    #region Ranking commands
+
     [ObservableProperty]
     public partial bool IsRankingBusy { get; set; } = false;
 
-    public DiscordGuildModel? SelectedGuild
+    public GuildSettingsModel? SelectedGuild
     {
         get => _selectedGuild;
         set => SetProperty(ref _selectedGuild, value);
@@ -53,23 +56,8 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         => ExcecuteRankingActionAsync(true, false, true);
 
     [RelayCommand]
-    private async Task ConnectBot()
-    {
-        await _botService.ConnectAsync();
-        IsConnected = true;
-        Load();
-    }
-
-    [RelayCommand]
-    private async Task DisconnectBot()
-    {
-        await _botService.DisconnectAsync();
-        IsConnected = false;
-    }
-
-    [RelayCommand]
     private Task DisplayRank(bool includeBanned)
-    => ExcecuteRankingActionAsync(false, true, false, includeBanned);
+        => ExcecuteRankingActionAsync(false, true, false, includeBanned);
 
     private async Task ExcecuteRankingActionAsync(
         bool updateRegions,
@@ -84,13 +72,40 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         IsRankingBusy = true;
         if (updateRegions)
         {
-            await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.Id);
+            await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.GuildId);
         }
         if (displayRank)
         {
-            await _botService.DisplayRankAsync(includeBanned, SelectedGuild.Id);
+            await _botService.DisplayRankAsync(includeBanned, SelectedGuild.GuildId);
         }
         IsRankingBusy = false;
+    }
+
+    #endregion Ranking commands
+
+    #region Message commands
+
+    [RelayCommand]
+    private Task SendChannelMessage()
+    {
+        return Task.CompletedTask;
+    }
+
+    #endregion Message commands
+
+    [RelayCommand]
+    private async Task ConnectBot()
+    {
+        await _botService.ConnectAsync();
+        IsConnected = true;
+        Load();
+    }
+
+    [RelayCommand]
+    private async Task DisconnectBot()
+    {
+        await _botService.DisconnectAsync();
+        IsConnected = false;
     }
 
     private void Load()
@@ -100,7 +115,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             Guilds.Add(item);
         }
-        var first = Guilds.FirstOrDefault();
+        var first = Guilds.FirstOrDefault(x => !x.Record.IsDebugGuild);
         if (first != null)
         {
             SelectedGuild = first;

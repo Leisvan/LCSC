@@ -30,13 +30,15 @@ internal static class AirtableExtensions
             Members: record.GetField<string[], string>(nameof(BattleNetProfileRecord.Members)),
             LadderRegion: record.GetField<string[], string>(nameof(BattleNetProfileRecord.LadderRegion)));
 
-    public static DiscordBotSettingsRecord ToDiscordBotSettings(this AirtableRecord record)
+    public static DiscordBotGuildSettingsRecord ToDiscordBotSettings(this AirtableRecord record)
         => new(record.Id,
-            Number: record.GetField<int>(nameof(DiscordBotSettingsRecord.Number)),
-            Key: record.GetField<string>(nameof(DiscordBotSettingsRecord.Key)),
-            Value: record.GetField<string>(nameof(DiscordBotSettingsRecord.Value)),
-            GuildId: record.GetField<string>(nameof(DiscordBotSettingsRecord.GuildId)),
-            Description: record.GetField<string>(nameof(DiscordBotSettingsRecord.Description)));
+            Number: record.GetField<int>(nameof(DiscordBotGuildSettingsRecord.Number)),
+            GuildId: record.GetField<string>(nameof(DiscordBotGuildSettingsRecord.GuildId)),
+            GuildName: record.GetField<string>(nameof(DiscordBotGuildSettingsRecord.GuildName)),
+            IsDebugGuild: record.GetField<bool>(nameof(DiscordBotGuildSettingsRecord.IsDebugGuild)),
+            RegionUpdateThresholdInMinutes: record.GetField<int>(nameof(DiscordBotGuildSettingsRecord.RegionUpdateThresholdInMinutes)),
+            RankingChannelId: record.GetField<string>(nameof(DiscordBotGuildSettingsRecord.RankingChannelId)),
+            Description: record.GetField<string>(nameof(DiscordBotGuildSettingsRecord.Description)));
 
     public static LadderRegionRecord ToLadderRegionRecord(this AirtableRecord record)
                 => new(record.Id,

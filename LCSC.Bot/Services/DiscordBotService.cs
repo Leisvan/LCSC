@@ -5,9 +5,9 @@ using DSharpPlus.Interactivity;
 using LCSC.Core.Interactivity;
 using LCSC.Core.Services;
 using LCSC.Discord.Helpers;
-using LCSC.Discord.Models;
 using LCSC.Discord.Services.Internal;
 using LCSC.Discord.Strings;
+using LCSC.Models;
 
 namespace LCSC.Discord.Services
 {
@@ -46,8 +46,8 @@ namespace LCSC.Discord.Services
 
         public Task DisplayRankAsync(bool includeBanned = false, ulong guildId = 0)
         {
-            var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
-            if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out ulong channelId) || channelId == 0)
+            var guildSettings = _settingsService.GetGuildSettings(guildId);
+            if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
                 LogNotifier.NotifyError(errorMessage);
@@ -56,13 +56,13 @@ namespace LCSC.Discord.Services
             return _guildActions.DisplayRankAsync(includeBanned, guildId, channelId);
         }
 
-        public IEnumerable<DiscordGuildModel> GetSettingServers()
+        public IEnumerable<GuildSettingsModel> GetSettingServers()
                     => _settingsService.GetAllGuilds();
 
         public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
         {
-            var channelIdSettingValue = _settingsService.GetStringValue(SettingKey.RankingChannel, guildId);
-            if (channelIdSettingValue == null || !ulong.TryParse(channelIdSettingValue, out ulong channelId) || channelId == 0)
+            var guildSettings = _settingsService.GetGuildSettings(guildId);
+            if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
                 LogNotifier.NotifyError(errorMessage);

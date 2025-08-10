@@ -14,6 +14,7 @@ using LCTWorks.Common.Services.Telemetry;
 using LCTWorks.Common.WinUI;
 using LCSC.App.Helpers;
 using System.Threading.Tasks;
+using LCSC.Core.Helpers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -35,6 +36,7 @@ namespace LCSC.App
         {
             var configuration = ReadConfigurations();
             Services = ConfigureServices(configuration);
+            BuildHelper.IsDebugBuild = AppHelper.IsDebug();
             this.InitializeComponent();
 
             _telemetryService = Services.GetService<ITelemetryService>();
@@ -81,7 +83,7 @@ namespace LCSC.App
             .AddTransient<TournamentsViewModel>()
 
             //Telemetry
-            .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), AppHelper.IsDebug(), EnvironmentHelper.GetTelemetryContextData())
+            .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, EnvironmentHelper.GetTelemetryContextData())
 
             //Build:
             .BuildServiceProvider(true);

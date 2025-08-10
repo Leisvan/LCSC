@@ -46,8 +46,8 @@ namespace LCSC.Core.Services
             return _airtableHttpService.CreateBattleNetProfile(record);
         }
 
-        public Task<IEnumerable<DiscordBotSettingsRecord>?> GetDiscordBotSettingsAsync()
-            => _airtableHttpService.GetDiscordBotSettingsAsync();
+        public Task<IEnumerable<DiscordBotGuildSettingsRecord>?> GetDiscordBotGuildsSettingsAsync()
+            => _airtableHttpService.GetDiscordBotGuildsSettingsAsync();
 
         public async Task<List<MemberModel>> GetMembersAsync(bool forceRefresh = false)
         {

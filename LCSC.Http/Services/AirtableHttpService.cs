@@ -6,7 +6,7 @@ namespace LCSC.Http.Services;
 
 public class AirtableHttpService(string? airtableToken, string? baseId)
 {
-    private const string DiscordBotSettingsTableName = "DiscordBotSettings";
+    private const string DiscordBotGuildSettingsTableName = "DiscordBotGuildSettings";
     private const string LadderRegionsTableName = "LadderRegions";
     private const string MembersTableName = "Members";
     private const string ProfilesTableName = "BattleNetProfiles";
@@ -32,9 +32,9 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         return records.Select(r => r.ToBattleNetProfileRecord());
     }
 
-    public async Task<IEnumerable<DiscordBotSettingsRecord>?> GetDiscordBotSettingsAsync()
+    public async Task<IEnumerable<DiscordBotGuildSettingsRecord>?> GetDiscordBotGuildsSettingsAsync()
     {
-        var records = await GetRecordsAsync(DiscordBotSettingsTableName);
+        var records = await GetRecordsAsync(DiscordBotGuildSettingsTableName);
         if (records == null)
         {
             return null;

@@ -148,7 +148,8 @@ namespace LCSC.Discord.Services.Internal
             TimeSpan? updateTime = null;
             if (!forceUpdate)
             {
-                var regionUpdateMinutesThreshold = _settingsService.GetIntValue(SettingKey.RegionUpdateThresholdInMinutes, guildId);
+                var guildSettings = _settingsService.GetGuildSettings(guildId);
+                var regionUpdateMinutesThreshold = guildSettings?.RegionUpdateThresholdInMinutes;
                 if (regionUpdateMinutesThreshold.HasValue && regionUpdateMinutesThreshold.Value > 0)
                 {
                     updateTime = TimeSpan.FromMinutes(regionUpdateMinutesThreshold.Value);

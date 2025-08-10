@@ -1,11 +1,13 @@
 ﻿namespace LCSC.Models.Airtable;
 
-public record class DiscordBotSettingsRecord(
+public record class DiscordBotGuildSettingsRecord(
     string Id,
     int Number = 0,
-    string? Key = "",
-    string? Value = "",
     string? GuildId = "",
+    string? GuildName = "",
+    bool IsDebugGuild = false,
+    int RegionUpdateThresholdInMinutes = 0,
+    string? RankingChannelId = "",
     string? Description = "")
 {
     public ulong GetIdNumber()
