@@ -10,6 +10,7 @@
     <PackageReference Include="System.Text.Json" Version="9.0.8" />
   </ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\LCTWorks\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
 		<ProjectReference Include="..\LCSC.Http\LCSC.Http.csproj" />
 		<ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
 	</ItemGroup>

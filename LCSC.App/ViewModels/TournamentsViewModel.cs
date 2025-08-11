@@ -6,9 +6,11 @@ using LCSC.App.Models.Messages;
 using LCSC.App.ObservableObjects;
 using LCSC.Core.Services;
 using LCSC.Models;
+using LCSC.Models.Pulse;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
@@ -91,6 +93,8 @@ namespace LCSC.App.ViewModels
                 Tournaments.Add(item);
             }
             IsLoading = false;
+
+            SelectedTournament = Tournaments.FirstOrDefault();
         }
 
         [RelayCommand]

@@ -15,17 +15,15 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 {
     private readonly DiscordBotService _botService = botService;
 
-    private bool _isConnected;
-
     private GuildSettingsModel? _selectedGuild;
 
     public ObservableCollection<GuildSettingsModel> Guilds { get; } = [];
 
-    public bool IsConnected
-    {
-        get => _isConnected;
-        set => SetProperty(ref _isConnected, value);
-    }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDisconnected))]
+    public partial bool IsConnected { get; set; }
+
+    public bool IsDisconnected => !IsConnected;
 
     #region Ranking commands
 
@@ -100,7 +98,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
     {
         await _botService.ConnectAsync();
         IsConnected = true;
-        Load();
+        await LoadAsync();
     }
 
     [RelayCommand]
@@ -110,9 +108,14 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         IsConnected = false;
     }
 
-    private void Load()
+    private async Task LoadAsync(bool forceRefresh = false)
     {
-        var allGuilds = _botService.GetSettingServers(BuildHelper.IsDebugBuild);
+        var allGuilds = await _botService.GetSettingServersAsync(BuildHelper.IsDebugBuild, forceRefresh);
+        if (allGuilds == null || allGuilds.Count == 0)
+        {
+            return;
+        }
+        Guilds.Clear();
         foreach (var item in allGuilds)
         {
             Guilds.Add(item);
@@ -122,5 +125,15 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             SelectedGuild = first;
         }
+    }
+
+    [RelayCommand]
+    private Task Refresh()
+    {
+        if (IsConnected)
+        {
+            return LoadAsync(true);
+        }
+        return Task.CompletedTask;
     }
 }

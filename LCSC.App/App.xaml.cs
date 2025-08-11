@@ -65,7 +65,7 @@ namespace LCSC.App
             //Services
             .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
             .AddSingleton(sp => new LadderService(sp.GetRequiredService<CacheService>(), configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
-            .AddSingleton(sp => new MembersService(sp.GetRequiredService<LadderService>(), configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"]))
+            .AddSingleton(sp => new MembersService(sp.GetRequiredService<LadderService>(), configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"], Package.Current.InstalledLocation.Path))
 
             //Discord bot
             .AddLogging(config =>

@@ -18,7 +18,6 @@ namespace LCSC.Discord.Services.Internal
     internal class GuildActionsService(
         MembersService membersService,
         DiscordBotService botService,
-        SettingsService settingsService,
         LadderService ladderService,
         InteractivityExtension interactivity)
     {
@@ -30,7 +29,6 @@ namespace LCSC.Discord.Services.Internal
         private readonly InteractivityExtension _interactivity = interactivity;
         private readonly LadderService _ladderService = ladderService;
         private readonly MembersService _membersService = membersService;
-        private readonly SettingsService _settingsService = settingsService;
         private CancellationTokenSource? _updateLadderTokenSource;
 
         public void CancelUpdateMemberRegions()
@@ -148,7 +146,7 @@ namespace LCSC.Discord.Services.Internal
             TimeSpan? updateTime = null;
             if (!forceUpdate)
             {
-                var guildSettings = _settingsService.GetGuildSettings(guildId);
+                var guildSettings = _membersService.GetGuildSettings(guildId);
                 var regionUpdateMinutesThreshold = guildSettings?.RegionUpdateThresholdInMinutes;
                 if (regionUpdateMinutesThreshold.HasValue && regionUpdateMinutesThreshold.Value > 0)
                 {

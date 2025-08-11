@@ -2,13 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adapters="using:LCSC.App.Adapters"
-             xmlns:airtableModels="using:LCSC.Models.Airtable"
              xmlns:common="using:LCTWorks.Common.WinUI.Controls"
              xmlns:core="using:Microsoft.Xaml.Interactivity"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ext="using:LCTWorks.Common.WinUI.Controls.Extensions"
              xmlns:i="using:Microsoft.Xaml.Interactivity"
-             xmlns:local="using:LCSC.App.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="using:LCSC.Models"
              xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
@@ -27,11 +25,7 @@
 
     <i:Interaction.Behaviors>
         <core:EventTriggerBehavior EventName="Loaded">
-            <core:InvokeCommandAction Command="{x:Bind ViewModel.RefreshCommand}">
-                <core:InvokeCommandAction.CommandParameter>
-                    <x:Boolean>False</x:Boolean>
-                </core:InvokeCommandAction.CommandParameter>
-            </core:InvokeCommandAction>
+            <core:InvokeCommandAction Command="{x:Bind ViewModel.InitializeCommand}" />
         </core:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 

@@ -107,6 +107,19 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
     }
 
     [RelayCommand]
+    public async Task Initialize()
+    {
+        if (IsLoading)
+        {
+            return;
+        }
+        IsLoading = true;
+        await _membersService.InitializeFromCacheAsync();
+        await FilterMembersAsync(false);
+        IsLoading = false;
+    }
+
+    [RelayCommand]
     public async Task NavigateToProfilePage(string pulseId)
     {
         if (string.IsNullOrEmpty(pulseId))
@@ -171,6 +184,8 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
                 OnPropertyChanged(nameof(SeasonString));
             }
         }
+
+        SelectedMember = Members.FirstOrDefault();
     }
 
     private async void RefreshAndReselectCurrentMember()

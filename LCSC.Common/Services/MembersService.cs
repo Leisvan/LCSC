@@ -4,24 +4,25 @@ using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
+using LCTWorks.Common.Helpers;
 using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {
-    public class MembersService(
-       LadderService ladderService,
-       string? airtableToken,
-       string? baseId)
+    public class MembersService(LadderService ladderService, string? airtableToken, string? baseId, string? cachePath)
     {
+        private const string CacheDirectoryName = "Cache";
         private const string DefaultRegionParameter = "US";
+        private const string MembersCacheFileName = "members.json";
+        private const string SettingsFileName = "settings.json";
+        private const string TournamentsCacheFileName = "tournaments.json";
 
-        private readonly AirtableHttpService _airtableHttpService = new AirtableHttpService(airtableToken, baseId);
-
+        private readonly AirtableHttpService _airtableHttpService = new(airtableToken, baseId);
+        private readonly string? _cachePath = cachePath;
+        private readonly List<GuildSettingsModel> _guildSettings = [];
         private readonly LadderService _ladderService = ladderService;
         private readonly List<MemberModel> _members = [];
-
-        private readonly PulseHttpService _pulseHttpService = new PulseHttpService();
+        private readonly PulseHttpService _pulseHttpService = new();
         private readonly List<TournamentModel> _tournaments = [];
 
         public Task<string?> CreateBattleNetProfile(
@@ -46,18 +47,35 @@ namespace LCSC.Core.Services
             return _airtableHttpService.CreateBattleNetProfile(record);
         }
 
-        public Task<IEnumerable<DiscordBotGuildSettingsRecord>?> GetDiscordBotGuildsSettingsAsync()
-            => _airtableHttpService.GetDiscordBotGuildsSettingsAsync();
+        public async Task<List<GuildSettingsModel>?> GetAllGuildSettingsAsync(bool forceRefresh = false)
+        {
+            if (forceRefresh || _guildSettings.Count == 0)
+            {
+                var guildSettings = await _airtableHttpService.GetDiscordBotGuildsSettingsAsync();
+                if (guildSettings != null && guildSettings.Any())
+                {
+                    _guildSettings.Clear();
+                    _guildSettings.AddRange(guildSettings.Select(item => new GuildSettingsModel(item)));
+                    await SaveToCacheAsync(false, false, true);
+                }
+            }
+            return _guildSettings;
+        }
+
+        public GuildSettingsModel? GetGuildSettings(ulong guildId)
+        {
+            if (_guildSettings == null || _guildSettings.Count == 0)
+            {
+                return default;
+            }
+            return _guildSettings.FirstOrDefault(x => x.GuildId == guildId);
+        }
 
         public async Task<List<MemberModel>> GetMembersAsync(bool forceRefresh = false)
         {
             if (forceRefresh || _members.Count == 0)
             {
                 await RefreshAllAsync();
-                foreach (var member in _members)
-                {
-                    member.Stats = GetMemberStats(member.Record.Id);
-                }
             }
 
             return _members;
@@ -104,6 +122,44 @@ namespace LCSC.Core.Services
                 await RefreshAllAsync();
             }
             return _tournaments;
+        }
+
+        public async Task InitializeFromCacheAsync()
+        {
+            if (string.IsNullOrEmpty(_cachePath))
+            {
+                return;
+            }
+
+            //Load members
+            var membersPath = GetCacheFilePath(MembersCacheFileName);
+            var cachedMembersTextData = await FileHelper.TryReadTextFileAsync(membersPath);
+            var cachedMembers = Json.ToObject<List<MemberModel>>(cachedMembersTextData);
+            if (cachedMembers != null && cachedMembers.Count > 0)
+            {
+                _members.Clear();
+                _members.AddRange(cachedMembers);
+            }
+
+            //Load members
+            var tournamentsPath = GetCacheFilePath(TournamentsCacheFileName);
+            var cachedTournamentsTextData = await FileHelper.TryReadTextFileAsync(tournamentsPath);
+            var cachedTournaments = Json.ToObject<List<TournamentModel>>(cachedTournamentsTextData);
+            if (cachedTournaments != null && cachedTournaments.Count > 0)
+            {
+                _tournaments.Clear();
+                _tournaments.AddRange(cachedTournaments);
+            }
+
+            //Load settings
+            var settingsPath = GetCacheFilePath(SettingsFileName);
+            var cachedSettingsTextData = await FileHelper.TryReadTextFileAsync(settingsPath);
+            var cachedSettings = Json.ToObject<List<GuildSettingsModel>>(cachedSettingsTextData);
+            if (cachedSettings != null && cachedSettings.Count > 0)
+            {
+                _guildSettings.Clear();
+                _guildSettings.AddRange(cachedSettings);
+            }
         }
 
         public async Task<ProfileSearchResult?> SearchProfileByBattleTag(string? battleTag)
@@ -250,16 +306,7 @@ namespace LCSC.Core.Services
             }
         }
 
-        private static string? GetFirstItemFromArray(string[]? array)
-        {
-            if (array == null || array.Length == 0)
-            {
-                return null;
-            }
-            return array[0];
-        }
-
-        private bool AreRegionsEqual(LadderRegionRecord? ladderRegion, Team team)
+        private static bool AreRegionsEqual(LadderRegionRecord? ladderRegion, Team team)
         {
             if (ladderRegion == null)
             {
@@ -270,6 +317,26 @@ namespace LCSC.Core.Services
                 return false;
             }
             return ladderRegion.TotalMatches == (team.Wins + team.Losses + team.Ties);
+        }
+
+        private static string? GetFirstItemFromArray(string[]? array)
+        {
+            if (array == null || array.Length == 0)
+            {
+                return null;
+            }
+            return array[0];
+        }
+
+        private static double RacePercent(IEnumerable<MatchModel> matches, string playerId, Race race)
+        {
+            int winCount = matches
+                .Where(x => x.Winner.Record.Id == playerId && x.LoserRace == race)
+                .Select(x => x.WinnerScore)
+                .Sum();
+            int allCount = matches.Where(x => (x.Winner.Record.Id == playerId && x.LoserRace == race) || (x.Loser.Record.Id == playerId && x.WinnerRace == race))
+                .Select(x => x.WinnerScore + x.LoserScore).Sum();
+            return allCount == 0 ? 0 : (winCount * 100) / allCount;
         }
 
         private List<MemberModel>? GetAllParticipants(TournamentRecord record)
@@ -319,6 +386,15 @@ namespace LCSC.Core.Services
                 return results;
             }
             return [];
+        }
+
+        private string GetCacheFilePath(string fileName)
+        {
+            if (string.IsNullOrEmpty(_cachePath))
+            {
+                return string.Empty;
+            }
+            return Path.Combine(_cachePath, CacheDirectoryName, fileName);
         }
 
         private List<MatchModel> GetMatchModels(TournamentRecord record)
@@ -372,17 +448,6 @@ namespace LCSC.Core.Services
             return null;
         }
 
-        private double RacePercent(IEnumerable<MatchModel> matches, string playerId, Race race)
-        {
-            int winCount = matches
-                .Where(x => x.Winner.Record.Id == playerId && x.LoserRace == race)
-                .Select(x => x.WinnerScore)
-                .Sum();
-            int allCount = matches.Where(x => (x.Winner.Record.Id == playerId && x.LoserRace == race) || (x.Loser.Record.Id == playerId && x.WinnerRace == race))
-                .Select(x => x.WinnerScore + x.LoserScore).Sum();
-            return allCount == 0 ? 0 : (winCount * 100) / allCount;
-        }
-
         private async Task RefreshAllAsync()
         {
             //Refresh members:
@@ -407,6 +472,10 @@ namespace LCSC.Core.Services
                     }
                     _members.Sort();
                 }
+                foreach (var member in _members)
+                {
+                    member.Stats = GetMemberStats(member.Record.Id);
+                }
             }
 
             //Refresh tournaments:
@@ -427,6 +496,39 @@ namespace LCSC.Core.Services
                 }
                 _tournaments.Clear();
                 _tournaments.AddRange(results.OrderByDescending(t => t.Record.Date));
+            }
+            await SaveToCacheAsync();
+        }
+
+        private async Task SaveToCacheAsync(bool saveMembers = true, bool saveTournaments = true, bool saveSettings = false)
+        {
+            if (string.IsNullOrEmpty(_cachePath))
+            {
+                return;
+            }
+            try
+            {
+                if (saveMembers && _members != null && _members.Count > 0)
+                {
+                    var membersPath = GetCacheFilePath(MembersCacheFileName);
+                    var json = await Json.StringifyAsync(_members);
+                    await FileHelper.WriteTextFileAsync(membersPath, json);
+                }
+                if (saveTournaments && _tournaments != null && _tournaments.Count > 0)
+                {
+                    var tournamentsPath = GetCacheFilePath(TournamentsCacheFileName);
+                    var json = await Json.StringifyAsync(_tournaments);
+                    await FileHelper.WriteTextFileAsync(tournamentsPath, json);
+                }
+                if (saveSettings && _guildSettings != null && _guildSettings.Count > 0)
+                {
+                    var settingsPath = GetCacheFilePath(SettingsFileName);
+                    var json = await Json.StringifyAsync(_guildSettings);
+                    await FileHelper.WriteTextFileAsync(settingsPath, json);
+                }
+            }
+            catch (Exception)
+            {
             }
         }
     }

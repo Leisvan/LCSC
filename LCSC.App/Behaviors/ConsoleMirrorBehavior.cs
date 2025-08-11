@@ -22,6 +22,7 @@ public class ConsoleMirrorBehavior : BehaviorBase<RichTextBlock>
         _notifier.TextWritten += TextWritten;
         _colorBrush = new SolidColorBrush(Colors.White);
         Console.SetOut(_notifier);
+        ConsoleInteractionsHelper.ClearConsoleRequested += OnConsoleClearRequested;
     }
 
     private static Color ConvertConsoleColorToColor(ConsoleColor consoleColor)
@@ -46,6 +47,11 @@ public class ConsoleMirrorBehavior : BehaviorBase<RichTextBlock>
             ConsoleColor.Magenta => Colors.Magenta,
             _ => Colors.White,
         };
+    }
+
+    private void OnConsoleClearRequested(object? sender, EventArgs e)
+    {
+        AssociatedObject?.Blocks.Clear();
     }
 
     private void SetColor()
