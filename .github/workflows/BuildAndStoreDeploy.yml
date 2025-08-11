@@ -66,6 +66,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: https://github.com/LCTWorks/LCTWorks.Common
+        path: master
 
     - name: Checkout
       uses: actions/checkout@v4
