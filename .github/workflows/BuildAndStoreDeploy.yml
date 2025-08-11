@@ -62,16 +62,11 @@ jobs:
       Appx_Package_Dir: '${{ github.workspace }}'
       
     steps:
-    - name: Checkout LCTWorks
-      uses: actions/checkout@v4
-      with:
-        repository: LCTWorks/LCTWorks.Common
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        path: LCSC
         fetch-depth: 0
+        submodules: true
 
 
     - name: Install GitVersion

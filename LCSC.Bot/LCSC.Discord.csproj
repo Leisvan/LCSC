@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
+    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

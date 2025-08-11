@@ -99,6 +99,9 @@
     <ProjectReference Include="..\LCSC.Bot\LCSC.Discord.csproj" />
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
+    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common.Services\LCTWorks.Common.Services.csproj" />
+    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common.WinUI\LCTWorks.Common.WinUI.csproj" />
+    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\Config\appsettings.json">
