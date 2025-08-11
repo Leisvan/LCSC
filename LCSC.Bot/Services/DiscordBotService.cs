@@ -14,18 +14,18 @@ namespace LCSC.Discord.Services
     public class DiscordBotService
     {
         private readonly DiscordClient _client;
+        private readonly CommunityDataService _communityDataService;
         private readonly GuildActionsService _guildActions;
-        private readonly MembersService _membersService;
 
         public DiscordBotService(
             DiscordClient client,
             InteractivityExtension interactivity,
-            MembersService membersService,
+            CommunityDataService communityDataService,
             LadderService ladderService)
         {
             _client = client;
-            _membersService = membersService;
-            _guildActions = new GuildActionsService(membersService, this, ladderService, interactivity);
+            _communityDataService = communityDataService;
+            _guildActions = new GuildActionsService(communityDataService, this, ladderService, interactivity);
         }
 
         public DiscordClient Client => _client;
@@ -50,7 +50,7 @@ namespace LCSC.Discord.Services
 
         public Task DisplayRankAsync(bool includeBanned = false, ulong guildId = 0)
         {
-            var guildSettings = _membersService.GetGuildSettings(guildId);
+            var guildSettings = _communityDataService.GetGuildSettings(guildId);
             if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
@@ -62,7 +62,7 @@ namespace LCSC.Discord.Services
 
         public async Task<List<GuildSettingsModel>?> GetSettingServersAsync(bool includeDebugGuilds, bool forceRefresh = false)
         {
-            var members = await _membersService.GetAllGuildSettingsAsync(forceRefresh);
+            var members = await _communityDataService.GetAllGuildSettingsAsync(forceRefresh);
             if (!includeDebugGuilds)
             {
                 members = members?.Where(x => !x.Record.IsDebugGuild).ToList();
@@ -72,7 +72,7 @@ namespace LCSC.Discord.Services
 
         public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
         {
-            var guildSettings = _membersService.GetGuildSettings(guildId);
+            var guildSettings = _communityDataService.GetGuildSettings(guildId);
             if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;

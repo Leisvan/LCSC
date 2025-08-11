@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LCSC.Core.Services
 {
-    public class MembersService(LadderService ladderService, string? airtableToken, string? baseId, string? cachePath)
+    public class CommunityDataService(LadderService ladderService, string? airtableToken, string? baseId, string? cachePath)
     {
         private const string CacheDirectoryName = "Cache";
         private const string DefaultRegionParameter = "US";

@@ -7,7 +7,7 @@ namespace LCSC.App.ObservableObjects;
 
 public partial class ProfileCreatorObservableObject : ObservableObject
 {
-    private readonly MembersService _membersService;
+    private readonly CommunityDataService _communityDataService;
     private string? _battleTag;
     private bool _isSearching;
     private string? _notes;
@@ -15,9 +15,9 @@ public partial class ProfileCreatorObservableObject : ObservableObject
     private string? _profileRealm;
     private string? _pulseId;
 
-    public ProfileCreatorObservableObject(MembersService membersService)
+    public ProfileCreatorObservableObject(CommunityDataService communityDataService)
     {
-        _membersService = membersService;
+        _communityDataService = communityDataService;
     }
 
     public string? BattleTag
@@ -61,7 +61,7 @@ public partial class ProfileCreatorObservableObject : ObservableObject
     {
         IsSearching = true;
 
-        var result = await _membersService.SearchProfileByBattleTag(BattleTag);
+        var result = await _communityDataService.SearchProfileByBattleTag(BattleTag);
         if (result != null)
         {
             PulseId = result.PulseId;

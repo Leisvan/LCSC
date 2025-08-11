@@ -17,11 +17,11 @@ using Windows.System;
 
 namespace LCSC.App.ViewModels;
 
-public partial class MembersViewModel(MembersService membersService, LadderService ladderService) : ObservableRecipient
+public partial class MembersViewModel(CommunityDataService communityDataService, LadderService ladderService) : ObservableRecipient
 {
     public int _seasonId = 0;
+    private readonly CommunityDataService _communityDataService = communityDataService;
     private readonly LadderService _ladderService = ladderService;
-    private readonly MembersService _membersService = membersService;
     private bool _isLoading;
     private bool _isLoadingCurrentMember;
     private string? _searchTerm = string.Empty;
@@ -48,7 +48,7 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
 
     public bool NoMemberSelected => SelectedMember == null;
 
-    public ProfileCreatorObservableObject ProfileCreator { get; } = new ProfileCreatorObservableObject(membersService);
+    public ProfileCreatorObservableObject ProfileCreator { get; } = new ProfileCreatorObservableObject(communityDataService);
 
     public string? SearchTerm
     {
@@ -81,7 +81,7 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
             return;
         }
 
-        var result = await _membersService.CreateBattleNetProfile(
+        var result = await _communityDataService.CreateBattleNetProfile(
             ProfileCreator.BattleTag,
             ProfileCreator.PulseId,
             ProfileCreator.ProfileRealm,
@@ -114,7 +114,7 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
             return;
         }
         IsLoading = true;
-        await _membersService.InitializeFromCacheAsync();
+        await _communityDataService.InitializeFromCacheAsync();
         await FilterMembersAsync(false);
         IsLoading = false;
     }
@@ -147,7 +147,7 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
         IsLoadingCurrentMember = true;
         foreach (var profile in SelectedMember.Profiles)
         {
-            await _membersService.UpdateSingleRegionAsync(profile);
+            await _communityDataService.UpdateSingleRegionAsync(profile);
         }
         RefreshAndReselectCurrentMember();
         IsLoadingCurrentMember = false;
@@ -158,7 +158,7 @@ public partial class MembersViewModel(MembersService membersService, LadderServi
         //Wait for the UI to update before fetching members
         await Task.Delay(120);
 
-        IEnumerable<MemberModel> source = await _membersService.GetMembersAsync(forceRefresh);
+        IEnumerable<MemberModel> source = await _communityDataService.GetMembersAsync(forceRefresh);
         if (!string.IsNullOrWhiteSpace(_searchTerm))
         {
             source = source.Where(m => m.Record.Nick?

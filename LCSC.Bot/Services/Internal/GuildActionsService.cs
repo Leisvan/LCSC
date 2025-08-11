@@ -9,14 +9,13 @@ using LCSC.Discord.Helpers;
 using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
-using LCSC.Models.Pulse;
 using System.Globalization;
 using System.Text;
 
 namespace LCSC.Discord.Services.Internal
 {
     internal class GuildActionsService(
-        MembersService membersService,
+        CommunityDataService communityDataService,
         DiscordBotService botService,
         LadderService ladderService,
         InteractivityExtension interactivity)
@@ -26,9 +25,9 @@ namespace LCSC.Discord.Services.Internal
         private const int RankingMessageChunkSize = 8;
         private static readonly CultureInfo CultureInfo = new("es-ES");
         private readonly DiscordBotService _botService = botService;
+        private readonly CommunityDataService _communityDataService = communityDataService;
         private readonly InteractivityExtension _interactivity = interactivity;
         private readonly LadderService _ladderService = ladderService;
-        private readonly MembersService _membersService = membersService;
         private CancellationTokenSource? _updateLadderTokenSource;
 
         public void CancelUpdateMemberRegions()
@@ -45,7 +44,7 @@ namespace LCSC.Discord.Services.Internal
             {
                 return MessageResources.SeasonInfoNotAvailableErrorMessage;
             }
-            var members = await _membersService.GetMembersAsync();
+            var members = await _communityDataService.GetMembersAsync();
             var entries = new List<(MemberRecord Member, LadderRegionRecord Region)>();
             foreach (var member in members.Where(x => includeBanned || !x.Record.Banned))
             {
@@ -146,7 +145,7 @@ namespace LCSC.Discord.Services.Internal
             TimeSpan? updateTime = null;
             if (!forceUpdate)
             {
-                var guildSettings = _membersService.GetGuildSettings(guildId);
+                var guildSettings = _communityDataService.GetGuildSettings(guildId);
                 var regionUpdateMinutesThreshold = guildSettings?.RegionUpdateThresholdInMinutes;
                 if (regionUpdateMinutesThreshold.HasValue && regionUpdateMinutesThreshold.Value > 0)
                 {
@@ -165,7 +164,7 @@ namespace LCSC.Discord.Services.Internal
                 message = await context.FollowupAsync(builder);
             }
             RegionUpdateProgressReportData? lastUpdate = null;
-            var result = await _membersService.UpdateAllRegionsAsync(false, updateTime,
+            var result = await _communityDataService.UpdateAllRegionsAsync(false, updateTime,
                 async (data) =>
                 {
                     lastUpdate = data;

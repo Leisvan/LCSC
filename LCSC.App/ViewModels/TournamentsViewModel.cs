@@ -6,18 +6,16 @@ using LCSC.App.Models.Messages;
 using LCSC.App.ObservableObjects;
 using LCSC.Core.Services;
 using LCSC.Models;
-using LCSC.Models.Pulse;
 using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LCSC.App.ViewModels
 {
-    public partial class TournamentsViewModel(MembersService membersService) : ObservableRecipient
+    public partial class TournamentsViewModel(CommunityDataService communityDataService) : ObservableRecipient
     {
-        private readonly MembersService _membersService = membersService;
+        private readonly CommunityDataService _communityDataService = communityDataService;
 
         private bool _isLoading;
 
@@ -85,7 +83,7 @@ namespace LCSC.App.ViewModels
         {
             IsLoading = true;
             Tournaments.Clear();
-            var source = await _membersService.GetTournamentsAsync(force);
+            var source = await _communityDataService.GetTournamentsAsync(force);
 
             Tournaments.Clear();
             foreach (var item in source)
@@ -132,7 +130,7 @@ namespace LCSC.App.ViewModels
             if (result == ContentDialogResult.Primary)
             {
                 IsUploading = true;
-                await _membersService.UpdateTournamentMatchesAsync(SelectedTournament.Record.Id, SelectedTournament.Matches);
+                await _communityDataService.UpdateTournamentMatchesAsync(SelectedTournament.Record.Id, SelectedTournament.Matches);
                 IsUploading = false;
             }
         }
