@@ -21,6 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCTWorks.Common.Services", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCTWorks.Common.WinUI", "..\LCTWorks\LCTWorks.Common\LCTWorks.Common.WinUI\LCTWorks.Common.WinUI.csproj", "{0A5DBC41-E3B6-96AF-FB6F-A4C17036764D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{32E88307-DB63-4E64-80E1-0C018D5938F2}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\BuildAndStoreDeploy.yml = .github\workflows\BuildAndStoreDeploy.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

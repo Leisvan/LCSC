@@ -62,10 +62,16 @@ jobs:
       Appx_Package_Dir: '${{ github.workspace }}'
       
     steps:
+    - name: Checkout LCTWorks
+      uses: actions/checkout@v4
+      with:
+        repository: https://github.com/LCTWorks/LCTWorks.Common
+
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0
@@ -83,12 +89,12 @@ jobs:
         $manifest.save(".\${{ env.Project_Name }}\Package.appxmanifest")
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Set up dependency caching for faster builds
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -168,7 +174,7 @@ jobs:
       BUNDLE_DIRECTORY: bundle
 
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: Msix
         path: ${{ env.ARTIFACT_DIRECTORY }}
