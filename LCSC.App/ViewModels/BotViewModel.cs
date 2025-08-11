@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DSharpPlus.Entities;
+using LCSC.Core.Helpers;
 using LCSC.Discord.Services;
 using LCSC.Models;
 using System;
@@ -111,7 +112,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     private void Load()
     {
-        var allGuilds = _botService.GetSettingServers();
+        var allGuilds = _botService.GetSettingServers(BuildHelper.IsDebugBuild);
         foreach (var item in allGuilds)
         {
             Guilds.Add(item);

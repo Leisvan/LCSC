@@ -56,8 +56,8 @@ namespace LCSC.Discord.Services
             return _guildActions.DisplayRankAsync(includeBanned, guildId, channelId);
         }
 
-        public IEnumerable<GuildSettingsModel> GetSettingServers()
-                    => _settingsService.GetAllGuilds();
+        public IEnumerable<GuildSettingsModel> GetSettingServers(bool includeDebugGuilds)
+                    => _settingsService.GetAllGuilds(includeDebugGuilds);
 
         public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
         {
