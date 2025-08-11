@@ -149,13 +149,13 @@ jobs:
     #     ls -R ${{ steps.set-package.outputs.x64 }}
 
     - name: Upload Msix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Msix
         path: ${{ steps.set-package.outputs.x86 }}\*.msix
 
     - name: Upload Msix
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Msix
         path: ${{ steps.set-package.outputs.x64 }}\*.msix
@@ -201,7 +201,7 @@ jobs:
         Write-Output $path_to_my_msix_bundle
 
     - name: Upload Bundle
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: msixbundle
         path: ${{ env.BUNDLE_DIRECTORY }}/*.msixbundle
