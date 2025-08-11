@@ -66,11 +66,11 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: LCTWorks/LCTWorks.Common
-        path: LCSC
 
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        path: LCSC
         fetch-depth: 0
 
 
