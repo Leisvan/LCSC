@@ -1,0 +1,216 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
+# built on .NET Core.
+# To learn how to migrate your existing application to .NET Core,
+# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
+#
+# To configure this workflow:
+#
+# 1. Configure environment variables
+# GitHub sets default environment variables for every workflow run.
+# Replace the variables relative to your project in the "env" section below.
+#
+# 2. Signing
+# Generate a signing certificate in the Windows Application
+# Packaging Project or add an existing signing certificate to the project.
+# Next, use PowerShell to encode the .pfx file using Base64 encoding
+# by running the following Powershell script to generate the output string:
+#
+# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
+# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
+#
+# Open the output file, SigningCertificate_Encoded.txt, and copy the
+# string inside. Then, add the string to the repo as a GitHub secret
+# and name it "Base64_Encoded_Pfx."
+# For more information on how to configure your signing certificate for
+# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
+#
+# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
+# See "Build the Windows Application Packaging project" below to see how the secret is used.
+#
+# For more information on GitHub Actions, refer to https://github.com/features/actions
+# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
+# refer to https://github.com/microsoft/github-actions-for-desktop-apps
+
+name: WinUI 3 MSIX app
+
+on:
+  push:
+    branches:
+    - release/*
+  workflow_dispatch:
+
+env:
+  Project_Name: 'LCSC.App'
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+    outputs:
+      X86: ${{ steps.set-package.outputs.X86 }}
+      x64: ${{ steps.set-package.outputs.x64 }}
+      MajorMinorPatch: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+    env:
+      DOTNET_VERSION: '9.0.x'    
+      Configuration: 'Release'
+      Solution_Name: 'LCSC.sln'
+      Appx_Package_Dir: '${{ github.workspace }}'
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      id:   gitversion
+      uses: gittools/actions/gitversion/execute@v0
+      
+    - name: Update manifest version
+      run: |
+        [xml]$manifest = get-content ".\${{ env.Project_Name }}\Package.appxmanifest"
+        $manifest.Package.Identity.Version = "${{ steps.gitversion.outputs.MajorMinorPatch }}.0"
+        $manifest.save(".\${{ env.Project_Name }}\Package.appxmanifest")
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Set up dependency caching for faster builds
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+            
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+      
+    - name: Restore the application
+      run: |
+        msbuild ${{ env.Solution_Name }} `
+          /t:Restore `
+          /p:Configuration=${{ env.Configuration }}
+      env:
+        Configuration: ${{ env.configuration }}           
+        
+    - name: Create the app package
+      run: | 
+        msbuild ${{ env.Solution_Name }} `
+          /p:Configuration=${{ env.Configuration }} `
+          /p:AppxBundle=${{ env.Appx_Bundle }} `
+          /p:AppxPackageDir="${{ env.Appx_Package_Dir }}\" `
+          /p:UapAppxPackageBuildMode=${{ env.Appx_Package_Build_Mode }} `
+          /p:GenerateAppxPackageOnBuild=true `
+          /p:AppxPackageSigningEnabled=false `
+          /p:Platform=${{ env.Platform }}
+      env:
+        Platform: x64
+        Appx_Bundle: Never
+        Appx_Package_Build_Mode: StoreUpload    
+        
+    - name: Create the app package
+      run: | 
+        msbuild ${{ env.Solution_Name }} `
+          /p:Configuration=${{ env.Configuration }} `
+          /p:AppxBundle=${{ env.Appx_Bundle }} `
+          /p:AppxPackageDir="${{ env.Appx_Package_Dir }}\" `
+          /p:UapAppxPackageBuildMode=${{ env.Appx_Package_Build_Mode }} `
+          /p:GenerateAppxPackageOnBuild=true `
+          /p:AppxPackageSigningEnabled=false `
+          /p:Platform=${{ env.Platform }}
+      env:
+        Platform: X86
+        Appx_Bundle: Never
+        Appx_Package_Build_Mode: StoreUpload  
+
+    - name: Set Package Vars
+      id: set-package
+      run: |
+        "X86=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_x86_Test" >> $env:GITHUB_OUTPUT
+        "x64=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_x64_Test" >> $env:GITHUB_OUTPUT
+
+    # - name: debug
+    #   run: | 
+    #     ls -R ${{ steps.set-package.outputs.ARM64 }}
+    #     ls -R ${{ steps.set-package.outputs.x64 }}
+
+    - name: Upload Msix
+      uses: actions/upload-artifact@v3
+      with:
+        name: Msix
+        path: ${{ steps.set-package.outputs.x86 }}\*.msix
+
+    - name: Upload Msix
+      uses: actions/upload-artifact@v3
+      with:
+        name: Msix
+        path: ${{ steps.set-package.outputs.x64 }}\*.msix
+  
+  bundle:
+    runs-on: windows-latest
+    needs: [build]
+    env:
+      ARTIFACT_DIRECTORY: artifact
+      BUNDLE_DIRECTORY: bundle
+
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: Msix
+        path: ${{ env.ARTIFACT_DIRECTORY }}
+
+    # - name: debug
+    #   run: | 
+    #     echo "ARM64 ${{ env.ARM64 }}"
+    #     echo "X64 ${{ env.x64 }}"
+    #     echo "MajorMinorPatch ${{ env.MajorMinorPatch }}"
+    #     ls -R ${{ env.BUNDLE_DIRECTORY }}
+    #   env:
+    #     ARM64: ${{needs.build.outputs.ARM64}}
+    #     x64: ${{needs.build.outputs.x64}}
+    #     MajorMinorPatch: ${{needs.build.outputs.MajorMinorPatch}}
+
+    - name: Make msixbundle
+      id: bundler
+      uses: LanceMcCarthy/Action-MsixBundler@v1
+      with:
+        msix-folder: "${{ env.ARTIFACT_DIRECTORY }}"
+        msixbundle-filepath: "${{ env.BUNDLE_DIRECTORY }}/${{ env.Project_Name }}.msixbundle"
+        msixbundle-version: "${{needs.build.outputs.MajorMinorPatch}}.0"
+      env:
+        MajorMinorPatch: ${{needs.build.outputs.MajorMinorPatch}}
+        
+    - name: Verify msixbundle File Path
+      shell: pwsh
+      run: |
+        $path_to_my_msix_bundle = "${{ steps.bundler.outputs.msixbundle_path }}"
+        Write-Output $path_to_my_msix_bundle
+
+    - name: Upload Bundle
+      uses: actions/upload-artifact@v3
+      with:
+        name: msixbundle
+        path: ${{ env.BUNDLE_DIRECTORY }}/*.msixbundle
+        
+    - uses: isaacrlevin/windows-store-action@1.0
+      name: Publish to Store
+      with:
+        tenant-id: ${{ secrets.ENTRA_TENANT_ID }}
+        client-id: ${{ secrets.ENTRA_APPLICATION_CLIENT_ID }}
+        client-secret: ${{ secrets.ENTRA_APPLICATION_SECRET }}
+        app-id: ${{ secrets.STORE_APP_ID }}
+        package-path: "${{ env.BUNDLE_DIRECTORY }}"
