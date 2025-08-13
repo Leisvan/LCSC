@@ -109,7 +109,7 @@ jobs:
       env:
         Configuration: ${{ env.configuration }}           
         
-    - name: Create the app package
+    - name: Create x64 app package
       run: | 
         msbuild ${{ env.Solution_Name }} `
           /p:Configuration=${{ env.Configuration }} `
@@ -124,7 +124,7 @@ jobs:
         Appx_Bundle: Never
         Appx_Package_Build_Mode: StoreUpload    
         
-    - name: Create the app package
+    - name: Create x86 app package
       run: | 
         msbuild ${{ env.Solution_Name }} `
           /p:Configuration=${{ env.Configuration }} `
@@ -135,9 +135,9 @@ jobs:
           /p:AppxPackageSigningEnabled=false `
           /p:Platform=${{ env.Platform }}
       env:
-        Platform: X86
+        Platform: x86
         Appx_Bundle: Never
-        Appx_Package_Build_Mode: StoreUpload  
+        Appx_Package_Build_Mode: StoreUpload
 
     - name: Set Package Vars
       id: set-package
@@ -150,16 +150,16 @@ jobs:
     #     ls -R ${{ steps.set-package.outputs.ARM64 }}
     #     ls -R ${{ steps.set-package.outputs.x64 }}
 
-    - name: Upload Msix
+    - name: Upload Msix x86
       uses: actions/upload-artifact@v4
       with:
-        name: Msix
+        name: Msix86
         path: ${{ steps.set-package.outputs.x86 }}\*.msix
 
-    - name: Upload Msix
+    - name: Upload Msix x64
       uses: actions/upload-artifact@v4
       with:
-        name: Msix
+        name: Msix64
         path: ${{ steps.set-package.outputs.x64 }}\*.msix
   
   bundle:
