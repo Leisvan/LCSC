@@ -9,16 +9,16 @@ using Newtonsoft.Json;
 
 namespace LCSC.Core.Services
 {
-    public class CommunityDataService(LadderService ladderService, string? airtableToken, string? baseId, string? cachePath)
+    public class CommunityDataService(LadderService ladderService, CacheService cacheService, string? airtableToken, string? baseId, string? cachePath)
     {
-        private const string CacheDirectoryName = "Cache";
         private const string DefaultRegionParameter = "US";
-        private const string MembersCacheFileName = "members.json";
-        private const string SettingsFileName = "settings.json";
-        private const string TournamentsCacheFileName = "tournaments.json";
+        private const string MembersCacheFileName = "Members.json";
+        private const string SettingsFileName = "Settings.json";
+        private const string TournamentsCacheFileName = "Tournaments.json";
 
         private readonly AirtableHttpService _airtableHttpService = new(airtableToken, baseId);
         private readonly string? _cachePath = cachePath;
+        private readonly CacheService _cacheService = cacheService;
         private readonly List<GuildSettingsModel> _guildSettings = [];
         private readonly LadderService _ladderService = ladderService;
         private readonly List<MemberModel> _members = [];
@@ -132,8 +132,7 @@ namespace LCSC.Core.Services
             }
 
             //Load members
-            var membersPath = GetCacheFilePath(MembersCacheFileName);
-            var cachedMembersTextData = await FileHelper.TryReadTextFileAsync(membersPath);
+            var cachedMembersTextData = await _cacheService.GetCachedTextAsync(MembersCacheFileName);
             var cachedMembers = Json.ToObject<List<MemberModel>>(cachedMembersTextData);
             if (cachedMembers != null && cachedMembers.Count > 0)
             {
@@ -142,8 +141,7 @@ namespace LCSC.Core.Services
             }
 
             //Load members
-            var tournamentsPath = GetCacheFilePath(TournamentsCacheFileName);
-            var cachedTournamentsTextData = await FileHelper.TryReadTextFileAsync(tournamentsPath);
+            var cachedTournamentsTextData = await _cacheService.GetCachedTextAsync(TournamentsCacheFileName);
             var cachedTournaments = Json.ToObject<List<TournamentModel>>(cachedTournamentsTextData);
             if (cachedTournaments != null && cachedTournaments.Count > 0)
             {
@@ -152,8 +150,7 @@ namespace LCSC.Core.Services
             }
 
             //Load settings
-            var settingsPath = GetCacheFilePath(SettingsFileName);
-            var cachedSettingsTextData = await FileHelper.TryReadTextFileAsync(settingsPath);
+            var cachedSettingsTextData = await _cacheService.GetCachedTextAsync(SettingsFileName);
             var cachedSettings = Json.ToObject<List<GuildSettingsModel>>(cachedSettingsTextData);
             if (cachedSettings != null && cachedSettings.Count > 0)
             {
@@ -225,7 +222,7 @@ namespace LCSC.Core.Services
                     }
                 }
 
-                if (await UpdateSingleRegionAsync(profile))
+                if (await UpdateInternalRegionAsync(profile))
                 {
                     updatedProfilesCount++;
                 }
@@ -237,46 +234,8 @@ namespace LCSC.Core.Services
             return updatedProfilesCount;
         }
 
-        public async Task<bool> UpdateSingleRegionAsync(BattleNetProfileModel profile)
-        {
-            if (profile == null || profile.Record == null)
-            {
-                return false;
-            }
-
-            var id = profile.LadderRegion?.Id ?? string.Empty;
-
-            var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
-            if (team == null)
-            {
-                return false;
-            }
-
-            var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
-
-            var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
-
-            var race = LadderHelper.GetRaceFromTeamResult(team);
-            string raceText = race == Race.Unknown ? string.Empty : race.ToString();
-
-            var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
-                id,
-                team.Season,
-                team.Region,
-                raceText,
-                team.Rating,
-                previousMMR,
-                team.LeagueType,
-                team.TierType,
-                team.Wins,
-                (team.Wins + team.Losses + team.Ties),
-                profile.Record.Id);
-            if (regionUpdated && result != null)
-            {
-                return true;
-            }
-            return false;
-        }
+        public Task<bool> UpdateSingleRegionAsync(BattleNetProfileModel profile)
+            => UpdateInternalRegionAsync(profile, true);
 
         public async Task UpdateTournamentMatchesAsync(string tournamentId, List<MatchModel>? matches)
         {
@@ -386,15 +345,6 @@ namespace LCSC.Core.Services
                 return results;
             }
             return [];
-        }
-
-        private string GetCacheFilePath(string fileName)
-        {
-            if (string.IsNullOrEmpty(_cachePath))
-            {
-                return string.Empty;
-            }
-            return Path.Combine(_cachePath, CacheDirectoryName, fileName);
         }
 
         private List<MatchModel> GetMatchModels(TournamentRecord record)
@@ -510,26 +460,68 @@ namespace LCSC.Core.Services
             {
                 if (saveMembers && _members != null && _members.Count > 0)
                 {
-                    var membersPath = GetCacheFilePath(MembersCacheFileName);
                     var json = await Json.StringifyAsync(_members);
-                    await FileHelper.WriteTextFileAsync(membersPath, json);
+                    await _cacheService.CacheTextFileAsync(MembersCacheFileName, json);
                 }
                 if (saveTournaments && _tournaments != null && _tournaments.Count > 0)
                 {
-                    var tournamentsPath = GetCacheFilePath(TournamentsCacheFileName);
                     var json = await Json.StringifyAsync(_tournaments);
-                    await FileHelper.WriteTextFileAsync(tournamentsPath, json);
+                    await _cacheService.CacheTextFileAsync(TournamentsCacheFileName, json);
                 }
                 if (saveSettings && _guildSettings != null && _guildSettings.Count > 0)
                 {
-                    var settingsPath = GetCacheFilePath(SettingsFileName);
                     var json = await Json.StringifyAsync(_guildSettings);
-                    await FileHelper.WriteTextFileAsync(settingsPath, json);
+                    await _cacheService.CacheTextFileAsync(SettingsFileName, json);
                 }
             }
             catch (Exception)
             {
             }
+        }
+
+        private async Task<bool> UpdateInternalRegionAsync(BattleNetProfileModel profile, bool updateCache = false)
+        {
+            if (profile == null || profile.Record == null)
+            {
+                return false;
+            }
+
+            var id = profile.LadderRegion?.Id ?? string.Empty;
+
+            var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
+            if (team == null)
+            {
+                return false;
+            }
+
+            var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
+
+            var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
+
+            var race = LadderHelper.GetRaceFromTeamResult(team);
+            string raceText = race == Race.Unknown ? string.Empty : race.ToString();
+
+            var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
+                id,
+                team.Season,
+                team.Region,
+                raceText,
+                team.Rating,
+                previousMMR,
+                team.LeagueType,
+                team.TierType,
+                team.Wins,
+                (team.Wins + team.Losses + team.Ties),
+                profile.Record.Id);
+            if (regionUpdated && result != null)
+            {
+                if (updateCache)
+                {
+                    await SaveToCacheAsync();
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

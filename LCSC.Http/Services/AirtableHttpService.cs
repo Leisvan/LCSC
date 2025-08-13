@@ -93,7 +93,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
     }
 
     public async Task<string?> UpdateOrCreateRegionAsync(
-                    string id,
+        string id,
         int seasonId,
         string? region,
         string race,
@@ -106,7 +106,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         string bnetProfileId)
     {
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
-        Fields fields = new Fields();
+        Fields fields = new();
         fields.AddField(nameof(LadderRegionRecord.SeasonId), seasonId);
         fields.AddField(nameof(LadderRegionRecord.Region), region);
         fields.AddField(nameof(LadderRegionRecord.Race), race);
