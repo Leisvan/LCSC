@@ -35,17 +35,33 @@ namespace LCSC.Discord.Services
         public void CancelUpdateMemberRegions()
             => _guildActions.CancelUpdateMemberRegions();
 
-        public Task ConnectAsync()
+        public async Task<bool> ConnectAsync()
         {
-            ConsoleInteractionsHelper.ClearConsole();
-            return _client.ConnectAsync();
+            try
+            {
+                ConsoleInteractionsHelper.ClearConsole();
+                await _client.ConnectAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                ConsoleInteractionsHelper.WriteErrorLine(e.Message);
+                return false;
+            }
         }
 
         public async Task DisconnectAsync()
         {
-            await _client.DisconnectAsync();
-            ConsoleInteractionsHelper.ClearConsole();
-            ConsoleInteractionsHelper.WriteLine(MessageResources.BotDisconnectedMessage);
+            try
+            {
+                await _client.DisconnectAsync();
+                ConsoleInteractionsHelper.ClearConsole();
+                ConsoleInteractionsHelper.WriteLine(MessageResources.BotDisconnectedMessage);
+            }
+            catch (Exception e)
+            {
+                ConsoleInteractionsHelper.WriteErrorLine(e.Message);
+            }
         }
 
         public Task DisplayRankAsync(bool includeBanned = false, ulong guildId = 0)

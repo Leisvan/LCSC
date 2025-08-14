@@ -1,37 +1,27 @@
-﻿using LCSC.App.ViewModels;
-using LCSC.Core.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Microsoft.Windows.Storage;
-using LCSC.Discord.Services;
-using Microsoft.Extensions.Logging;
-using System;
-using Windows.ApplicationModel;
-using LCSC.Discord.Extensions;
+﻿using LCSC.App.Helpers;
 using LCSC.App.Logging;
+using LCSC.App.ViewModels;
+using LCSC.Core.Helpers;
+using LCSC.Core.Services;
+using LCSC.Discord.Extensions;
+using LCSC.Discord.Services;
 using LCTWorks.Common.Services.Telemetry;
 using LCTWorks.Common.WinUI;
-using LCSC.App.Helpers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.Storage;
+using System;
 using System.Threading.Tasks;
-using LCSC.Core.Helpers;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Windows.ApplicationModel;
 
 namespace LCSC.App
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     public partial class App : Application
     {
         private readonly ITelemetryService? _telemetryService;
 
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
         public App()
         {
             var configuration = ReadConfigurations();
@@ -51,11 +41,7 @@ namespace LCSC.App
 
         public IServiceProvider Services { get; }
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             MainWindow.Activate();
         }

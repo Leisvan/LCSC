@@ -2,8 +2,6 @@
 using LCSC.Http.Extensions;
 using LCSC.Models;
 using LCSC.Models.Airtable;
-using LCSC.Models.BattleNet;
-using LCSC.Models.Pulse;
 
 namespace LCSC.Http.Services;
 
@@ -18,8 +16,15 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
 
+    private bool IsConfigured
+        => !string.IsNullOrEmpty(_airtableToken) && !string.IsNullOrEmpty(_baseId);
+
     public async Task<string?> CreateBattleNetProfile(BattleNetProfileRecord record)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
 
         var result = await airtableBase.CreateRecord(ProfilesTableName, record.GetFields());
@@ -98,6 +103,10 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 
     public async Task<bool> UpdateOrCreateRegionsAsync(IEnumerable<LadderRegionModel> regions)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         List<Fields> fieldsToCreate = [];
         List<IdFields> fieldsToUpdate = [];
         foreach (var region in regions)
@@ -160,6 +169,10 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 
     public async Task<string?> UpdateOrCreateSingleRegionAsync(LadderRegionModel region)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
         Fields fields = new();
         fields.AddField(nameof(LadderRegionRecord.SeasonId), region.SeasonId);
@@ -183,6 +196,10 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 
     public async Task<bool> UpdateTournamentMatchesData(string tournamentId, string matchesData)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
         var fields = new Fields();
         fields.AddField(nameof(TournamentRecord.MatchesData), matchesData);
@@ -192,6 +209,10 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 
     private async Task<IEnumerable<AirtableRecord>> GetRecordsAsync(string table)
     {
+        if (!IsConfigured)
+        {
+            return [];
+        }
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
         string? offset = null;
         string? errorMessage = null;
@@ -224,6 +245,10 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
 
     private async Task<AirtableRecord?> GetSingleRecordAsync(string table, string id)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
         string? errorMessage = null;
 

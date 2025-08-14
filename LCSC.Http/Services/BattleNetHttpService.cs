@@ -8,23 +8,24 @@ using System.Text;
 
 namespace LCSC.Http.Services;
 
-public class BattleNetHttpService
+public class BattleNetHttpService(string? clientId, string? clientSecret)
 {
     private const string AccessTokenUrl = "https://oauth.battle.net/token";
     private const string LeagueData1v1NAUrl = @"https://us.api.blizzard.com/data/sc2/league/{0}/201/0/{1}";
 
-    private readonly string? _clientId;
-    private readonly string? _clientSecret;
+    private readonly string? _clientId = clientId;
+    private readonly string? _clientSecret = clientSecret;
     private BattleNetToken? _token;
 
-    public BattleNetHttpService(string? clientId, string? clientSecret)
-    {
-        _clientId = clientId;
-        _clientSecret = clientSecret;
-    }
+    private bool IsConfigured
+        => !string.IsNullOrEmpty(_clientId) && !string.IsNullOrEmpty(_clientSecret);
 
     public async Task<List<LadderTierModel>?> GetLadderTiersForLeague(int season, int leagueId)
     {
+        if (!IsConfigured)
+        {
+            return default;
+        }
         var list = new List<LadderTierModel>();
         try
         {

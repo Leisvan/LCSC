@@ -6,7 +6,6 @@ using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
 using LCTWorks.Common.Helpers;
 using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {

@@ -96,9 +96,11 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
     [RelayCommand]
     private async Task ConnectBot()
     {
-        await _botService.ConnectAsync();
-        IsConnected = true;
-        await LoadAsync();
+        if (await _botService.ConnectAsync())
+        {
+            IsConnected = true;
+            await LoadAsync();
+        }
     }
 
     [RelayCommand]
