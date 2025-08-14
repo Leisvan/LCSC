@@ -6,6 +6,7 @@ using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
 using LCTWorks.Common.Helpers;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LCSC.Core.Services
 {
@@ -196,14 +197,14 @@ namespace LCSC.Core.Services
                 .Where(m => m.Profiles != null && m.Profiles.Count > 0)
                 .SelectMany(m => m.Profiles!)
                 .ToList();
-            int updatedProfilesCount = 0;
+            var updatedRegions = new List<LadderRegionModel>();
             for (int i = 0; i < profilesList.Count; i++)
             {
                 if (token?.IsCancellationRequested == true)
                 {
                     if (progressReport != null)
                     {
-                        await progressReport.Invoke(RegionUpdateProgressReportData.FromError("Operación cancelada"));
+                        await progressReport.Invoke(RegionUpdateProgressReportData.Message("Operación cancelada"));
                     }
                     return 0;
                 }
@@ -222,20 +223,60 @@ namespace LCSC.Core.Services
                     }
                 }
 
-                if (await UpdateInternalRegionAsync(profile))
+                var region = await UpdateSingleRegionInternalAsync(profile);
+                if (region != null && region.IsUpdated)
                 {
-                    updatedProfilesCount++;
+                    updatedRegions.Add(region);
                 }
             }
-            if (updatedProfilesCount > 0)
+            if (updatedRegions.Count > 0)
             {
-                await RefreshAllAsync();
+                if (progressReport != null)
+                {
+                    await progressReport.Invoke(RegionUpdateProgressReportData.Message("Finalizando operación"));
+                }
+                if (await _airtableHttpService.UpdateOrCreateRegionsAsync(updatedRegions))
+                {
+                    await RefreshAllAsync();
+                }
+                else
+                {
+                    if (progressReport != null)
+                    {
+                        await progressReport.Invoke(RegionUpdateProgressReportData.Message("Error"));
+                    }
+                }
             }
-            return updatedProfilesCount;
+            return updatedRegions.Count;
         }
 
-        public Task<bool> UpdateSingleRegionAsync(BattleNetProfileModel profile)
-            => UpdateInternalRegionAsync(profile, true);
+        public async Task<bool> UpdateRegionsAsync(IEnumerable<BattleNetProfileModel> profiles)
+        {
+            List<LadderRegionModel> regions = [];
+            if (profiles == null || !profiles.Any())
+            {
+                return false;
+            }
+            foreach (var profile in profiles)
+            {
+                var region = await UpdateSingleRegionInternalAsync(profile);
+                if (region == null || !region.IsUpdated)
+                {
+                    continue;
+                }
+                regions.Add(region);
+            }
+            if (regions.Count == 0)
+            {
+                return false;
+            }
+            if (await _airtableHttpService.UpdateOrCreateRegionsAsync(regions))
+            {
+                await SaveToCacheAsync();
+                return true;
+            }
+            return false;
+        }
 
         public async Task UpdateTournamentMatchesAsync(string tournamentId, List<MatchModel>? matches)
         {
@@ -479,11 +520,11 @@ namespace LCSC.Core.Services
             }
         }
 
-        private async Task<bool> UpdateInternalRegionAsync(BattleNetProfileModel profile, bool updateCache = false)
+        private async Task<LadderRegionModel?> UpdateSingleRegionInternalAsync(BattleNetProfileModel profile)
         {
             if (profile == null || profile.Record == null)
             {
-                return false;
+                return default;
             }
 
             var id = profile.LadderRegion?.Id ?? string.Empty;
@@ -491,7 +532,7 @@ namespace LCSC.Core.Services
             var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
             if (team == null)
             {
-                return false;
+                return default;
             }
 
             var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
@@ -501,7 +542,7 @@ namespace LCSC.Core.Services
             var race = LadderHelper.GetRaceFromTeamResult(team);
             string raceText = race == Race.Unknown ? string.Empty : race.ToString();
 
-            var result = await _airtableHttpService.UpdateOrCreateRegionAsync(
+            return new LadderRegionModel(
                 id,
                 team.Season,
                 team.Region,
@@ -512,16 +553,8 @@ namespace LCSC.Core.Services
                 team.TierType,
                 team.Wins,
                 (team.Wins + team.Losses + team.Ties),
-                profile.Record.Id);
-            if (regionUpdated && result != null)
-            {
-                if (updateCache)
-                {
-                    await SaveToCacheAsync();
-                }
-                return true;
-            }
-            return false;
+                profile.Record.Id,
+                true);
         }
     }
 }

@@ -145,11 +145,10 @@ public partial class MembersViewModel(CommunityDataService communityDataService,
             return;
         }
         IsLoadingCurrentMember = true;
-        foreach (var profile in SelectedMember.Profiles)
+        if (await _communityDataService.UpdateRegionsAsync(SelectedMember.Profiles))
         {
-            await _communityDataService.UpdateSingleRegionAsync(profile);
+            RefreshAndReselectCurrentMember();
         }
-        RefreshAndReselectCurrentMember();
         IsLoadingCurrentMember = false;
     }
 

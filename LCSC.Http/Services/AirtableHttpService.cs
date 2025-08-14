@@ -1,6 +1,9 @@
 ﻿using AirtableApiClient;
 using LCSC.Http.Extensions;
+using LCSC.Models;
 using LCSC.Models.Airtable;
+using LCSC.Models.BattleNet;
+using LCSC.Models.Pulse;
 
 namespace LCSC.Http.Services;
 
@@ -10,6 +13,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
     private const string LadderRegionsTableName = "LadderRegions";
     private const string MembersTableName = "Members";
     private const string ProfilesTableName = "BattleNetProfiles";
+    private const int RecordsChunkSize = 10;
     private const string TournamentTableName = "Tournaments";
     private readonly string? _airtableToken = airtableToken;
     private readonly string? _baseId = baseId;
@@ -92,37 +96,88 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         return records.Select(r => r.ToTournamentRecord());
     }
 
-    public async Task<string?> UpdateOrCreateRegionAsync(
-        string id,
-        int seasonId,
-        string? region,
-        string race,
-        int currentMMR,
-        int previousMMR,
-        int league,
-        int tier,
-        int wins,
-        int totalMatches,
-        string bnetProfileId)
+    public async Task<bool> UpdateOrCreateRegionsAsync(IEnumerable<LadderRegionModel> regions)
+    {
+        List<Fields> fieldsToCreate = [];
+        List<IdFields> fieldsToUpdate = [];
+        foreach (var region in regions)
+        {
+            IdFields idFields = new(region.Id);
+            idFields.AddField(nameof(LadderRegionRecord.SeasonId), region.SeasonId);
+            idFields.AddField(nameof(LadderRegionRecord.Region), region.Region);
+            idFields.AddField(nameof(LadderRegionRecord.Race), region.Race);
+            idFields.AddField(nameof(LadderRegionRecord.CurrentMMR), region.CurrentMMR);
+            idFields.AddField(nameof(LadderRegionRecord.PreviousMMR), region.PreviousMMR);
+            idFields.AddField(nameof(LadderRegionRecord.League), region.League);
+            idFields.AddField(nameof(LadderRegionRecord.Tier), region.Tier);
+            idFields.AddField(nameof(LadderRegionRecord.Wins), region.Wins);
+            idFields.AddField(nameof(LadderRegionRecord.TotalMatches), region.TotalMatches);
+            idFields.AddField(nameof(LadderRegionRecord.BattleNetProfiles), new string[] { region.BattleNetProfileId });
+            if (string.IsNullOrEmpty(region.Id))
+            {
+                fieldsToCreate.Add(idFields);
+            }
+            else
+            {
+                fieldsToUpdate.Add(idFields);
+            }
+        }
+        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
+        AirtableCreateUpdateReplaceMultipleRecordsResponse? createResponse = null;
+        AirtableCreateUpdateReplaceMultipleRecordsResponse? updateResponse = null;
+        if (fieldsToCreate.Count > 0)
+        {
+            var chunks = fieldsToCreate.Chunk(RecordsChunkSize);
+            foreach (var chunk in chunks)
+            {
+                try
+                {
+                    createResponse = await airtableBase.CreateMultipleRecords(LadderRegionsTableName, chunk.ToArray());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+        if (fieldsToUpdate.Count > 0)
+        {
+            var chunks = fieldsToUpdate.Chunk(RecordsChunkSize);
+            foreach (var chunk in chunks)
+            {
+                try
+                {
+                    updateResponse = await airtableBase.UpdateMultipleRecords(LadderRegionsTableName, chunk.ToArray());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+        return (createResponse == null && updateResponse == null) || (createResponse?.Success == true || updateResponse?.Success == true);
+    }
+
+    public async Task<string?> UpdateOrCreateSingleRegionAsync(LadderRegionModel region)
     {
         using var airtableBase = new AirtableBase(_airtableToken, _baseId);
         Fields fields = new();
-        fields.AddField(nameof(LadderRegionRecord.SeasonId), seasonId);
-        fields.AddField(nameof(LadderRegionRecord.Region), region);
-        fields.AddField(nameof(LadderRegionRecord.Race), race);
-        fields.AddField(nameof(LadderRegionRecord.CurrentMMR), currentMMR);
-        fields.AddField(nameof(LadderRegionRecord.PreviousMMR), previousMMR);
-        fields.AddField(nameof(LadderRegionRecord.League), league);
-        fields.AddField(nameof(LadderRegionRecord.Tier), tier);
-        fields.AddField(nameof(LadderRegionRecord.Wins), wins);
-        fields.AddField(nameof(LadderRegionRecord.TotalMatches), totalMatches);
-        fields.AddField(nameof(LadderRegionRecord.BattleNetProfiles), new string[] { bnetProfileId });
-        if (string.IsNullOrEmpty(id))
+        fields.AddField(nameof(LadderRegionRecord.SeasonId), region.SeasonId);
+        fields.AddField(nameof(LadderRegionRecord.Region), region.Region);
+        fields.AddField(nameof(LadderRegionRecord.Race), region.Race);
+        fields.AddField(nameof(LadderRegionRecord.CurrentMMR), region.CurrentMMR);
+        fields.AddField(nameof(LadderRegionRecord.PreviousMMR), region.PreviousMMR);
+        fields.AddField(nameof(LadderRegionRecord.League), region.League);
+        fields.AddField(nameof(LadderRegionRecord.Tier), region.Tier);
+        fields.AddField(nameof(LadderRegionRecord.Wins), region.Wins);
+        fields.AddField(nameof(LadderRegionRecord.TotalMatches), region.TotalMatches);
+        fields.AddField(nameof(LadderRegionRecord.BattleNetProfiles), new string[] { region.BattleNetProfileId });
+        if (string.IsNullOrEmpty(region.Id))
         {
             var result = await airtableBase.CreateRecord(LadderRegionsTableName, fields);
             return result.Success ? result.Record.Id : null;
         }
-        var result2 = await airtableBase.UpdateRecord(LadderRegionsTableName, fields, id);
+        var result2 = await airtableBase.UpdateRecord(LadderRegionsTableName, fields, region.Id);
         return result2.Success ? result2.Record.Id : null;
     }
 

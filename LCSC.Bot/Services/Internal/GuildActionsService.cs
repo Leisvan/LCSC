@@ -168,15 +168,15 @@ namespace LCSC.Discord.Services.Internal
                 async (data) =>
                 {
                     lastUpdate = data;
-                    var content = data.ErrorMessage ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
-                    message = await UpdateMessageAsync(content, channelId, message);
+                    var content = data.MessageText ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
+                    message = await UpdateMessageAsync((string)content, channelId, message);
                 }, _updateLadderTokenSource.Token);
 
-            if (lastUpdate?.ErrorMessage == null)
+            if (lastUpdate?.MessageText == null)
             {
                 await UpdateMessageAsync(MessageResources.UpdatedProfilesCountFormat.Format(result), channelId, message);
             }
-
+            _updateLadderTokenSource = null;
             return null;
         }
 
