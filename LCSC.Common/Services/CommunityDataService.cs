@@ -381,6 +381,10 @@ namespace LCSC.Core.Services
                         }
                         value.Add(new BattleNetProfileModel(item, region));
                     }
+                    else
+                    {
+
+                    }
                 }
                 return results;
             }

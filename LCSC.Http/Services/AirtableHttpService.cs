@@ -219,7 +219,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         var records = new List<AirtableRecord>();
         do
         {
-            var response = await airtableBase.ListRecords(table);
+            var response = await airtableBase.ListRecords(table, offset);
             if (response.Success)
             {
                 records.AddRange(response.Records);
@@ -239,6 +239,7 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
                 errorMessage = "Unknown error";
                 break;
             }
+            offset = response.Offset;
         } while (offset != null);
         return records;
     }
