@@ -1,3 +1,6 @@
 [submodule "LCTWorks.Common"]
 	path = LCTWorks.Common
 	url = https://github.com/LCTWorks/LCTWorks.Common.git
+[submodule "submodules/LCTWorks.Common"]
+	path = submodules/LCTWorks.Common
+	url = https://github.com/LCTWorks/LCTWorks.Common.git
