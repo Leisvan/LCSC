@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 	  
     <RootNamespace>LCSC.App</RootNamespace>
@@ -91,7 +91,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.8" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250602001" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
@@ -99,9 +99,9 @@
     <ProjectReference Include="..\LCSC.Bot\LCSC.Discord.csproj" />
     <ProjectReference Include="..\LCSC.Common\LCSC.Core.csproj" />
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
-    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common.Services\LCTWorks.Common.Services.csproj" />
-    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common.WinUI\LCTWorks.Common.WinUI.csproj" />
-    <ProjectReference Include="..\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
+    <ProjectReference Include="..\submodules\LCTWorks.Common\LCTWorks.Common\LCTWorks.Common.csproj" />
+    <ProjectReference Include="..\submodules\LCTWorks.Common\LCTWorks.Services\LCTWorks.Services.csproj" />
+    <ProjectReference Include="..\submodules\LCTWorks.Common\LCTWorks.WinUI\LCTWorks.WinUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\Config\appsettings.json">
@@ -277,7 +277,7 @@
     <PublishReadyToRun>false</PublishReadyToRun>
 	<PublishTrimmed>false</PublishTrimmed>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <PackageId>LCSCII</PackageId>
     <Product>LCSC</Product>
     <AssemblyName>LCSCII</AssemblyName>

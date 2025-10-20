@@ -8,10 +8,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <XamlControlsResources xmlns="using:LCTWorks.WinUI" />
                 <ResourceDictionary Source="ms-appx:///Styles/ColorsAndBrushes.xaml" />
                 <ResourceDictionary Source="ms-appx:///Styles/Textblocks.xaml" />
                 <ResourceDictionary Source="ms-appx:///Styles/Fonts.xaml" />
-                <ResourceDictionary Source="ms-appx:///LCTWorks.Common.WinUI/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <!--  Other app resources here  -->
         </ResourceDictionary>

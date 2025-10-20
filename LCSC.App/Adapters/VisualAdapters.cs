@@ -1,8 +1,5 @@
-﻿using CommunityToolkit.WinUI.Helpers;
-using LCSC.Models;
+﻿using LCSC.Models;
 using LCSC.Models.Airtable;
-using LCSC.Models.BattleNet;
-using LCTWorks.Common.WinUI.Extensions;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;

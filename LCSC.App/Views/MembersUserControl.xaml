@@ -2,10 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adapters="using:LCSC.App.Adapters"
-             xmlns:common="using:LCTWorks.Common.WinUI.Controls"
+             xmlns:common="using:LCTWorks.WinUI.Controls"
              xmlns:core="using:Microsoft.Xaml.Interactivity"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ext="using:LCTWorks.Common.WinUI.Controls.Extensions"
+             xmlns:ext="using:LCTWorks.WinUI.Controls.Extensions"
              xmlns:i="using:Microsoft.Xaml.Interactivity"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="using:LCSC.Models"
@@ -208,18 +208,18 @@
                                 HorizontalAlignment="Center"
                                 Orientation="Horizontal"
                                 Spacing="4">
-                        <common:ChipControl Background="{StaticResource Tag2Color}"
-                                            Foreground="{StaticResource TextColorDark1}"
-                                            Text="{x:Bind ViewModel.SelectedMember.Race, Mode=OneWay}" />
-                        <common:ChipControl Background="{StaticResource Tag1Color}"
-                                            Foreground="{StaticResource TextColorDark1}"
-                                            Text="{x:Bind ViewModel.SelectedMember.Record.CountryTag, Mode=OneWay}" />
-                        <common:ChipControl Background="{StaticResource SuccessColor}"
-                                            Text="Verificado"
-                                            Visibility="{x:Bind ViewModel.SelectedMember.Record.Verified, Mode=OneWay}" />
-                        <common:ChipControl Background="{StaticResource ErrorColor}"
-                                            Text="Expulsado"
-                                            Visibility="{x:Bind ViewModel.SelectedMember.Record.Banned, Mode=OneWay}" />
+                        <common:Chip Background="{StaticResource Tag2Color}"
+                                     Foreground="{StaticResource TextColorDark1}"
+                                     Text="{x:Bind ViewModel.SelectedMember.Race, Mode=OneWay}" />
+                        <common:Chip Background="{StaticResource Tag1Color}"
+                                     Foreground="{StaticResource TextColorDark1}"
+                                     Text="{x:Bind ViewModel.SelectedMember.Record.CountryTag, Mode=OneWay}" />
+                        <common:Chip Background="{StaticResource SuccessColor}"
+                                     Text="Verificado"
+                                     Visibility="{x:Bind ViewModel.SelectedMember.Record.Verified, Mode=OneWay}" />
+                        <common:Chip Background="{StaticResource ErrorColor}"
+                                     Text="Expulsado"
+                                     Visibility="{x:Bind ViewModel.SelectedMember.Record.Banned, Mode=OneWay}" />
                     </StackPanel>
                 </Grid>
             </Grid>

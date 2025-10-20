@@ -5,8 +5,8 @@ using LCSC.Core.Helpers;
 using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
 using LCSC.Discord.Services;
-using LCTWorks.Common.Services.Telemetry;
-using LCTWorks.Common.WinUI;
+using LCTWorks.Services.Telemetry;
+using LCTWorks.WinUI.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -69,7 +69,7 @@ namespace LCSC.App
             .AddTransient<TournamentsViewModel>()
 
             //Telemetry
-            .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, EnvironmentHelper.GetTelemetryContextData())
+            .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, RuntimePackageHelper.GetTelemetryContextData())
 
             //Build:
             .BuildServiceProvider(true);
