@@ -133,7 +133,7 @@
                                            Width="24"
                                            Height="24"
                                            HorizontalAlignment="Left"
-                                           VerticalAlignment="Bottom"
+                                           VerticalAlignment="Center"
                                            Source="{x:Bind adapters:VisualAdapters.ToRegionLeagueBadgePath(BestRegion, x:False), Mode=OneWay}" />
                                 </Grid>
 

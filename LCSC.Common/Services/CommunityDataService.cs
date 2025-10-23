@@ -4,6 +4,7 @@ using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
+using LCTWorks.Common.Extensions;
 using LCTWorks.Common.Helpers;
 using Newtonsoft.Json;
 
@@ -366,7 +367,7 @@ namespace LCSC.Core.Services
 
                 var regionsMap = ladderRegions
                     .Where(x => x.BattleNetProfiles?.Length > 0)
-                    .ToDictionary(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
+                    .ToDictionaryIgnoreDuplicateKeys(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
 
                 foreach (var item in bnetProfiles)
                 {
