@@ -93,6 +93,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     private void DispatcherTick(object? sender, EventArgs e)
     {
+        UpdateAndDisplayRank(false);
     }
 
     private async Task LoadAsync(bool forceRefresh = false)

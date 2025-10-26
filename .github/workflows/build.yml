@@ -1,4 +1,4 @@
-name: Build
+name: x86/x64 MSIX
 
 on:
   workflow_dispatch:
