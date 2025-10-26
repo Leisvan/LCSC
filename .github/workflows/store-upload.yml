@@ -3,42 +3,44 @@ name: Upload
 on:
   workflow_dispatch:
     inputs:
-      package_run_id:
-        description: ''
+      build_run_id:
+        description: 'Build workflow run id (optional when called by orchestrator)'
         required: false
         default: ''
   workflow_call:
     inputs:
-      package_run_id:
-        description: 'Package workflow run id'
+      build_run_id:
+        description: 'Build workflow run id (not needed when called in same run)'
         required: false
         type: string
 
 permissions:
-  actions: read
   contents: read
+  actions: read
 
 env:
-  BUNDLE_DIRECTORY: bundle
+  PACKAGE_DIRECTORY: packages
 
 jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - name: Download bundle (same run)
-        if: ${{ (inputs.package_run_id == '' || inputs.package_run_id == null) && (github.event.inputs.package_run_id == '' || github.event.inputs.package_run_id == null) }}
+      - name: Download MSIX artifacts (same run)
+        if: ${{ (inputs.build_run_id == '' || inputs.build_run_id == null) && (github.event.inputs.build_run_id == '' || github.event.inputs.build_run_id == null) }}
         uses: actions/download-artifact@v4
         with:
-          name: msixbundle
-          path: ${{ env.BUNDLE_DIRECTORY }}
+          pattern: Msix-*
+          merge-multiple: true
+          path: ${{ env.PACKAGE_DIRECTORY }}
 
-      - name: Download bundle (using run-id)
-        if: ${{ (inputs.package_run_id != '' && inputs.package_run_id != null) || (github.event.inputs.package_run_id != '' && github.event.inputs.package_run_id != null) }}
+      - name: Download MSIX artifacts (using run-id)
+        if: ${{ (inputs.build_run_id != '' && inputs.build_run_id != null) || (github.event.inputs.build_run_id != '' && github.event.inputs.build_run_id != null) }}
         uses: actions/download-artifact@v4
         with:
-          name: msixbundle
-          path: ${{ env.BUNDLE_DIRECTORY }}
-          run-id: ${{ inputs.package_run_id != '' && inputs.package_run_id || github.event.inputs.package_run_id }}
+          pattern: Msix-*
+          merge-multiple: true
+          path: ${{ env.PACKAGE_DIRECTORY }}
+          run-id: ${{ inputs.build_run_id != '' && inputs.build_run_id || github.event.inputs.build_run_id }}
 
       - name: Publish to Store
         uses: isaacrlevin/windows-store-action@1.0
@@ -47,4 +49,4 @@ jobs:
           client-id: ${{ secrets.ENTRA_APPLICATION_CLIENT_ID }}
           client-secret: ${{ secrets.ENTRA_APPLICATION_SECRET }}
           app-id: ${{ secrets.STORE_APP_ID }}
-          package-path: "${{ env.BUNDLE_DIRECTORY }}"
+          package-path: "${{ env.PACKAGE_DIRECTORY }}"

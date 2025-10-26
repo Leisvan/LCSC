@@ -12,19 +12,13 @@ on:
         default: ''
 
 permissions:
-  actions: write
   contents: read
+  actions: write
 
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-    with: {}
-  bundle:
-    needs: build
-    uses: ./.github/workflows/bundle.yml
-    with: {}
   upload:
-    needs: bundle
+    needs: build
     uses: ./.github/workflows/store-upload.yml
-    with: {}
     secrets: inherit
