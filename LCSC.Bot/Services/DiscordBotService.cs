@@ -86,16 +86,17 @@ namespace LCSC.Discord.Services
             return members;
         }
 
-        public Task UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
+        public async Task<bool> UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
         {
             var guildSettings = _communityDataService.GetGuildSettings(guildId);
             if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
                 LogNotifier.NotifyError(errorMessage);
-                return Task.CompletedTask;
+                return false;
             }
-            return _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId, channelId);
+            var errorResult = await _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId, channelId);
+            return errorResult == null;
         }
 
         internal async Task RespondToInteractionAsync(ComponentInteractionCreatedEventArgs args)

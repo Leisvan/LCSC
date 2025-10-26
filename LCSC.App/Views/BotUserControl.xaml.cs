@@ -14,4 +14,9 @@ public sealed partial class BotUserControl : UserControl
     }
 
     public DiscordBotViewModel? ViewModel { get; }
+
+    private void WrapPanel_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+    {
+
+    }
 }

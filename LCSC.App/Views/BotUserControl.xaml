@@ -5,17 +5,22 @@
              xmlns:controls="using:CommunityToolkit.WinUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+             xmlns:lctWorks="using:LCTWorks.WinUI.Controls"
              xmlns:local="using:LCSC.App.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="using:CommunityToolkit.WinUI"
              mc:Ignorable="d">
 
-    <Grid ColumnSpacing="16">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="600" />
+            <ColumnDefinition Width="500"
+                              MinWidth="340"
+                              MaxWidth="500" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Grid Background="{StaticResource AppColor1}"
+        <Grid Margin="8"
+              Background="{StaticResource AppColor1}"
               CornerRadius="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="68" />
@@ -59,113 +64,138 @@
                 </ScrollView>
             </Grid>
         </Grid>
-        <Grid Grid.Column="1"
-              RowSpacing="8"
-              Visibility="{x:Bind ViewModel.IsConnected, Mode=OneWay}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <controls:SettingsExpander Description="Lista de configuraciones en uso por el bot"
-                                       Header="Config"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE713;}">
-                <StackPanel Orientation="Horizontal"
-                            Spacing="8">
-                    <ComboBox MinWidth="220"
-                              ItemsSource="{x:Bind ViewModel.Guilds, Mode=OneWay}"
-                              SelectedItem="{x:Bind ViewModel.SelectedGuild, Mode=TwoWay}" />
-                    <Button Command="{x:Bind ViewModel.RefreshCommand}"
-                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
-                        <FontIcon Glyph="&#xE895;" />
-                    </Button>
-                </StackPanel>
-            </controls:SettingsExpander>
-            <controls:SettingsExpander Grid.Row="1"
-                                       Description="Lista de acciones relacionadas con el ranking"
-                                       Header="Ranking"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE902;}"
-                                       IsExpanded="True">
-                <controls:SettingsExpander.Items>
-                    <controls:SettingsCard>
-                        <controls:SettingsCard.Header>
-                            <StackPanel Margin="0,16"
+        <!--<controls:GridSplitter Grid.Column="1"
+                               Height="32"
+                               Margin="4,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               ResizeBehavior="BasedOnAlignment"
+                               ResizeDirection="Auto">
+            <controls:GridSplitter.RenderTransform>
+                <TranslateTransform Y="-7" />
+            </controls:GridSplitter.RenderTransform>
+        </controls:GridSplitter>-->
+        <ScrollViewer Grid.Column="2"
+                      Margin="0,8"
+                      HorizontalAlignment="Stretch">
+            <Grid RowSpacing="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <controls:SettingsExpander Description="Lista de configuraciones en uso por el bot"
+                                           Header="Config"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE713;}"
+                                           IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8">
+                        <ComboBox MinWidth="220"
+                                  ItemsSource="{x:Bind ViewModel.Guilds, Mode=OneWay}"
+                                  SelectedItem="{x:Bind ViewModel.SelectedGuild, Mode=TwoWay}" />
+                        <Button Command="{x:Bind ViewModel.RefreshCommand}"
+                                IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE895;" />
+                        </Button>
+                    </StackPanel>
+                </controls:SettingsExpander>
+                <controls:SettingsExpander Grid.Row="1"
+                                           Description="Lista de acciones relacionadas con el ranking"
+                                           Header="Ranking"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE902;}"
+                                           IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"
+                                           IsExpanded="True">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                               Description="Ejecuta 'Actualizar' y luego 'Mostrar' secuencialmente."
+                                               Header="Actualizar y mostrar">
+                            <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <StackPanel Orientation="Horizontal"
-                                            Spacing="8">
-                                    <Button Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
-                                            Content="Actualizar y mostrar"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}"
-                                            Style="{ThemeResource AccentButtonStyle}">
-                                        <Button.CommandParameter>
-                                            <x:Boolean>False</x:Boolean>
-                                        </Button.CommandParameter>
-                                    </Button>
-                                    <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
-                                            Content="Actualizar"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
-                                    <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
-                                            Content="Actualizar (forzado)"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
-                                    <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                            Content="Mostrar"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
-                                        <Button.CommandParameter>
-                                            <x:Boolean>False</x:Boolean>
-                                        </Button.CommandParameter>
-                                    </Button>
-                                    <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                            Content="Mostrar (Banned)"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
-                                        <Button.CommandParameter>
-                                            <x:Boolean>True</x:Boolean>
-                                        </Button.CommandParameter>
-                                    </Button>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal"
-                                            Spacing="8">
-                                    <Button Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
-                                            Content="Cancelar"
-                                            IsEnabled="{x:Bind ViewModel.IsRankingBusy, Mode=OneWay}" />
-                                </StackPanel>
+                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
+                                                       Content="Actualizar y mostrar"
+                                                       IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}"
+                                                       Style="{StaticResource AccentThemedButtonStyle}">
+                                    <lctWorks:ThemedButton.CommandParameter>
+                                        <x:Boolean>False</x:Boolean>
+                                    </lctWorks:ThemedButton.CommandParameter>
+                                </lctWorks:ThemedButton>
+                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
+                                                       Content="Cancelar"
+                                                       IsEnabled="{x:Bind ViewModel.IsRankingBusy, Mode=OneWay}"
+                                                       Style="{StaticResource DangerThemedButtonStyle}" />
                             </StackPanel>
-                        </controls:SettingsCard.Header>
-                    </controls:SettingsCard>
-                    <controls:SettingsCard Description="Programe 'Actualizar y mostrar' para que se ejecute a la hora deseada."
-                                           Header="Temporizador">
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.IsDispatcherRunning, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard Header="Hora #1"
-                                           IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
-                        <TimePicker Time="{x:Bind ViewModel.ScheduleTime1, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard Header="Hora #2"
-                                           IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
-                        <TimePicker Time="{x:Bind ViewModel.ScheduleTime2, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                </controls:SettingsExpander.Items>
-            </controls:SettingsExpander>
-            <controls:SettingsExpander Grid.Row="2"
-                                       Description="Lista de opciones para enviar mensajes"
-                                       Header="Mensajes"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xEBDB;}"
-                                       IsEnabled="False">
-                <controls:SettingsExpander.Items>
-                    <controls:SettingsCard>
-                        <controls:SettingsCard.Header>
-                            <StackPanel Margin="0,16"
+                        </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                               Description="Estas acciones solo actualizan el ranking y almacenan los resultados."
+                                               Header="Actualizar">
+                            <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <StackPanel Orientation="Horizontal"
-                                            Spacing="8">
-                                    <Button Content="Test"
-                                            Style="{ThemeResource AccentButtonStyle}" />
-                                </StackPanel>
+                                <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
+                                        Content="Actualizar"
+                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
+                                <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
+                                        Content="Actualizar (forzado)"
+                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
                             </StackPanel>
-                        </controls:SettingsCard.Header>
-                    </controls:SettingsCard>
-                </controls:SettingsExpander.Items>
-            </controls:SettingsExpander>
-        </Grid>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                               Description="Muestra el ranking, puede escoger si incluir o no a los miembros restringidos"
+                                               Header="Mostrar">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                        Content="Mostrar"
+                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
+                                    <Button.CommandParameter>
+                                        <x:Boolean>False</x:Boolean>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
+                                        Content="Mostrar (Restringidos)"
+                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
+                                    <Button.CommandParameter>
+                                        <x:Boolean>True</x:Boolean>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Description="Programe 'Actualizar y mostrar' para que se ejecute a la hora deseada."
+                                               Header="Temporizador">
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.IsDispatcherRunning, Mode=TwoWay}" />
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Header="Hora #1"
+                                               IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                            <TimePicker Time="{x:Bind ViewModel.ScheduleTime1, Mode=TwoWay}" />
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Header="Hora #2"
+                                               IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                            <TimePicker Time="{x:Bind ViewModel.ScheduleTime2, Mode=TwoWay}" />
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+                <controls:SettingsExpander Grid.Row="2"
+                                           Description="Lista de opciones para enviar mensajes"
+                                           Header="Mensajes"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xEBDB;}"
+                                           IsEnabled="False">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard>
+                            <controls:SettingsCard.Header>
+                                <StackPanel Margin="0,16"
+                                            Spacing="8">
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="8">
+                                        <Button Content="Test"
+                                                Style="{ThemeResource AccentButtonStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:SettingsCard.Header>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

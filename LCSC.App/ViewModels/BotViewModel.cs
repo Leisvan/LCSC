@@ -193,7 +193,11 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         IsRankingBusy = true;
         if (updateRegions)
         {
-            await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.GuildId);
+            if (!await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.GuildId))
+            {
+                IsRankingBusy = false;
+                return;
+            }
         }
         if (displayRank)
         {

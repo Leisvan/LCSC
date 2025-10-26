@@ -169,9 +169,14 @@ namespace LCSC.Discord.Services.Internal
                 {
                     lastUpdate = data;
                     var content = data.MessageText ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
-                    message = await UpdateMessageAsync((string)content, channelId, message);
+                    message = await UpdateMessageAsync(content, channelId, message);
                 }, _updateLadderTokenSource.Token);
-
+            if (result == -1)
+            {
+                await UpdateMessageAsync(MessageResources.OperationCancelledMessage, channelId, message);
+                _updateLadderTokenSource = null;
+                return MessageResources.OperationCancelledMessage;
+            }
             if (lastUpdate?.MessageText == null)
             {
                 await UpdateMessageAsync(MessageResources.UpdatedProfilesCountFormat.Format(result), channelId, message);

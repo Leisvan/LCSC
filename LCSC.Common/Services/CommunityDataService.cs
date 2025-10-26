@@ -206,7 +206,7 @@ namespace LCSC.Core.Services
                     {
                         await progressReport.Invoke(RegionUpdateProgressReportData.Message("Operación cancelada"));
                     }
-                    return 0;
+                    return -1;
                 }
                 var profile = profilesList[i];
                 if (progressReport != null)
@@ -384,7 +384,6 @@ namespace LCSC.Core.Services
                     }
                     else
                     {
-
                     }
                 }
                 return results;

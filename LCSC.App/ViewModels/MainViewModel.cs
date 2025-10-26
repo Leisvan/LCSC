@@ -3,27 +3,26 @@ using LCSC.App.Models.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using LCTWorks.WinUI.Helpers;
 
-namespace LCSC.App.ViewModels
+namespace LCSC.App.ViewModels;
+
+public partial class MainViewModel : ObservableRecipient
 {
-    public partial class MainViewModel : ObservableRecipient
+    public MainViewModel()
     {
-        public MainViewModel()
+        Messenger.Register<MainViewModel, LoadingChangedMessage>(this, (recipient, message) =>
         {
-            Messenger.Register<MainViewModel, LoadingChangedMessage>(this, (recipient, message) =>
-            {
-                IsEnabled = !message.Value;
-            });
-        }
-
-        public bool IsBotViewEnabled => true;
-
-        [ObservableProperty]
-        public partial bool IsEnabled { get; set; } = true;
-
-        public bool IsMembersViewEnabled => true;
-
-        public bool IsTournamentsViewEnabled => true;
-
-        public string AppVersion => RuntimePackageHelper.GetPackageVersion();
+            IsEnabled = !message.Value;
+        });
     }
+
+    public string AppVersion => RuntimePackageHelper.IsDebug() ? "Debug" : RuntimePackageHelper.GetPackageVersion();
+
+    public bool IsBotViewEnabled => true;
+
+    [ObservableProperty]
+    public partial bool IsEnabled { get; set; } = true;
+
+    public bool IsMembersViewEnabled => true;
+
+    public bool IsTournamentsViewEnabled => true;
 }
