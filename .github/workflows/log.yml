@@ -1,0 +1,116 @@
+name: Log build
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Optional override for webhook username'
+        required: false
+        default: ''
+      avatar_url:
+        description: 'Optional override for webhook avatar URL'
+        required: false
+        default: ''
+      thumbnail_url:
+        description: 'Optional thumbnail URL for the embed'
+        required: false
+        default: ''
+      submission_url:
+        description: 'Optional link to the Store submission (used for button)'
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      username:
+        description: 'Optional override for webhook username'
+        required: false
+        type: string
+      avatar_url:
+        description: 'Optional override for webhook avatar URL'
+        required: false
+        type: string
+      thumbnail_url:
+        description: 'Optional thumbnail URL for the embed'
+        required: false
+        type: string
+      submission_url:
+        description: 'Optional link to the Store submission (used for button)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  log:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Build embed and post to Discord
+        shell: pwsh
+        run: |
+          $username = '${{ inputs.username }}'; if ([string]::IsNullOrWhiteSpace($username)) { $username = '${{ github.event.inputs.username }}' }
+          $avatar   = '${{ inputs.avatar_url }}'; if ([string]::IsNullOrWhiteSpace($avatar))   { $avatar   = '${{ github.event.inputs.avatar_url }}' }
+          $thumb    = '${{ inputs.thumbnail_url }}'; if ([string]::IsNullOrWhiteSpace($thumb)) { $thumb    = '${{ github.event.inputs.thumbnail_url }}' }
+          $submit   = '${{ inputs.submission_url }}'; if ([string]::IsNullOrWhiteSpace($submit)) { $submit = '${{ github.event.inputs.submission_url }}' }
+
+          $version = "${{ steps.gitversion.outputs.MajorMinorPatch }}"
+          $title = "LCSC build sent for certification"
+          $desc  = "Version: $version"
+          $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+
+          # Build payload
+          $payload = @{}
+
+          if (-not [string]::IsNullOrWhiteSpace($username)) { $payload.username = $username }
+          if (-not [string]::IsNullOrWhiteSpace($avatar))   { $payload.avatar_url = $avatar }
+
+          $embed = @{
+            title       = $title
+            description = $desc
+            color       = 5793266 # Discord blurple-ish
+            timestamp   = [DateTime]::UtcNow.ToString('o')
+          }
+          if (-not [string]::IsNullOrWhiteSpace($thumb)) {
+            $embed.thumbnail = @{ url = $thumb }
+          }
+          $payload.embeds = @($embed)
+
+          # Add a link button (submission if provided, else workflow run)
+          $buttonUrl = if (-not [string]::IsNullOrWhiteSpace($submit)) { $submit } else { $runUrl }
+          $buttonLbl = if (-not [string]::IsNullOrWhiteSpace($submit)) { 'View submission' } else { 'View run' }
+          $payload.components = @(
+            @{
+              type = 1
+              components = @(
+                @{
+                  type = 2      # button
+                  style = 5     # Link
+                  label = $buttonLbl
+                  url = $buttonUrl
+                }
+              )
+            }
+          )
+
+          $webhook = '${{ secrets.DISCORD_RELEASE_WEBHOOK }}'
+          if ([string]::IsNullOrWhiteSpace($webhook)) {
+            throw "Discord webhook secret not provided. Set repo/org secret DISCORD_RELEASE_WEBHOOK."
+          }
+
+          $json = $payload | ConvertTo-Json -Depth 20 -Compress
+          Invoke-RestMethod -Uri $webhook -Method Post -ContentType 'application/json' -Body $json

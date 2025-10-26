@@ -26,3 +26,11 @@ jobs:
   tag:
     needs: upload
     uses: ./.github/workflows/gittag.yml
+  log:
+    needs: upload
+    uses: ./.github/workflows/log.yml
+    with:
+      username: 'LCSC Bot'
+      avatar_url: 'https://example.com/avatar.png'
+      thumbnail_url: 'https://example.com/thumbnail.png'
+    secrets: inherit

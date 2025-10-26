@@ -16,9 +16,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github-workflows", ".github-workflows", "{32E88307-DB63-4E64-80E1-0C018D5938F2}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
-		.github\workflows\bundle.yml = .github\workflows\bundle.yml
 		.github\workflows\BuildAndDeployStart.yml = .github\workflows\BuildAndDeployStart.yml
+		.github\workflows\bundle.yml = .github\workflows\bundle.yml
 		.github\workflows\gittag.yml = .github\workflows\gittag.yml
+		.github\workflows\log.yml = .github\workflows\log.yml
 		.github\workflows\store-upload.yml = .github\workflows\store-upload.yml
 	EndProjectSection
 EndProject
