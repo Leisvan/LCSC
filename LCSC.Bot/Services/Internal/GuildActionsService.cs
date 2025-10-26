@@ -10,6 +10,8 @@ using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using System.Globalization;
+using System.Net.Http.Headers;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace LCSC.Discord.Services.Internal
@@ -33,9 +35,57 @@ namespace LCSC.Discord.Services.Internal
         public void CancelUpdateMemberRegions()
             => _updateLadderTokenSource?.Cancel();
 
+        public async Task<string?> DisplayRangesAsync(ulong channelId = 0, CommandContext? context = null)
+        {
+            var seasonId = await _ladderService.GetSeasonIdAsync();
+            if (seasonId == 0)
+            {
+                return MessageResources.SeasonInfoNotAvailableErrorMessage;
+            }
+            var ladderTiers = await _ladderService.GetLadderTiersAsync();
+            if (ladderTiers == null || ladderTiers.Count == 0)
+            {
+                return MessageResources.SeasonInfoNotAvailableErrorMessage;
+            }
+            var channel = context == null
+                ? await _botService.Client.GetChannelAsync(channelId)
+                : context.Channel;
+
+            var builder = new StringBuilder();
+            builder.AppendLine(MessageResources.LadderRangesHeaderFormat.Format(seasonId.ToString()));
+            builder.AppendLine(MessageResources.LadderRangesHeader);
+            var capTool = new StringLengthCapTool(6, true);
+            foreach (var group in ladderTiers.GroupBy(t => t.League).OrderByDescending(g => g.Key))
+            {
+                var league = group.Key;
+                var leagueNum = (int)league;
+                var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, leagueNum, -1);
+                builder.Append(leagueEmoji);
+
+                foreach (var item in group.OrderByDescending(g => g.Tier))
+                {
+                    builder.Append(BlankSpace);
+                    builder.Append($"`{capTool.GetString(item.MinMMR)}`");
+                }
+                builder.AppendLine();
+            }
+
+            string message = builder.ToString();
+            WriteToConsole(message);
+            if (context != null)
+            {
+                await context.RespondAsync(message);
+            }
+            else
+            {
+                await channel.SendMessageAsync(message);
+            }
+
+            return null;
+        }
+
         public async Task<string?> DisplayRankAsync(
             bool includeBanned = false,
-            ulong guildId = 0,
             ulong channelId = 0,
             CommandContext? context = null)
         {

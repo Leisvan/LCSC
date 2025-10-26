@@ -126,6 +126,12 @@
   <data name="ChannelIdNotFoundErrorMessage" xml:space="preserve">
     <value>Id del canal no encontrado.</value>
   </data>
+  <data name="LadderRangesHeader" xml:space="preserve">
+    <value>`  ` `Tier 3` `Tier 2` `Tier 1`</value>
+  </data>
+  <data name="LadderRangesHeaderFormat" xml:space="preserve">
+    <value>Rangos del ladder para la Temporada {0}.</value>
+  </data>
   <data name="NoProfileToShowErrorMessage" xml:space="preserve">
     <value>No hay perfiles que mostrar.</value>
   </data>

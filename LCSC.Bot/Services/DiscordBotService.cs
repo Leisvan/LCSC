@@ -73,7 +73,7 @@ namespace LCSC.Discord.Services
                 LogNotifier.NotifyError(errorMessage);
                 return Task.CompletedTask;
             }
-            return _guildActions.DisplayRankAsync(includeBanned, guildId, channelId);
+            return _guildActions.DisplayRankAsync(includeBanned, channelId);
         }
 
         public async Task<List<GuildSettingsModel>?> GetSettingServersAsync(bool includeDebugGuilds, bool forceRefresh = false)

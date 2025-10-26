@@ -19,7 +19,7 @@ namespace LCSC.Discord.Strings {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class MessageResources {
@@ -84,6 +84,24 @@ namespace LCSC.Discord.Strings {
         internal static string ChannelIdNotFoundErrorMessage {
             get {
                 return ResourceManager.GetString("ChannelIdNotFoundErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to `  ` `Tier 3` `Tier 2` `Tier 1`.
+        /// </summary>
+        internal static string LadderRangesHeader {
+            get {
+                return ResourceManager.GetString("LadderRangesHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rangos del ladder para la Temporada {0}..
+        /// </summary>
+        internal static string LadderRangesHeaderFormat {
+            get {
+                return ResourceManager.GetString("LadderRangesHeaderFormat", resourceCulture);
             }
         }
         
