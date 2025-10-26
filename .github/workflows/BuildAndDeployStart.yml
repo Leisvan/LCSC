@@ -18,6 +18,7 @@ permissions:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    secrets: inherit
   upload:
     needs: build
     uses: ./.github/workflows/store-upload.yml
