@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LCSC.App.Models.Messages;
 using CommunityToolkit.Mvvm.Messaging;
+using LCTWorks.WinUI.Helpers;
 
 namespace LCSC.App.ViewModels
 {
@@ -22,5 +23,7 @@ namespace LCSC.App.ViewModels
         public bool IsMembersViewEnabled => true;
 
         public bool IsTournamentsViewEnabled => true;
+
+        public string AppVersion => RuntimePackageHelper.GetPackageVersion();
     }
 }

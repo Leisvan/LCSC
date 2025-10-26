@@ -43,5 +43,10 @@
                 <views:BotUserControl />
             </PivotItem>
         </Pivot>
+        <TextBlock Grid.Row="1"
+                   Margin="24,8"
+                   HorizontalAlignment="Right"
+                   Opacity=".6"
+                   Text="{x:Bind ViewModel.AppVersion}" />
     </Grid>
 </Window>
