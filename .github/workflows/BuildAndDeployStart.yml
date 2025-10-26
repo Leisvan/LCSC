@@ -12,7 +12,7 @@ on:
         default: ''
 
 permissions:
-  actions: read
+  actions: write
   contents: read
 
 jobs:
