@@ -66,6 +66,46 @@ jobs:
             /t:Restore `
             /p:Configuration=${{ env.Configuration }}
 
+      - name: Create appsettings.json from secrets
+        shell: pwsh
+        run: |
+          $configDir = "LCSC.App\Assets\Config"
+          New-Item -ItemType Directory -Force -Path $configDir | Out-Null
+
+          # Fail fast if a required secret is missing
+          $required = @{
+            AIRBASE_TOKEN='${{ secrets.AIRBASE_TOKEN }}'
+            AIRBASE_BASEID='${{ secrets.AIRBASE_BASEID }}'
+            BNET_CLIENT_ID='${{ secrets.BNET_CLIENT_ID }}'
+            BNET_CLIENT_SECRET='${{ secrets.BNET_CLIENT_SECRET }}'
+            DISCORD_TOKEN='${{ secrets.DISCORD_TOKEN }}'
+            DISCORD_CLIENT_SECRET='${{ secrets.DISCORD_CLIENT_SECRET }}'
+            TELEMETRY_KEY='${{ secrets.TELEMETRY_KEY }}'
+          }
+          $missing = @()
+          foreach($k in $required.Keys){ if([string]::IsNullOrWhiteSpace($required[$k])){ $missing += $k } }
+          if($missing.Count -gt 0){ throw "Missing required secrets: $($missing -join ', ')" }
+
+          $json = @{
+            AirBaseSettings = @{
+              token = "${{ secrets.AIRBASE_TOKEN }}"
+              baseId = "${{ secrets.AIRBASE_BASEID }}"
+            }
+            BattleNetSettings = @{
+              clientId = "${{ secrets.BNET_CLIENT_ID }}"
+              clientSecret = "${{ secrets.BNET_CLIENT_SECRET }}"
+            }
+            DiscordSettings = @{
+              token = "${{ secrets.DISCORD_TOKEN }}"
+              clientSecret = "${{ secrets.DISCORD_CLIENT_SECRET }}"
+            }
+            TelemetryKey = @{
+              key = "${{ secrets.TELEMETRY_KEY }}"
+            }
+          } | ConvertTo-Json -Depth 5
+
+          Set-Content -Path (Join-Path $configDir 'appsettings.json') -Value $json -Encoding UTF8
+
       - name: Build x64 MSIX
         shell: pwsh
         run: |
@@ -108,43 +148,3 @@ jobs:
         with:
           name: Msix-x64
           path: ${{ steps.set-package.outputs.x64 }}\*.msix
-
-      - name: Create appsettings.json from secrets
-        shell: pwsh
-        run: |
-          $configDir = "LCSC.App\Assets\Config"
-          New-Item -ItemType Directory -Force -Path $configDir | Out-Null
-
-          # Fail fast if a required secret is missing
-          $required = @{
-            AIRBASE_TOKEN='${{ secrets.AIRBASE_TOKEN }}'
-            AIRBASE_BASEID='${{ secrets.AIRBASE_BASEID }}'
-            BNET_CLIENT_ID='${{ secrets.BNET_CLIENT_ID }}'
-            BNET_CLIENT_SECRET='${{ secrets.BNET_CLIENT_SECRET }}'
-            DISCORD_TOKEN='${{ secrets.DISCORD_TOKEN }}'
-            DISCORD_CLIENT_SECRET='${{ secrets.DISCORD_CLIENT_SECRET }}'
-            TELEMETRY_KEY='${{ secrets.TELEMETRY_KEY }}'
-          }
-          $missing = @()
-          foreach($k in $required.Keys){ if([string]::IsNullOrWhiteSpace($required[$k])){ $missing += $k } }
-          if($missing.Count -gt 0){ throw "Missing required secrets: $($missing -join ', ')" }
-
-          $json = @{
-            AirBaseSettings = @{
-              token = "${{ secrets.AIRBASE_TOKEN }}"
-              baseId = "${{ secrets.AIRBASE_BASEID }}"
-            }
-            BattleNetSettings = @{
-              clientId = "${{ secrets.BNET_CLIENT_ID }}"
-              clientSecret = "${{ secrets.BNET_CLIENT_SECRET }}"
-            }
-            DiscordSettings = @{
-              token = "${{ secrets.DISCORD_TOKEN }}"
-              clientSecret = "${{ secrets.DISCORD_CLIENT_SECRET }}"
-            }
-            TelemetryKey = @{
-              key = "${{ secrets.TELEMETRY_KEY }}"
-            }
-          } | ConvertTo-Json -Depth 5
-
-          Set-Content -Path (Join-Path $configDir 'appsettings.json') -Value $json -Encoding UTF8
