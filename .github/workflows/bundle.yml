@@ -1,0 +1,72 @@
+name: Bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: ''
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      build_run_id:
+        description: 'Build workflow run id'
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  Project_Name: 'LCSC.App'
+  ARTIFACT_DIRECTORY: artifact
+  BUNDLE_DIRECTORY: bundle
+
+jobs:
+  bundle:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Download MSIX artifacts (same run)
+        if: ${{ (inputs.build_run_id == '' || inputs.build_run_id == null) && (github.event.inputs.build_run_id == '' || github.event.inputs.build_run_id == null) }}
+        uses: actions/download-artifact@v4
+        with:
+          name: Msix
+          path: ${{ env.ARTIFACT_DIRECTORY }}
+
+      - name: Download MSIX artifacts (using run-id)
+        if: ${{ (inputs.build_run_id != '' && inputs.build_run_id != null) || (github.event.inputs.build_run_id != '' && github.event.inputs.build_run_id != null) }}
+        uses: actions/download-artifact@v4
+        with:
+          name: Msix
+          path: ${{ env.ARTIFACT_DIRECTORY }}
+          run-id: ${{ inputs.build_run_id != '' && inputs.build_run_id || github.event.inputs.build_run_id }}
+
+      - name: Ensure bundle directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path "${{ env.BUNDLE_DIRECTORY }}" | Out-Null
+
+      - name: Make msixbundle
+        id: bundler
+        uses: LanceMcCarthy/Action-MsixBundler@v1
+        with:
+          msix-folder: "${{ env.ARTIFACT_DIRECTORY }}"
+          msixbundle-filepath: "${{ env.BUNDLE_DIRECTORY }}/${{ env.Project_Name }}.msixbundle"
+          msixbundle-version: "${{ steps.gitversion.outputs.MajorMinorPatch }}.0"
+
+      - name: Upload Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: msixbundle
+          path: ${{ env.BUNDLE_DIRECTORY }}/*.msixbundle

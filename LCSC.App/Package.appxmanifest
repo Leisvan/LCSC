@@ -10,7 +10,7 @@
   <Identity
     Name="864LCTWorks.LCSC"
     Publisher="CN=5977B261-AAFE-4B70-9EC9-92AACD7DD5BD"
-    Version="1.0.10.0" />
+    Version="1.0.11.0" />
 
   <mp:PhoneIdentity PhoneProductId="c3075fba-9a28-4ce3-93e6-7d19fd0208d2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

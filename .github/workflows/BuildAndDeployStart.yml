@@ -1,0 +1,29 @@
+﻿name: Build and Deploy to Store
+
+on:
+  push:
+    branches:
+      - release/*
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or tag to build'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with: {}
+  bundle:
+    needs: build
+    uses: ./.github/workflows/bundle.yml
+    with: {}
+  upload:
+    needs: bundle
+    uses: ./.github/workflows/store-upload.yml
+    with: {}
+    secrets: inherit

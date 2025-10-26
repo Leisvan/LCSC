@@ -13,9 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCSC.Discord", "LCSC.Bot\LC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCSC.App", "LCSC.App\LCSC.App.csproj", "{8210A1B9-6962-49C9-AAFC-27FF1DF96375}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{32E88307-DB63-4E64-80E1-0C018D5938F2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github-workflows", ".github-workflows", "{32E88307-DB63-4E64-80E1-0C018D5938F2}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\BuildAndStoreDeploy.yml = .github\workflows\BuildAndStoreDeploy.yml
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\bundle.yml = .github\workflows\bundle.yml
+		.github\workflows\BuildAndDeployStart.yml = .github\workflows\BuildAndDeployStart.yml
+		.github\workflows\store-upload.yml = .github\workflows\store-upload.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{9D213082-539B-46E3-B6C0-6E3D8D8010A4}"
