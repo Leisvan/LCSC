@@ -18,11 +18,8 @@ permissions:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  package:
-    needs: build
-    uses: ./.github/workflows/bundle.yml
   upload:
-    needs: package
+    needs: build
     uses: ./.github/workflows/store-upload.yml
     secrets: inherit
   tag:
