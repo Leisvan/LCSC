@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github-workflows", ".githu
 		.github\workflows\build.yml = .github\workflows\build.yml
 		.github\workflows\bundle.yml = .github\workflows\bundle.yml
 		.github\workflows\BuildAndDeployStart.yml = .github\workflows\BuildAndDeployStart.yml
+		.github\workflows\gittag.yml = .github\workflows\gittag.yml
 		.github\workflows\store-upload.yml = .github\workflows\store-upload.yml
 	EndProjectSection
 EndProject

@@ -132,6 +132,18 @@
                             </StackPanel>
                         </controls:SettingsCard.Header>
                     </controls:SettingsCard>
+                    <controls:SettingsCard Description="Programe 'Actualizar y mostrar' para que se ejecute a la hora deseada."
+                                           Header="Temporizador">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.IsDispatcherRunning, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="Hora #1"
+                                           IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                        <TimePicker Time="{x:Bind ViewModel.ScheduleTime1, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="Hora #2"
+                                           IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                        <TimePicker Time="{x:Bind ViewModel.ScheduleTime2, Mode=TwoWay}" />
+                    </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
             <controls:SettingsExpander Grid.Row="2"

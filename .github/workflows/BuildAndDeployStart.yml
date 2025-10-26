@@ -12,13 +12,19 @@ on:
         default: ''
 
 permissions:
-  contents: read
+  contents: write
   actions: write
 
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  upload:
+  package:
     needs: build
+    uses: ./.github/workflows/bundle.yml
+  upload:
+    needs: package
     uses: ./.github/workflows/store-upload.yml
     secrets: inherit
+  tag:
+    needs: upload
+    uses: ./.github/workflows/gittag.yml

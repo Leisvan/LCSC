@@ -1,0 +1,60 @@
+name: Git Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional explicit tag (e.g., 1.2.3.0). If empty, computed with GitVersion.'
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Optional explicit tag (e.g., 1.2.3.0). If empty, computed with GitVersion.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install GitVersion
+        if: ${{ (inputs.tag == '' || inputs.tag == null) && (github.event.inputs.tag == '' || github.event.inputs.tag == null) }}
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: gitversion
+        if: ${{ (inputs.tag == '' || inputs.tag == null) && (github.event.inputs.tag == '' || github.event.inputs.tag == null) }}
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Compute tag value
+        id: tagval
+        shell: pwsh
+        run: |
+          $t = '${{ inputs.tag }}'
+          if ([string]::IsNullOrWhiteSpace($t)) { $t = '${{ github.event.inputs.tag }}' }
+          if ([string]::IsNullOrWhiteSpace($t)) { $t = "${{ steps.gitversion.outputs.MajorMinorPatch }}.0" }
+          "TAG=$t" >> $env:GITHUB_OUTPUT
+          Write-Host "Tag to create: $t"
+
+      - name: Create tag with github-tag-action
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.tagval.outputs.TAG }}
+          tag_prefix: ''                 # do not prefix with 'v'
+          create_annotated_tag: true     # optional, makes an annotated tag
+          fetch_all_tags: true
+          commit_sha: ${{ github.sha }}
