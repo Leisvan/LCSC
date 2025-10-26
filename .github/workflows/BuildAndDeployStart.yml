@@ -30,7 +30,7 @@ jobs:
     needs: upload
     uses: ./.github/workflows/log.yml
     with:
-      username: 'LCSC Bot'
-      avatar_url: 'https://example.com/avatar.png'
-      thumbnail_url: 'https://example.com/thumbnail.png'
+      username: 'Henrietta the Whale'
+      avatar_url: 'https://github.com/Leisvan/LCSC/blob/master/.assets/AvatarLogo.png?raw=true'
+      thumbnail_url: 'https://github.com/Leisvan/LCSC/blob/master/.assets/LCSC.Logo.png?raw=true'
     secrets: inherit
