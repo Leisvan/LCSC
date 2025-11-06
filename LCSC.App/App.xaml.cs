@@ -5,7 +5,7 @@ using LCSC.Core.Helpers;
 using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
 using LCSC.Discord.Services;
-using LCTWorks.Services.Telemetry;
+using LCTWorks.Telemetry;
 using LCTWorks.WinUI.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +70,7 @@ namespace LCSC.App
 
             //Telemetry
             .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, RuntimePackageHelper.GetTelemetryContextData())
+            .AddSerilog(AppStorageHelper.GetLocalFolder("Log").Path, BuildHelper.IsDebugBuild ? Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Information, BuildHelper.IsDebugBuild, includeConsole: true)
 
             //Build:
             .BuildServiceProvider(true);

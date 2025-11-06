@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LCSC.Core.Helpers;
 using LCSC.Discord.Services;
 using LCSC.Models;
-using LCTWorks.Common;
+using LCTWorks.Core;
 using LCTWorks.WinUI.Helpers;
 using Microsoft.UI.Dispatching;
 using System;

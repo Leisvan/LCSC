@@ -1,7 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Extensions;
 using DSharpPlus.Interactivity.Extensions;
 using LCSC.Discord.Commands;
