@@ -18,7 +18,7 @@ namespace LCSC.Discord.Extensions
 
             services
                 .AddDiscordClient(token, DiscordIntents.Guilds | DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents | SlashCommandProcessor.RequiredIntents)
-                .AddCommandsExtension((IServiceProvider serviceProvider, CommandsExtension extension) =>
+                .AddCommandsExtension((serviceProvider, extension) =>
                 {
                     extension.AddCommands([typeof(LadderCommand)]);
                 })

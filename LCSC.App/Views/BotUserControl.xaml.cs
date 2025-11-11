@@ -1,5 +1,4 @@
 using LCSC.App.ViewModels;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
@@ -17,6 +16,5 @@ public sealed partial class BotUserControl : UserControl
 
     private void WrapPanel_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
     {
-
     }
 }
