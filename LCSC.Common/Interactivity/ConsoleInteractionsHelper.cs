@@ -35,8 +35,13 @@ public static class ConsoleInteractionsHelper
     public static void WriteErrorLine(string message)
         => WriteLine(message, ConsoleColor.Red);
 
-    public static void WriteLine(string message, ConsoleColor color = ConsoleColor.Gray)
+    public static void WriteLine(string message, ConsoleColor color = ConsoleColor.Gray, bool includeTimeSpan = true)
     {
+        var time = DateTime.Now.ToLocalTime();
+        if (includeTimeSpan)
+        {
+            message = $"[{time:HH:mm:ss}] {message}";
+        }
         ForegroundColor = color;
         Console.WriteLine(message);
         ResetForegroundColor();

@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LCSC.App.Helpers;
 using LCSC.Core.Helpers;
 using LCSC.Discord.Services;
 using LCSC.Models;
+using LCTWorks.Core;
 using LCTWorks.WinUI.Helpers;
+using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,7 +16,8 @@ namespace LCSC.App.ViewModels;
 public partial class DiscordBotViewModel(DiscordBotService botService) : ObservableObject
 {
     private readonly DiscordBotService _botService = botService;
-    private readonly DispatcherHelper _dispatcherHelper = new();
+    private readonly DispatcherQueue _dispatcher = DispatcherQueue.GetForCurrentThread();
+    private readonly ScheduleTimer _timer = new();
     private TimeSpan _scheduleTime1 = TimeSpan.FromHours(12);
     private TimeSpan _scheduleTime2 = TimeSpan.FromHours(0);
 
@@ -29,18 +31,18 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     public bool IsDisconnected => !IsConnected;
 
-    public bool IsDispatcherRunning
+    public bool IsTimerRunning
     {
-        get => _dispatcherHelper?.IsRunning ?? false;
+        get => _timer?.IsRunning ?? false;
         set
         {
             if (value)
             {
-                _dispatcherHelper?.Start();
+                _timer?.Start();
             }
             else
             {
-                _dispatcherHelper?.Stop();
+                _timer?.Stop();
             }
             OnPropertyChanged();
         }
@@ -53,7 +55,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             if (SetProperty(ref _scheduleTime1, value))
             {
-                UpdateDispatcherTimes();
+                UpdateTimer();
                 LocalSettingsHelper.SaveSetting(nameof(ScheduleTime1), ScheduleTime1);
             }
         }
@@ -66,7 +68,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             if (SetProperty(ref _scheduleTime2, value))
             {
-                UpdateDispatcherTimes();
+                UpdateTimer();
                 LocalSettingsHelper.SaveSetting(nameof(ScheduleTime2), ScheduleTime2);
             }
         }
@@ -79,21 +81,17 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             IsConnected = true;
             await LoadAsync();
-            StartDispatcher();
+            StartTimer();
         }
     }
 
     [RelayCommand]
     private async Task DisconnectBot()
     {
+        CancelUpdateRank();
         await _botService.DisconnectAsync();
         IsConnected = false;
-        _dispatcherHelper.Stop();
-    }
-
-    private void DispatcherTick(object? sender, EventArgs e)
-    {
-        UpdateAndDisplayRank(false);
+        _timer.Stop();
     }
 
     private async Task LoadAsync(bool forceRefresh = false)
@@ -125,25 +123,37 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         return Task.CompletedTask;
     }
 
-    private void StartDispatcher()
+    private void StartTimer()
     {
-        _dispatcherHelper.Tick -= DispatcherTick;
-        _dispatcherHelper.Tick += DispatcherTick;
-        IsDispatcherRunning = true;
-        _dispatcherHelper.ClearTickTimes();
+        _timer.Tick -= TimerTick;
+        _timer.Tick += TimerTick;
+        IsTimerRunning = true;
+        _timer.ClearCheckPoints();
+        _timer.Start();
 
         _scheduleTime1 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime1), TimeSpan.FromHours(12));
         _scheduleTime2 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime2), TimeSpan.FromHours(0));
         OnPropertyChanged(nameof(ScheduleTime1));
         OnPropertyChanged(nameof(ScheduleTime2));
-        UpdateDispatcherTimes();
+        UpdateTimer();
     }
 
-    private void UpdateDispatcherTimes()
+    private async void TimerTick(object? sender, EventArgs e)
     {
-        _dispatcherHelper.ClearTickTimes();
-        _dispatcherHelper.AddTickTime(ScheduleTime1);
-        _dispatcherHelper.AddTickTime(ScheduleTime2);
+        try
+        {
+            await UpdateAndDisplayRank(false).ConfigureAwait(false);
+        }
+        catch
+        {
+        }
+    }
+
+    private void UpdateTimer()
+    {
+        _timer.ClearCheckPoints();
+        _timer.AddCheckPoint(ScheduleTime1);
+        _timer.AddCheckPoint(ScheduleTime2);
     }
 
     #region Ranking commands
@@ -190,12 +200,12 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             return;
         }
-        IsRankingBusy = true;
+        await UIDispatchAsync(() => IsRankingBusy = true);
         if (updateRegions)
         {
             if (!await _botService.UpdateMemberRegionsAsync(forceUpdate, SelectedGuild.GuildId))
             {
-                IsRankingBusy = false;
+                await UIDispatchAsync(() => IsRankingBusy = false);
                 return;
             }
         }
@@ -203,7 +213,15 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             await _botService.DisplayRankAsync(includeBanned, SelectedGuild.GuildId);
         }
-        IsRankingBusy = false;
+        await UIDispatchAsync(() => IsRankingBusy = false);
+    }
+
+    private async Task UIDispatchAsync(Action action)
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            action();
+        });
     }
 
     #endregion Ranking commands

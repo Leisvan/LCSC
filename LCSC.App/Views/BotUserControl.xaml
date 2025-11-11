@@ -4,6 +4,7 @@
              xmlns:appBehaviors="using:LCSC.App.Behaviors"
              xmlns:controls="using:CommunityToolkit.WinUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="using:LCSC.Core.Helpers"
              xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
              xmlns:lctWorks="using:LCTWorks.WinUI.Controls"
              xmlns:local="using:LCSC.App.Views"
@@ -163,14 +164,14 @@
                         </controls:SettingsCard>
                         <controls:SettingsCard Description="Programe 'Actualizar y mostrar' para que se ejecute a la hora deseada."
                                                Header="Temporizador">
-                            <ToggleSwitch IsOn="{x:Bind ViewModel.IsDispatcherRunning, Mode=TwoWay}" />
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.IsTimerRunning, Mode=TwoWay}" />
                         </controls:SettingsCard>
                         <controls:SettingsCard Header="Hora #1"
-                                               IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                                               IsEnabled="{x:Bind ViewModel.IsTimerRunning, Mode=OneWay}">
                             <TimePicker Time="{x:Bind ViewModel.ScheduleTime1, Mode=TwoWay}" />
                         </controls:SettingsCard>
                         <controls:SettingsCard Header="Hora #2"
-                                               IsEnabled="{x:Bind ViewModel.IsDispatcherRunning, Mode=OneWay}">
+                                               IsEnabled="{x:Bind ViewModel.IsTimerRunning, Mode=OneWay}">
                             <TimePicker Time="{x:Bind ViewModel.ScheduleTime2, Mode=TwoWay}" />
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
@@ -189,6 +190,32 @@
                                                 Spacing="8">
                                         <Button Content="Test"
                                                 Style="{ThemeResource AccentButtonStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:SettingsCard.Header>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+                <controls:SettingsExpander Grid.Row="3"
+                                           Header="Debug"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}"
+                                           Visibility="{x:Bind helpers:BuildHelper.IsDebugBuild}">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard>
+                            <controls:SettingsCard.Header>
+                                <StackPanel Margin="0,16"
+                                            Spacing="8">
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="8">
+                                        <lctWorks:ThemedButton Content="Content"
+                                                               Style="{ThemeResource AccentThemedButtonStyle}" />
+                                        <lctWorks:ThemedButton Glyph="check_circle"
+                                                               GlyphFontFamily="{StaticResource MaterialSymbolsFontFamily}"
+                                                               Style="{ThemeResource AccentThemedButtonStyle}" />
+                                        <lctWorks:ThemedButton Content="Check"
+                                                               Glyph="check_circle"
+                                                               GlyphFontFamily="{StaticResource MaterialSymbolsFontFamily}"
+                                                               Style="{ThemeResource AccentThemedButtonStyle}" />
                                     </StackPanel>
                                 </StackPanel>
                             </controls:SettingsCard.Header>

@@ -1,7 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Extensions;
 using DSharpPlus.Interactivity.Extensions;
 using LCSC.Discord.Commands;
@@ -19,7 +18,7 @@ namespace LCSC.Discord.Extensions
 
             services
                 .AddDiscordClient(token, DiscordIntents.Guilds | DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents | SlashCommandProcessor.RequiredIntents)
-                .AddCommandsExtension((IServiceProvider serviceProvider, CommandsExtension extension) =>
+                .AddCommandsExtension((serviceProvider, extension) =>
                 {
                     extension.AddCommands([typeof(LadderCommand)]);
                 })

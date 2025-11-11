@@ -10,8 +10,6 @@ using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using System.Globalization;
-using System.Net.Http.Headers;
-using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace LCSC.Discord.Services.Internal

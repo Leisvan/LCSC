@@ -33,15 +33,6 @@ jobs:
           merge-multiple: true
           path: ${{ env.PACKAGE_DIRECTORY }}
 
-      # - name: Download MSIX artifacts (using run-id)
-      #   if: ${{ (inputs.build_run_id != '' && inputs.build_run_id != null) || (github.event.inputs.build_run_id != '' && github.event.inputs.build_run_id != null) }}
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     pattern: Msix-*
-      #     merge-multiple: true
-      #     path: ${{ env.PACKAGE_DIRECTORY }}
-      #     run-id: ${{ inputs.build_run_id != '' && inputs.build_run_id || github.event.inputs.build_run_id }}
-
       - name: Publish to Store
         uses: isaacrlevin/windows-store-action@1.0
         with:
