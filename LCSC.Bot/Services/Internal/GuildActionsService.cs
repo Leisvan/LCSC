@@ -100,10 +100,10 @@ namespace LCSC.Discord.Services.Internal
                 {
                     continue;
                 }
-                var region = GetValidLadderRegion(member, seasonId);
-                if (region != null)
+                var regions = GetValidLadderRegions(member, seasonId);
+                if (regions != null)
                 {
-                    entries.Add((member.Record, region));
+                    entries.AddRange(regions.Select(r => (member.Record, r)));
                 }
             }
 
@@ -247,20 +247,21 @@ namespace LCSC.Discord.Services.Internal
                 + "`TOTAL`"; //Total games played
         }
 
-        private static LadderRegionRecord? GetValidLadderRegion(MemberModel? model, int seasonId)
+        private static List<LadderRegionRecord> GetValidLadderRegions(MemberModel? model, int seasonId)
         {
             if (model?.Profiles == null)
             {
-                return null;
+                return [];
             }
-            var profile = model.Profiles
-                .Where(p => p.LadderRegion != null)
-                .Where(p => p.LadderRegion?.SeasonId == seasonId)
-                .Select(p => p.LadderRegion)
+            var regions = model.Profiles
+                .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
+                .SelectMany(p => p.LadderRegions!)
+                .Where(r => r.SeasonId == seasonId)
                 .OrderByDescending(r => r?.CurrentMMR ?? 0)
-                .FirstOrDefault();
+                .DistinctBy(r => r.Race)
+                .ToList();
 
-            return profile;
+            return regions;
         }
 
         private static void WriteToConsole(string message, ConsoleColor foregroundColor = ConsoleColor.White)

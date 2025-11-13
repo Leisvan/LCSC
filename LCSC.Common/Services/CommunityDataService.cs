@@ -5,8 +5,9 @@ using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
 using LCTWorks.Core.Extensions;
-using Newtonsoft.Json;
 using LCTWorks.Core.Helpers;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace LCSC.Core.Services;
 
@@ -238,25 +239,16 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
                 }
                 return -1;
             }
+
             var profile = profilesList[i];
             if (progressReport != null)
             {
                 await progressReport.Invoke(new RegionUpdateProgressReportData(i + 1, profilesList.Count, $"`{profile.Record.BattleTag}`"));
             }
-
-            if (regionUpdateThreshold != null)
+            var regions = await UpdateRegionsInternalAsync(profile, regionUpdateThreshold);
+            foreach (var item in regions.Where(r => r.IsUpdated))
             {
-                if (profile.LadderRegion != null &&
-                    profile.LadderRegion.LastUpdated + regionUpdateThreshold > DateTime.UtcNow)
-                {
-                    continue;
-                }
-            }
-
-            var region = await UpdateSingleRegionInternalAsync(profile);
-            if (region != null && region.IsUpdated)
-            {
-                updatedRegions.Add(region);
+                updatedRegions.Add(item);
             }
         }
         if (updatedRegions.Count > 0)
@@ -289,12 +281,11 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
         }
         foreach (var profile in profiles)
         {
-            var region = await UpdateSingleRegionInternalAsync(profile);
-            if (region == null || !region.IsUpdated)
+            var profileRegions = await UpdateRegionsInternalAsync(profile);
+            foreach (var item in profileRegions.Where(r => !r.IsUpdated))
             {
-                continue;
+                regions.Add(item);
             }
-            regions.Add(region);
         }
         if (regions.Count == 0)
         {
@@ -395,26 +386,24 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
             var ladderRegions = await _airtableHttpService.GetLadderRegionsAsync() ?? [];
             var results = new Dictionary<string, List<BattleNetProfileModel>>();
 
-            var regionsMap = ladderRegions
+            var regionsLookup = ladderRegions
                 .Where(x => x.BattleNetProfiles?.Length > 0)
-                .ToDictionaryIgnoreDuplicateKeys(x => x.BattleNetProfiles?.FirstOrDefault() ?? string.Empty);
+                .ToLookup(x => x.BattleNetProfiles!.FirstOrDefault() ?? string.Empty);
 
             foreach (var item in bnetProfiles)
             {
-                regionsMap.TryGetValue(item.Id, out var region);
                 var id = item.Members?.FirstOrDefault();
-                if (id != null)
+                if (id == null)
                 {
-                    if (!results.TryGetValue(id, out List<BattleNetProfileModel>? value))
-                    {
-                        value = [];
-                        results[id] = value;
-                    }
-                    value.Add(new BattleNetProfileModel(item, region));
+                    continue;
                 }
-                else
+                if (!results.TryGetValue(id, out List<BattleNetProfileModel>? value))
                 {
+                    value = [];
+                    results[id] = value;
                 }
+                var allRegions = regionsLookup[item.Id];
+                value.Add(new BattleNetProfileModel(item, [.. allRegions]));
             }
             return results;
         }
@@ -553,40 +542,58 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
         }
     }
 
-    private async Task<LadderRegionModel?> UpdateSingleRegionInternalAsync(BattleNetProfileModel profile)
+    private async Task<List<LadderRegionModel>> UpdateRegionsInternalAsync(BattleNetProfileModel profile, TimeSpan? regionUpdateThreshold = null)
     {
         if (profile == null || profile.Record == null)
         {
-            return default;
+            return [];
         }
 
-        var id = profile.LadderRegion?.Id ?? string.Empty;
-
-        var team = await _ladderService.Get1v1TeamAsync(profile.Record.PulseId);
-        if (team == null)
+        var teams = await _ladderService.Get1v1TeamsAsync(profile.Record.PulseId);
+        if (teams.Count == 0)
         {
-            return default;
+            return [];
+        }
+        var list = new List<LadderRegionModel>();
+        foreach (var item in teams)
+        {
+            var itemRace = LadderHelper.GetRaceFromTeamResult(item);
+            string itemRaceText = itemRace == Race.Unknown ? string.Empty : itemRace.ToString();
+
+            var storedRegion = profile.LadderRegions?.FirstOrDefault(r => r.SeasonId == item.Season && r.Race == itemRaceText);
+
+            if (storedRegion != null && regionUpdateThreshold != null)
+            {
+                if (regionUpdateThreshold != null)
+                {
+                    if (storedRegion.LastUpdated + regionUpdateThreshold > DateTime.UtcNow)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            var id = storedRegion?.Id ?? string.Empty;
+            var previousMMR = storedRegion?.CurrentMMR ?? 0;
+            var regionUpdated = !AreRegionsEqual(storedRegion, item);
+
+            var region = new LadderRegionModel(
+                id,
+                item.Season,
+                item.Region,
+                itemRaceText,
+                item.Rating,
+                previousMMR,
+                item.LeagueType,
+                item.TierType,
+                item.Wins,
+                (item.Wins + item.Losses + item.Ties),
+                profile.Record.Id,
+                regionUpdated);
+
+            list.Add(region);
         }
 
-        var regionUpdated = !AreRegionsEqual(profile.LadderRegion, team);
-
-        var previousMMR = profile.LadderRegion?.CurrentMMR ?? 0;
-
-        var race = LadderHelper.GetRaceFromTeamResult(team);
-        string raceText = race == Race.Unknown ? string.Empty : race.ToString();
-
-        return new LadderRegionModel(
-            id,
-            team.Season,
-            team.Region,
-            raceText,
-            team.Rating,
-            previousMMR,
-            team.LeagueType,
-            team.TierType,
-            team.Wins,
-            (team.Wins + team.Losses + team.Ties),
-            profile.Record.Id,
-            true);
+        return list;
     }
 }
