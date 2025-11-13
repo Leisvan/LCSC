@@ -86,6 +86,9 @@ namespace LCSC.Discord.Services
             return members;
         }
 
+        public Task PruneRegionsAsync()
+            => _communityDataService.PruneRegionsAsync();
+
         public async Task<bool> UpdateMemberRegionsAsync(bool forceUpdate = false, ulong guildId = 0)
         {
             var guildSettings = _communityDataService.GetGuildSettings(guildId);

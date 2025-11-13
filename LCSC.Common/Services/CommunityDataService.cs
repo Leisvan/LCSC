@@ -160,6 +160,36 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
         }
     }
 
+    public async Task<int> PruneRegionsAsync()
+    {
+        var currentSeasonId = await _ladderService.GetSeasonIdAsync();
+        if (currentSeasonId == 0)
+        {
+            return 0;
+        }
+        var regions = (await _airtableHttpService.GetLadderRegionsAsync());
+        if (regions == null || !regions.Any())
+        {
+            return 0;
+        }
+        var regionsToDelete = new List<string>();
+
+        foreach (var region in regions)
+        {
+            if (region.SeasonId < currentSeasonId)
+            {
+                regionsToDelete.Add(region.Id);
+            }
+        }
+        if (regionsToDelete.Count > 0)
+        {
+            var successCount = await _airtableHttpService.DeleteRegionsAsync(regionsToDelete);
+            await RefreshAllAsync();
+            return successCount;
+        }
+        return 0;
+    }
+
     public async Task<ProfileSearchResult?> SearchProfileByBattleTag(string? battleTag)
     {
         if (battleTag == null)

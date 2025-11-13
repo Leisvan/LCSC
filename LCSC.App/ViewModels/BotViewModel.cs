@@ -74,6 +74,18 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         }
     }
 
+    private void ConfigureTimer()
+    {
+        _timer.Tick -= TimerTick;
+        _timer.Tick += TimerTick;
+
+        _scheduleTime1 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime1), TimeSpan.FromHours(12));
+        _scheduleTime2 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime2), TimeSpan.FromHours(0));
+        OnPropertyChanged(nameof(ScheduleTime1));
+        OnPropertyChanged(nameof(ScheduleTime2));
+        UpdateTimer();
+    }
+
     [RelayCommand]
     private async Task ConnectBot()
     {
@@ -81,7 +93,7 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             IsConnected = true;
             await LoadAsync();
-            StartTimer();
+            ConfigureTimer();
         }
     }
 
@@ -121,21 +133,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
             return LoadAsync(true);
         }
         return Task.CompletedTask;
-    }
-
-    private void StartTimer()
-    {
-        _timer.Tick -= TimerTick;
-        _timer.Tick += TimerTick;
-        IsTimerRunning = true;
-        _timer.ClearCheckPoints();
-        _timer.Start();
-
-        _scheduleTime1 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime1), TimeSpan.FromHours(12));
-        _scheduleTime2 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime2), TimeSpan.FromHours(0));
-        OnPropertyChanged(nameof(ScheduleTime1));
-        OnPropertyChanged(nameof(ScheduleTime2));
-        UpdateTimer();
     }
 
     private async void TimerTick(object? sender, EventArgs e)
@@ -213,6 +210,16 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             await _botService.DisplayRankAsync(includeBanned, SelectedGuild.GuildId);
         }
+        await UIDispatchAsync(() => IsRankingBusy = false);
+    }
+
+    [RelayCommand]
+    private async Task PruneRegionsAsync()
+    {
+        await UIDispatchAsync(() => IsRankingBusy = true);
+
+        await _botService.PruneRegionsAsync();
+
         await UIDispatchAsync(() => IsRankingBusy = false);
     }
 

@@ -162,6 +162,17 @@
                                 </Button>
                             </StackPanel>
                         </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                               Description="Limpia las regiones de temporadas pasadas."
+                                               Header="Limpiar">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.PruneRegionsCommand}"
+                                                       Content="Limpiar regiones"
+                                                       IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}"
+                                                       Style="{ThemeResource WarningThemedButtonStyle}" />
+                            </StackPanel>
+                        </controls:SettingsCard>
                         <controls:SettingsCard Description="Programe 'Actualizar y mostrar' para que se ejecute a la hora deseada."
                                                Header="Temporizador">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.IsTimerRunning, Mode=TwoWay}" />

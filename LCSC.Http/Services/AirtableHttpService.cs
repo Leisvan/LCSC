@@ -31,6 +31,36 @@ public class AirtableHttpService(string? airtableToken, string? baseId)
         return result.Success ? result.Record.Id : null;
     }
 
+    public async Task<int> DeleteRegionsAsync(List<string> regionIds)
+    {
+        if (!IsConfigured)
+        {
+            return 0;
+        }
+        if (regionIds.Count == 0)
+        {
+            return 0;
+        }
+        using var airtableBase = new AirtableBase(_airtableToken, _baseId);
+        int successCount = 0;
+        foreach (var id in regionIds)
+        {
+            try
+            {
+                var results = await airtableBase.DeleteRecord(LadderRegionsTableName, id);
+                if (results.Success)
+                {
+                    successCount++;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        return successCount;
+    }
+
     public async Task<IEnumerable<BattleNetProfileRecord>?> GetBattleNetProfilesAsync()
     {
         var records = await GetRecordsAsync(ProfilesTableName);
