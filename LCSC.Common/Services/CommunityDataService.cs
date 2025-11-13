@@ -227,6 +227,7 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
             .Where(m => includeBannedPlayers || !m.Record.Banned)
             .Where(m => m.Profiles != null && m.Profiles.Count > 0)
             .SelectMany(m => m.Profiles!)
+            //.Take(10)
             .ToList();
         var updatedRegions = new List<LadderRegionModel>();
         for (int i = 0; i < profilesList.Count; i++)
@@ -246,7 +247,7 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
                 await progressReport.Invoke(new RegionUpdateProgressReportData(i + 1, profilesList.Count, $"`{profile.Record.BattleTag}`"));
             }
             var regions = await UpdateRegionsInternalAsync(profile, regionUpdateThreshold);
-            foreach (var item in regions.Where(r => r.IsUpdated))
+            foreach (var item in regions)
             {
                 updatedRegions.Add(item);
             }
@@ -575,7 +576,6 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
 
             var id = storedRegion?.Id ?? string.Empty;
             var previousMMR = storedRegion?.CurrentMMR ?? 0;
-            var regionUpdated = !AreRegionsEqual(storedRegion, item);
 
             var region = new LadderRegionModel(
                 id,
@@ -589,7 +589,7 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
                 item.Wins,
                 (item.Wins + item.Losses + item.Ties),
                 profile.Record.Id,
-                regionUpdated);
+                true);
 
             list.Add(region);
         }
