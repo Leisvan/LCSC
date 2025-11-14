@@ -48,10 +48,20 @@ public record class MemberModel(
             _bestRegion = null;
             return;
         }
-        _bestRegion = Profiles
-            .Select(x => x.LadderRegion)
-            .Where(x => x != null && x.SeasonId == seasonId)
-            .OrderByDescending(x => x?.CurrentMMR ?? 0)
+        var allRegions = new List<LadderRegionRecord>();
+        foreach (var item in Profiles.Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0))
+        {
+            var region = item.LadderRegions?
+                .Where(x => x != null && x.SeasonId == seasonId)
+                .OrderByDescending(x => x?.CurrentMMR ?? 0)
+                .FirstOrDefault();
+            if (region != null)
+            {
+                allRegions.Add(region);
+            }
+        }
+        _bestRegion = allRegions
+            .OrderByDescending(x => x.CurrentMMR)
             .FirstOrDefault();
     }
 
@@ -76,7 +86,13 @@ public record class MemberModel(
         {
             if (Profiles != null)
             {
-                return Profiles.Select(x => x.LadderRegion?.CurrentMMR).Max()?.ToString() ?? string.Empty;
+                return Profiles
+                    .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
+                    .SelectMany(p => p.LadderRegions!)
+                        .Select(x => x.CurrentMMR)
+                        .Max()
+                        .ToString()
+                    ?? string.Empty;
             }
             return string.Empty;
         }

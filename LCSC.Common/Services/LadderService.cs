@@ -137,28 +137,35 @@ namespace LCSC.Core.Services
             return 0;
         }
 
-        internal async Task<Team?> Get1v1TeamAsync(string? pulseId)
+        internal async Task<List<Team>> Get1v1TeamsAsync(string? pulseId)
         {
             if (string.IsNullOrEmpty(pulseId))
             {
-                return null;
+                return [];
             }
             var result = await _pulseHttpService.GetCharacterCommonDataAsync(pulseId);
             if (result == null)
             {
-                return null;
+                return [];
             }
             var seasonId = await GetSeasonIdAsync();
-            var validTeam = result.Teams?
-                .Where(t => t.QueueType == 201 && t.Season == seasonId)
-                .FirstOrDefault();
-
-            if (validTeam == null)
+            if (seasonId == 0)
             {
-                return null;
+                return [];
             }
-            await SetLadderTiersAsync(validTeam);
-            return validTeam;
+            var validTeams = result.Teams?
+                .Where(t => t.QueueType == 201 && t.Season == seasonId)
+                .ToList();
+
+            if (validTeams == null || validTeams.Count == 0)
+            {
+                return [];
+            }
+            foreach (var team in validTeams)
+            {
+                await SetLadderTiersAsync(team);
+            }
+            return validTeams;
         }
 
         private async Task SetLadderTiersAsync(Team? team)
