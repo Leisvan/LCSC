@@ -17,9 +17,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 {
     private readonly DiscordBotService _botService = botService;
     private readonly DispatcherQueue _dispatcher = DispatcherQueue.GetForCurrentThread();
-    private readonly ScheduleTimer _timer = new();
-    private TimeSpan _scheduleTime1 = TimeSpan.FromHours(12);
-    private TimeSpan _scheduleTime2 = TimeSpan.FromHours(0);
 
     private GuildSettingsModel? _selectedGuild;
 
@@ -31,61 +28,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     public bool IsDisconnected => !IsConnected;
 
-    public bool IsTimerRunning
-    {
-        get => _timer?.IsRunning ?? false;
-        set
-        {
-            if (value)
-            {
-                _timer?.Start();
-            }
-            else
-            {
-                _timer?.Stop();
-            }
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeSpan ScheduleTime1
-    {
-        get => _scheduleTime1;
-        set
-        {
-            if (SetProperty(ref _scheduleTime1, value))
-            {
-                UpdateTimer();
-                LocalSettingsHelper.SaveSetting(nameof(ScheduleTime1), ScheduleTime1);
-            }
-        }
-    }
-
-    public TimeSpan ScheduleTime2
-    {
-        get => _scheduleTime2;
-        set
-        {
-            if (SetProperty(ref _scheduleTime2, value))
-            {
-                UpdateTimer();
-                LocalSettingsHelper.SaveSetting(nameof(ScheduleTime2), ScheduleTime2);
-            }
-        }
-    }
-
-    private void ConfigureTimer()
-    {
-        _timer.Tick -= TimerTick;
-        _timer.Tick += TimerTick;
-
-        _scheduleTime1 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime1), TimeSpan.FromHours(12));
-        _scheduleTime2 = LocalSettingsHelper.ReadSetting(nameof(ScheduleTime2), TimeSpan.FromHours(0));
-        OnPropertyChanged(nameof(ScheduleTime1));
-        OnPropertyChanged(nameof(ScheduleTime2));
-        UpdateTimer();
-    }
-
     [RelayCommand]
     private async Task ConnectBot()
     {
@@ -93,7 +35,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         {
             IsConnected = true;
             await LoadAsync();
-            ConfigureTimer();
         }
     }
 
@@ -103,7 +44,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         CancelUpdateRank();
         await _botService.DisconnectAsync();
         IsConnected = false;
-        _timer.Stop();
     }
 
     private async Task LoadAsync(bool forceRefresh = false)
@@ -144,13 +84,6 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
         catch
         {
         }
-    }
-
-    private void UpdateTimer()
-    {
-        _timer.ClearCheckPoints();
-        _timer.AddCheckPoint(ScheduleTime1);
-        _timer.AddCheckPoint(ScheduleTime2);
     }
 
     #region Ranking commands

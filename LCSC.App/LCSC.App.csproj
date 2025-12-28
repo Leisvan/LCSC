@@ -46,6 +46,7 @@
     <Content Remove="Assets\UnknownPortrait.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\Config\appsettings.json" />
     <None Remove="Assets\Fonts\MaterialSymbols-Outlined-400.ttf" />
     <None Remove="Assets\Images\bnet.png" />
     <None Remove="Assets\Images\LCSC.png" />
