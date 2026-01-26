@@ -17,7 +17,7 @@ jobs:
     env:
       DOTNET_VERSION: '9.0.x'
       Configuration: 'Release'
-      Solution_Name: 'LCSC.sln'
+      Solution_Name: 'LCSC.slnx'
       Appx_Package_Dir: '${{ github.workspace }}'
 
     steps:
