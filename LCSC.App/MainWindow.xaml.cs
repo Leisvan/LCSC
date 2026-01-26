@@ -1,6 +1,5 @@
 using LCSC.App.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
 using WinUIEx;
 
 namespace LCSC.App

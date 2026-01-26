@@ -84,17 +84,17 @@ public record class MemberModel(
     {
         get
         {
-            if (Profiles != null)
+            if (Profiles == null)
             {
-                return Profiles
-                    .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
-                    .SelectMany(p => p.LadderRegions!)
-                        .Select(x => x.CurrentMMR)
-                        .Max()
-                        .ToString()
-                    ?? string.Empty;
+                return string.Empty;
             }
-            return string.Empty;
+
+            var maxRegion = Profiles
+                .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
+                .SelectMany(p => p.LadderRegions!)
+                .MaxBy(x => x.CurrentMMR);
+
+            return maxRegion?.CurrentMMR.ToString() ?? string.Empty;
         }
     }
 }

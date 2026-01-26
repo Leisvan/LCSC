@@ -3,8 +3,6 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:appBehaviors="using:LCSC.App.Behaviors"
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
-                xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
                 xmlns:local="using:LCSC.App"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 xmlns:views="using:LCSC.App.Views"
@@ -12,6 +10,7 @@
                 Title="LCSC"
                 MinWidth="800"
                 MinHeight="600"
+                Activated="{x:Bind ViewModel.Activated, Mode=OneWay}"
                 mc:Ignorable="d">
 
     <Grid Background="{StaticResource AppColor2}">
@@ -49,6 +48,6 @@
                    Margin="24,8"
                    HorizontalAlignment="Right"
                    Opacity=".6"
-                   Text="{x:Bind ViewModel.AppVersion}" />
+                   Text="{x:Bind ViewModel.AppVersionNotification, Mode=OneWay}" />
     </Grid>
 </winex:WindowEx>

@@ -6,6 +6,7 @@ using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
 using LCSC.Discord.Services;
 using LCTWorks.Telemetry;
+using LCTWorks.WinUI;
 using LCTWorks.WinUI.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,91 +17,92 @@ using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
-namespace LCSC.App
+namespace LCSC.App;
+
+public partial class App : Application, IAppExtended
 {
-    public partial class App : Application
+    private readonly ITelemetryService? _telemetryService;
+
+    public App()
     {
-        private readonly ITelemetryService? _telemetryService;
+        var configuration = ReadConfigurations();
+        Services = ConfigureServices(configuration);
+        BuildHelper.IsDebugBuild = AppHelper.IsDebug();
+        this.InitializeComponent();
 
-        public App()
+        _telemetryService = Services.GetService<ITelemetryService>();
+        UnhandledException += App_UnhandledException;
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+    }
+
+    public new static App Current => (App)Application.Current;
+
+    public static Window MainWindow { get; } = new MainWindow();
+
+    Window IAppExtended.MainWindow => MainWindow;
+
+    public IServiceProvider Services { get; }
+
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        MainWindow.Activate();
+    }
+
+    private static ServiceProvider ConfigureServices(IConfiguration configuration)
+        => new ServiceCollection()
+        //Services
+        .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
+        .AddSingleton(sp => new LadderService(sp.GetRequiredService<CacheService>(), configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
+        .AddSingleton(sp => new CommunityDataService(sp.GetRequiredService<LadderService>(), sp.GetRequiredService<CacheService>(), configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"], Package.Current.InstalledLocation.Path))
+
+        //Discord bot
+        .AddLogging(config =>
         {
-            var configuration = ReadConfigurations();
-            Services = ConfigureServices(configuration);
-            BuildHelper.IsDebugBuild = AppHelper.IsDebug();
-            this.InitializeComponent();
+            config.AddConsole();
+            config.AddProvider(new ConsoleLoggerProvider());
+        })
+        .AddSingleton<DiscordBotService>()
+        .ConfigureDiscordClient(configuration["DiscordSettings:token"])
 
-            _telemetryService = Services.GetService<ITelemetryService>();
-            UnhandledException += App_UnhandledException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-        }
+        //ViewModels
+        .AddSingleton<MainViewModel>()
+        .AddTransient<DiscordBotViewModel>()
+        .AddTransient<MembersViewModel>()
+        .AddTransient<TournamentsViewModel>()
 
-        public new static App Current => (App)Application.Current;
+        //Telemetry
+        .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, RuntimePackageHelper.GetTelemetryContextData())
+        .AddSerilog(AppStorageHelper.GetLocalFolder("Log").Path, BuildHelper.IsDebugBuild ? Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Information, BuildHelper.IsDebugBuild, includeConsole: true)
 
-        public static Window MainWindow { get; } = new MainWindow();
+        //Build:
+        .BuildServiceProvider(true);
 
-        public IServiceProvider Services { get; }
+    private static IConfiguration ReadConfigurations()
+    {
+        return new ConfigurationBuilder()
+            .SetBasePath(Package.Current.InstalledLocation.Path)
+            .AddJsonFile("assets\\Config\\appsettings.json", false)
+            .Build();
+    }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        => _telemetryService?.ReportUnhandledException(e.Exception);
+
+    private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+        => _telemetryService?.ReportUnhandledException(e.ExceptionObject as Exception ?? new Exception("Unknown exception"));
+
+    private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs? e)
+    {
+        if (e?.Exception == null)
         {
-            MainWindow.Activate();
+            return;
         }
-
-        private static ServiceProvider ConfigureServices(IConfiguration configuration)
-            => new ServiceCollection()
-            //Services
-            .AddSingleton(new CacheService(ApplicationData.GetDefault().LocalCachePath))
-            .AddSingleton(sp => new LadderService(sp.GetRequiredService<CacheService>(), configuration["BattleNetSettings:clientId"], configuration["BattleNetSettings:clientSecret"]))
-            .AddSingleton(sp => new CommunityDataService(sp.GetRequiredService<LadderService>(), sp.GetRequiredService<CacheService>(), configuration["AirBaseSettings:token"], configuration["AirBaseSettings:baseId"], Package.Current.InstalledLocation.Path))
-
-            //Discord bot
-            .AddLogging(config =>
-            {
-                config.AddConsole();
-                config.AddProvider(new ConsoleLoggerProvider());
-            })
-            .AddSingleton<DiscordBotService>()
-            .ConfigureDiscordClient(configuration["DiscordSettings:token"])
-
-            //ViewModels
-            .AddSingleton<MainViewModel>()
-            .AddTransient<DiscordBotViewModel>()
-            .AddTransient<MembersViewModel>()
-            .AddTransient<TournamentsViewModel>()
-
-            //Telemetry
-            .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, RuntimePackageHelper.GetTelemetryContextData())
-            .AddSerilog(AppStorageHelper.GetLocalFolder("Log").Path, BuildHelper.IsDebugBuild ? Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Information, BuildHelper.IsDebugBuild, includeConsole: true)
-
-            //Build:
-            .BuildServiceProvider(true);
-
-        private static IConfiguration ReadConfigurations()
+        var flattenedExceptions = e.Exception.Flatten().InnerExceptions;
+        foreach (var exception in flattenedExceptions)
         {
-            return new ConfigurationBuilder()
-                .SetBasePath(Package.Current.InstalledLocation.Path)
-                .AddJsonFile("assets\\Config\\appsettings.json", false)
-                .Build();
+            _telemetryService?.LogAndTrackError(GetType(), exception);
         }
-
-        private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-            => _telemetryService?.ReportUnhandledException(e.Exception);
-
-        private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
-            => _telemetryService?.ReportUnhandledException(e.ExceptionObject as Exception ?? new Exception("Unknown exception"));
-
-        private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs? e)
-        {
-            if (e?.Exception == null)
-            {
-                return;
-            }
-            var flattenedExceptions = e.Exception.Flatten().InnerExceptions;
-            foreach (var exception in flattenedExceptions)
-            {
-                _telemetryService?.LogAndTrackError(GetType(), exception);
-            }
-            e.SetObserved();
-        }
+        e.SetObserved();
     }
 }
