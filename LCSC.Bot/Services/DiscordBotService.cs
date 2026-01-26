@@ -2,12 +2,12 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
-using LCSC.Core.Interactivity;
 using LCSC.Core.Services;
 using LCSC.Discord.Helpers;
 using LCSC.Discord.Services.Internal;
 using LCSC.Discord.Strings;
 using LCSC.Models;
+using LCTWorks.Core.Interops;
 
 namespace LCSC.Discord.Services
 {
@@ -39,13 +39,13 @@ namespace LCSC.Discord.Services
         {
             try
             {
-                ConsoleInteractionsHelper.ClearConsole();
+                ConsoleInterops.ClearConsole();
                 await _client.ConnectAsync();
                 return true;
             }
             catch (Exception e)
             {
-                ConsoleInteractionsHelper.WriteErrorLine(e.Message);
+                ConsoleInterops.WriteErrorLine(e.Message);
                 return false;
             }
         }
@@ -55,12 +55,12 @@ namespace LCSC.Discord.Services
             try
             {
                 await _client.DisconnectAsync();
-                ConsoleInteractionsHelper.ClearConsole();
-                ConsoleInteractionsHelper.WriteLine(MessageResources.BotDisconnectedMessage);
+                ConsoleInterops.ClearConsole();
+                ConsoleInterops.WriteLine(MessageResources.BotDisconnectedMessage);
             }
             catch (Exception e)
             {
-                ConsoleInteractionsHelper.WriteErrorLine(e.Message);
+                ConsoleInterops.WriteErrorLine(e.Message);
             }
         }
 
@@ -70,7 +70,7 @@ namespace LCSC.Discord.Services
             if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
-                LogNotifier.NotifyError(errorMessage);
+                ConsoleInterops.WriteErrorLine(errorMessage);
                 return Task.CompletedTask;
             }
             return _guildActions.DisplayRankAsync(includeBanned, channelId);
@@ -95,7 +95,7 @@ namespace LCSC.Discord.Services
             if (guildSettings == null || !ulong.TryParse(guildSettings.RankingChannelId, out ulong channelId) || channelId == 0)
             {
                 var errorMessage = MessageResources.ChannelIdNotFoundErrorMessage;
-                LogNotifier.NotifyError(errorMessage);
+                ConsoleInterops.WriteErrorLine(errorMessage);
                 return false;
             }
             var errorResult = await _guildActions.UpdateMemberRegionsAsync(forceUpdate, guildId, channelId);

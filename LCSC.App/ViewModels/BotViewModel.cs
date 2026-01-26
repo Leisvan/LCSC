@@ -20,6 +20,9 @@ public partial class DiscordBotViewModel(DiscordBotService botService) : Observa
 
     private GuildSettingsModel? _selectedGuild;
 
+    [ObservableProperty]
+    public partial bool AutoScroll { get; set; } = true;
+
     public ObservableCollection<GuildSettingsModel> Guilds { get; } = [];
 
     [ObservableProperty]

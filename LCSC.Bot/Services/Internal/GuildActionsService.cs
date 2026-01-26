@@ -1,7 +1,6 @@
 ﻿using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using LCSC.Core.Interactivity;
 using LCSC.Core.Models;
 using LCSC.Core.Services;
 using LCSC.Discord.Extensions;
@@ -9,317 +8,312 @@ using LCSC.Discord.Helpers;
 using LCSC.Discord.Strings;
 using LCSC.Models;
 using LCSC.Models.Airtable;
+using LCTWorks.Core.Interops;
 using System.Globalization;
 using System.Text;
 
-namespace LCSC.Discord.Services.Internal
+namespace LCSC.Discord.Services.Internal;
+
+internal class GuildActionsService(
+    CommunityDataService communityDataService,
+    DiscordBotService botService,
+    LadderService ladderService,
+    InteractivityExtension interactivity)
 {
-    internal class GuildActionsService(
-        CommunityDataService communityDataService,
-        DiscordBotService botService,
-        LadderService ladderService,
-        InteractivityExtension interactivity)
+    private const char BlankSpace = ' ';
+    private const string DoubleSpaceCode = "`  `";
+    private const int RankingMessageChunkSize = 8;
+    private static readonly CultureInfo CultureInfo = new("es-ES");
+    private readonly DiscordBotService _botService = botService;
+    private readonly CommunityDataService _communityDataService = communityDataService;
+    private readonly InteractivityExtension _interactivity = interactivity;
+    private readonly LadderService _ladderService = ladderService;
+    private CancellationTokenSource? _updateLadderTokenSource;
+
+    public void CancelUpdateMemberRegions()
+        => _updateLadderTokenSource?.Cancel();
+
+    public async Task<string?> DisplayRangesAsync(ulong channelId = 0, CommandContext? context = null)
     {
-        private const string BlankSpace = " ";
-        private const string DoubleSpaceCode = "`  `";
-        private const int RankingMessageChunkSize = 8;
-        private static readonly CultureInfo CultureInfo = new("es-ES");
-        private readonly DiscordBotService _botService = botService;
-        private readonly CommunityDataService _communityDataService = communityDataService;
-        private readonly InteractivityExtension _interactivity = interactivity;
-        private readonly LadderService _ladderService = ladderService;
-        private CancellationTokenSource? _updateLadderTokenSource;
-
-        public void CancelUpdateMemberRegions()
-            => _updateLadderTokenSource?.Cancel();
-
-        public async Task<string?> DisplayRangesAsync(ulong channelId = 0, CommandContext? context = null)
+        var seasonId = await _ladderService.GetSeasonIdAsync();
+        if (seasonId == 0)
         {
-            var seasonId = await _ladderService.GetSeasonIdAsync();
-            if (seasonId == 0)
-            {
-                return MessageResources.SeasonInfoNotAvailableErrorMessage;
-            }
-            var ladderTiers = await _ladderService.GetLadderTiersAsync();
-            if (ladderTiers == null || ladderTiers.Count == 0)
-            {
-                return MessageResources.SeasonInfoNotAvailableErrorMessage;
-            }
-            var channel = context == null
-                ? await _botService.Client.GetChannelAsync(channelId)
-                : context.Channel;
+            return MessageResources.SeasonInfoNotAvailableErrorMessage;
+        }
+        var ladderTiers = await _ladderService.GetLadderTiersAsync();
+        if (ladderTiers == null || ladderTiers.Count == 0)
+        {
+            return MessageResources.SeasonInfoNotAvailableErrorMessage;
+        }
+        var channel = context == null
+            ? await _botService.Client.GetChannelAsync(channelId)
+            : context.Channel;
 
-            var builder = new StringBuilder();
-            builder.AppendLine(MessageResources.LadderRangesHeaderFormat.Format(seasonId.ToString()));
-            builder.AppendLine(MessageResources.LadderRangesHeader);
-            var capTool = new StringLengthCapTool(6, true);
-            foreach (var group in ladderTiers.GroupBy(t => t.League).OrderByDescending(g => g.Key))
-            {
-                var league = group.Key;
-                var leagueNum = (int)league;
-                var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, leagueNum, -1);
-                builder.Append(leagueEmoji);
+        var builder = new StringBuilder();
+        builder.AppendLine(MessageResources.LadderRangesHeaderFormat.Format(seasonId.ToString()));
+        builder.AppendLine(MessageResources.LadderRangesHeader);
+        var capTool = new StringLengthCapTool(6, true);
+        foreach (var group in ladderTiers.GroupBy(t => t.League).OrderByDescending(g => g.Key))
+        {
+            var league = group.Key;
+            var leagueNum = (int)league;
+            var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, leagueNum, -1);
+            builder.Append(leagueEmoji);
 
-                foreach (var item in group.OrderByDescending(g => g.Tier))
-                {
-                    builder.Append(BlankSpace);
-                    builder.Append($"`{capTool.GetString(item.MinMMR)}`");
-                }
-                builder.AppendLine();
-            }
-
-            string message = builder.ToString();
-            WriteToConsole(message);
-            if (context != null)
+            foreach (var item in group.OrderByDescending(g => g.Tier))
             {
-                await context.RespondAsync(message);
+                builder.Append(BlankSpace);
+                builder.Append($"`{capTool.GetString(item.MinMMR)}`");
             }
-            else
-            {
-                await channel.SendMessageAsync(message);
-            }
-
-            return null;
+            builder.AppendLine();
         }
 
-        public async Task<string?> DisplayRankAsync(
-            bool includeBanned = false,
-            ulong channelId = 0,
-            CommandContext? context = null)
+        string message = builder.ToString();
+        ConsoleInterops.WriteLine(message);
+        if (context != null)
         {
-            var seasonId = await _ladderService.GetSeasonIdAsync();
-            if (seasonId == 0)
-            {
-                return MessageResources.SeasonInfoNotAvailableErrorMessage;
-            }
-            var members = await _communityDataService.GetMembersAsync();
-            var entries = new List<(MemberRecord Member, LadderRegionRecord Region)>();
-            foreach (var member in members.Where(x => includeBanned || !x.Record.Banned))
-            {
-                if (member.Record?.Nick == null)
-                {
-                    continue;
-                }
-                var regions = GetValidLadderRegions(member, seasonId);
-                if (regions != null)
-                {
-                    entries.AddRange(regions.Select(r => (member.Record, r)));
-                }
-            }
-
-            if (entries.Count == 0)
-            {
-                return MessageResources.NoProfileToShowErrorMessage;
-            }
-
-            if (context != null)
-            {
-                string message = MessageResources.AccessingMembersListMessage;
-                WriteToConsole(message);
-                await context.FollowupAsync(message);
-            }
-
-            //0. Setup ranking messages
-            var channel = context == null
-                ? await _botService.Client.GetChannelAsync(channelId)
-                : context.Channel;
-
-            int seqNumber = 1;
-            var header = GetRankingHeaderString();
-
-            //1. Ranking header:
-            WriteToConsole(header);
-            await channel.SendMessageAsync(header);
-
-            //2. Ranking lines:
-            foreach (var sublist in entries.OrderByDescending(e => e.Region.CurrentMMR).Chunk(RankingMessageChunkSize))
-            {
-                var stringBuilder = new StringBuilder();
-                foreach (var (Record, Region) in sublist)
-                {
-                    var line = await GetRankingEntryLineAsync(Record, Region, seqNumber++);
-                    stringBuilder.AppendLine(line);
-                }
-                var allLines = stringBuilder.ToString();
-
-                WriteToConsole(allLines);
-                await channel.SendMessageAsync(allLines);
-            }
-
-            //3. Disclaimer embed
-            var sb = new StringBuilder();
-            sb.AppendLine(MessageResources.RankingDisclaimerContentLine1);
-            sb.AppendLine();
-            sb.AppendLine(MessageResources.RankingDisclaimerContentLine2);
-            sb.AppendLine(MessageResources.RankingDisclaimerContentLine3);
-            var now = DateTime.Now.Date.ToString("MMMM dd", CultureInfo);
-
-            var disclaimerText = sb.ToString();
-            ConsoleInteractionsHelper.WriteLine(disclaimerText, ConsoleColor.White);
-            var disclaimerEmbedBuilder = new DiscordEmbedBuilder()
-            {
-                Title = MessageResources.RankingDisclaimerTitle,
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = MessageResources.RankingDisclaimerImageUrl },
-                Description = disclaimerText,
-                Footer = new DiscordEmbedBuilder.EmbedFooter
-                {
-                    Text = $"🗓 {now}",
-                }
-            };
-            var disclaimerEmbed = await channel.SendMessageAsync(disclaimerEmbedBuilder);
-
-            //4. Emoji reaction (GG)
-            var emoji = await EmojisHelper.GetDiscordEmojiAsync(_botService.Client, EmojiResources.Reaction_GG);
-            if (emoji is not null)
-            {
-                await disclaimerEmbed.CreateReactionAsync(emoji);
-            }
-
-            return null;
+            await context.RespondAsync(message);
+        }
+        else
+        {
+            await channel.SendMessageAsync(message);
         }
 
-        public async Task<string?> UpdateMemberRegionsAsync(
-                    bool forceUpdate = false,
-                    ulong guildId = 0,
-                    ulong channelId = 0,
-                    CommandContext? context = null)
+        return null;
+    }
+
+    public async Task<string?> DisplayRankAsync(
+        bool includeBanned = false,
+        ulong channelId = 0,
+        CommandContext? context = null)
+    {
+        var seasonId = await _ladderService.GetSeasonIdAsync();
+        if (seasonId == 0)
         {
-            if (_updateLadderTokenSource != null)
+            return MessageResources.SeasonInfoNotAvailableErrorMessage;
+        }
+        var members = await _communityDataService.GetMembersAsync();
+        var entries = new List<(MemberRecord Member, LadderRegionRecord Region)>();
+        foreach (var member in members.Where(x => includeBanned || !x.Record.Banned))
+        {
+            if (member.Record?.Nick == null)
             {
-                return MessageResources.OperationAlredyInProgressMessage;
+                continue;
             }
-            _updateLadderTokenSource = new CancellationTokenSource();
+            var regions = GetValidLadderRegions(member, seasonId);
+            if (regions != null)
+            {
+                entries.AddRange(regions.Select(r => (member.Record, r)));
+            }
+        }
 
-            TimeSpan? updateTime = null;
-            if (!forceUpdate)
-            {
-                var guildSettings = _communityDataService.GetGuildSettings(guildId);
-                var regionUpdateMinutesThreshold = guildSettings?.RegionUpdateThresholdInMinutes;
-                if (regionUpdateMinutesThreshold.HasValue && regionUpdateMinutesThreshold.Value > 0)
-                {
-                    updateTime = TimeSpan.FromMinutes(regionUpdateMinutesThreshold.Value);
-                }
-            }
+        if (entries.Count == 0)
+        {
+            return MessageResources.NoProfileToShowErrorMessage;
+        }
 
-            DiscordMessage? message = null;
-            if (context != null)
+        if (context != null)
+        {
+            string message = MessageResources.AccessingMembersListMessage;
+            ConsoleInterops.WriteLine(message);
+            await context.FollowupAsync(message);
+        }
+
+        //0. Setup ranking messages
+        var channel = context == null
+            ? await _botService.Client.GetChannelAsync(channelId)
+            : context.Channel;
+
+        int seqNumber = 1;
+        var header = GetRankingHeaderString();
+
+        //1. Ranking header:
+        ConsoleInterops.WriteLine(header);
+        await channel.SendMessageAsync(header);
+
+        //2. Ranking lines:
+        foreach (var sublist in entries.OrderByDescending(e => e.Region.CurrentMMR).Chunk(RankingMessageChunkSize))
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var (Record, Region) in sublist)
             {
-                string messageContent = MessageResources.AccessingMembersListMessage;
-                var builder = new DiscordMessageBuilder()
-                    .WithContent(messageContent)
-                    .AddComponents(InteractionsHelper.GetCancelUpdateRankButton());
-                WriteToConsole(messageContent);
-                message = await context.FollowupAsync(builder);
+                var line = await GetRankingEntryLineAsync(Record, Region, seqNumber++);
+                stringBuilder.AppendLine(line);
             }
-            RegionUpdateProgressReportData? lastUpdate = null;
-            var result = await _communityDataService.UpdateAllRegionsAsync(false, updateTime,
-                async (data) =>
-                {
-                    lastUpdate = data;
-                    var content = data.MessageText ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
-                    message = await UpdateMessageAsync(content, channelId, message);
-                }, _updateLadderTokenSource.Token);
-            if (result == -1)
+            var allLines = stringBuilder.ToString();
+
+            ConsoleInterops.WriteLine(allLines);
+            await channel.SendMessageAsync(allLines);
+        }
+
+        //3. Disclaimer embed
+        var sb = new StringBuilder();
+        sb.AppendLine(MessageResources.RankingDisclaimerContentLine1);
+        sb.AppendLine();
+        sb.AppendLine(MessageResources.RankingDisclaimerContentLine2);
+        sb.AppendLine(MessageResources.RankingDisclaimerContentLine3);
+        var now = DateTime.Now.Date.ToString("MMMM dd", CultureInfo);
+
+        var disclaimerText = sb.ToString();
+        ConsoleInterops.WriteLine(disclaimerText, ConsoleColor.White);
+        var disclaimerEmbedBuilder = new DiscordEmbedBuilder()
+        {
+            Title = MessageResources.RankingDisclaimerTitle,
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = MessageResources.RankingDisclaimerImageUrl },
+            Description = disclaimerText,
+            Footer = new DiscordEmbedBuilder.EmbedFooter
             {
-                await UpdateMessageAsync(MessageResources.OperationCancelledMessage, channelId, message);
-                _updateLadderTokenSource = null;
-                return MessageResources.OperationCancelledMessage;
+                Text = $"🗓 {now}",
             }
-            if (lastUpdate?.MessageText == null)
+        };
+        var disclaimerEmbed = await channel.SendMessageAsync(disclaimerEmbedBuilder);
+
+        //4. Emoji reaction (GG)
+        var emoji = await EmojisHelper.GetDiscordEmojiAsync(_botService.Client, EmojiResources.Reaction_GG);
+        if (emoji is not null)
+        {
+            await disclaimerEmbed.CreateReactionAsync(emoji);
+        }
+
+        return null;
+    }
+
+    public async Task<string?> UpdateMemberRegionsAsync(
+                bool forceUpdate = false,
+                ulong guildId = 0,
+                ulong channelId = 0,
+                CommandContext? context = null)
+    {
+        if (_updateLadderTokenSource != null)
+        {
+            return MessageResources.OperationAlredyInProgressMessage;
+        }
+        _updateLadderTokenSource = new CancellationTokenSource();
+
+        TimeSpan? updateTime = null;
+        if (!forceUpdate)
+        {
+            var guildSettings = _communityDataService.GetGuildSettings(guildId);
+            var regionUpdateMinutesThreshold = guildSettings?.RegionUpdateThresholdInMinutes;
+            if (regionUpdateMinutesThreshold.HasValue && regionUpdateMinutesThreshold.Value > 0)
             {
-                await UpdateMessageAsync(MessageResources.UpdatedProfilesCountFormat.Format(result), channelId, message);
+                updateTime = TimeSpan.FromMinutes(regionUpdateMinutesThreshold.Value);
             }
+        }
+
+        DiscordMessage? message = null;
+        if (context != null)
+        {
+            string messageContent = MessageResources.AccessingMembersListMessage;
+            var builder = new DiscordMessageBuilder()
+                .WithContent(messageContent)
+                .AddComponents(InteractionsHelper.GetCancelUpdateRankButton());
+            ConsoleInterops.WriteLine(messageContent);
+            message = await context.FollowupAsync(builder);
+        }
+        RegionUpdateProgressReportData? lastUpdate = null;
+        var result = await _communityDataService.UpdateAllRegionsAsync(false, updateTime,
+            async (data) =>
+            {
+                lastUpdate = data;
+                var content = data.MessageText ?? MessageResources.UpdatingProfilesReportFormat.Format(data.Number, data.Total, data?.EntryName ?? string.Empty);
+                message = await UpdateMessageAsync(content, channelId, message);
+            }, _updateLadderTokenSource.Token);
+        if (result == -1)
+        {
+            await UpdateMessageAsync(MessageResources.OperationCancelledMessage, channelId, message);
             _updateLadderTokenSource = null;
+            return MessageResources.OperationCancelledMessage;
+        }
+        if (lastUpdate?.MessageText == null)
+        {
+            await UpdateMessageAsync(MessageResources.UpdatedProfilesCountFormat.Format(result), channelId, message);
+        }
+        _updateLadderTokenSource = null;
+        return null;
+    }
+
+    private static string GetRankingHeaderString()
+    {
+        return
+            "`##`" + BlankSpace //Number
+            + DoubleSpaceCode + BlankSpace // Race logo
+            + $"`{StringLengthCapTool.Default.GetString("NICK")}`" + BlankSpace // Nick
+            + "`  `| " // Country flag
+            + "` MMR`" + BlankSpace // MMR
+            + "` ↕MMR`" + BlankSpace // MMR Diff
+            + DoubleSpaceCode + BlankSpace //League icon
+            + "`  WR`" + BlankSpace // Winrate
+            + "`TOTAL`"; //Total games played
+    }
+
+    private static List<LadderRegionRecord> GetValidLadderRegions(MemberModel? model, int seasonId)
+    {
+        if (model?.Profiles == null)
+        {
+            return [];
+        }
+        var regions = model.Profiles
+            .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
+            .SelectMany(p => p.LadderRegions!)
+            .Where(r => r.SeasonId == seasonId)
+            .OrderByDescending(r => r?.CurrentMMR ?? 0)
+            .DistinctBy(r => r.Race)
+            .ToList();
+
+        return regions;
+    }
+
+    private async Task<string> GetRankingEntryLineAsync(MemberRecord record, LadderRegionRecord region, int seqNumber)
+    {
+        if (record.Nick == null || region == null)
+        {
+            return string.Empty;
+        }
+
+        var raceEmoji = await EmojisHelper.GetRaceEmojiStringAsync(_botService.Client, region.Race);
+        var flagEmoji = EmojisHelper.GetFlagEmojiString(record.CountryTag);
+        var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, region.League, region.Tier);
+
+        var newPlayer = (region.PreviousMMR == 0);
+        var mmrDiffValue = newPlayer ? 0 : region.CurrentMMR - region.PreviousMMR;
+        var mmrsign = mmrDiffValue == 0 ? " " : (mmrDiffValue > 0) ? "↑" : "↓";
+        string mmrDifText = newPlayer ? " NEW " : mmrsign + StringLengthCapTool.InvertedFourSpaces.GetString(mmrDiffValue == 0 ? " " : Math.Abs(mmrDiffValue));
+        var winrate = (double)region.Wins / region.TotalMatches * 100;
+
+        var builder = new StringBuilder();
+        var i3ct = StringLengthCapTool.InvertedThreeSpaces;
+        var i5ct = StringLengthCapTool.InvertedFiveSpaces;
+
+        builder.Append($"`{seqNumber:00}` ");
+        builder.Append($"{raceEmoji} ");
+        builder.Append($"`{StringLengthCapTool.Default.GetString(record.Nick)}` ");
+        builder.Append($"{flagEmoji} | ");
+        builder.Append($"`{region.CurrentMMR}` ");
+        builder.Append($"`{mmrDifText}` ");
+        builder.Append($"{leagueEmoji} ");
+        builder.Append($"`{i3ct.GetString((int)winrate)}%` ");
+        builder.Append($"`{i5ct.GetString(region.TotalMatches)}` ");
+
+        return builder.ToString();
+    }
+
+    private async Task<DiscordMessage?> UpdateMessageAsync(string content, ulong channelId, DiscordMessage? message = null)
+    {
+        try
+        {
+            ConsoleInterops.WriteLine(content);
+            if (message == null)
+            {
+                var channel = await _botService.Client.GetChannelAsync(channelId);
+                return await channel.SendMessageAsync(content);
+            }
+            return message = await message.ModifyAsync(content);
+        }
+        catch (Exception e)
+        {
+            ConsoleInterops.WriteErrorLine(e.Message);
             return null;
-        }
-
-        private static string GetRankingHeaderString()
-        {
-            return
-                "`##`" + BlankSpace //Number
-                + DoubleSpaceCode + BlankSpace // Race logo
-                + $"`{StringLengthCapTool.Default.GetString("NICK")}`" + BlankSpace // Nick
-                + "`  `| " // Country flag
-                + "` MMR`" + BlankSpace // MMR
-                + "` ↕MMR`" + BlankSpace // MMR Diff
-                + DoubleSpaceCode + BlankSpace //League icon
-                + "`  WR`" + BlankSpace // Winrate
-                + "`TOTAL`"; //Total games played
-        }
-
-        private static List<LadderRegionRecord> GetValidLadderRegions(MemberModel? model, int seasonId)
-        {
-            if (model?.Profiles == null)
-            {
-                return [];
-            }
-            var regions = model.Profiles
-                .Where(p => p.LadderRegions != null && p.LadderRegions.Count > 0)
-                .SelectMany(p => p.LadderRegions!)
-                .Where(r => r.SeasonId == seasonId)
-                .OrderByDescending(r => r?.CurrentMMR ?? 0)
-                .DistinctBy(r => r.Race)
-                .ToList();
-
-            return regions;
-        }
-
-        private static void WriteToConsole(string message, ConsoleColor foregroundColor = ConsoleColor.White)
-        {
-            ConsoleInteractionsHelper.WriteLine(message, foregroundColor);
-        }
-
-        private async Task<string> GetRankingEntryLineAsync(MemberRecord record, LadderRegionRecord region, int seqNumber)
-        {
-            if (record.Nick == null || region == null)
-            {
-                return string.Empty;
-            }
-
-            var raceEmoji = await EmojisHelper.GetRaceEmojiStringAsync(_botService.Client, region.Race);
-            var flagEmoji = EmojisHelper.GetFlagEmojiString(record.CountryTag);
-            var leagueEmoji = await EmojisHelper.GetLeagueEmojiStringAsync(_botService.Client, region.League, region.Tier);
-
-            var newPlayer = (region.PreviousMMR == 0);
-            var mmrDiffValue = newPlayer ? 0 : region.CurrentMMR - region.PreviousMMR;
-            var mmrsign = mmrDiffValue == 0 ? " " : (mmrDiffValue > 0) ? "↑" : "↓";
-            string mmrDifText = newPlayer ? " NEW " : mmrsign + StringLengthCapTool.InvertedFourSpaces.GetString(mmrDiffValue == 0 ? " " : Math.Abs(mmrDiffValue));
-            var winrate = (double)region.Wins / region.TotalMatches * 100;
-
-            var builder = new StringBuilder();
-            var i3ct = StringLengthCapTool.InvertedThreeSpaces;
-            var i5ct = StringLengthCapTool.InvertedFiveSpaces;
-
-            builder.Append($"`{seqNumber:00}` ");
-            builder.Append($"{raceEmoji} ");
-            builder.Append($"`{StringLengthCapTool.Default.GetString(record.Nick)}` ");
-            builder.Append($"{flagEmoji} | ");
-            builder.Append($"`{region.CurrentMMR}` ");
-            builder.Append($"`{mmrDifText}` ");
-            builder.Append($"{leagueEmoji} ");
-            builder.Append($"`{i3ct.GetString((int)winrate)}%` ");
-            builder.Append($"`{i5ct.GetString(region.TotalMatches)}` ");
-
-            return builder.ToString();
-        }
-
-        private async Task<DiscordMessage?> UpdateMessageAsync(string content, ulong channelId, DiscordMessage? message = null)
-        {
-            try
-            {
-                WriteToConsole(content);
-                if (message == null)
-                {
-                    var channel = await _botService.Client.GetChannelAsync(channelId);
-                    return await channel.SendMessageAsync(content);
-                }
-                return message = await message.ModifyAsync(content);
-            }
-            catch (Exception e)
-            {
-                LogNotifier.Notify(e.Message);
-                return null;
-            }
         }
     }
 }

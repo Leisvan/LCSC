@@ -1,7 +1,7 @@
 <UserControl x:Class="LCSC.App.Views.BotUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:appBehaviors="using:LCSC.App.Behaviors"
+             xmlns:behaviors="using:LCTWorks.WinUI.Xaml.Behaviors"
              xmlns:controls="using:CommunityToolkit.WinUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helpers="using:LCSC.Core.Helpers"
@@ -40,6 +40,8 @@
                 <StackPanel HorizontalAlignment="Right"
                             Orientation="Horizontal"
                             Spacing="4">
+                    <ToggleButton Content="Auto Scroll"
+                                  IsChecked="{x:Bind ViewModel.AutoScroll, Mode=TwoWay}" />
                     <Button Command="{x:Bind ViewModel.ConnectBotCommand, Mode=OneWay}"
                             Style="{ThemeResource AccentButtonStyle}"
                             Visibility="{x:Bind ViewModel.IsDisconnected, Mode=OneWay}">
@@ -54,15 +56,16 @@
             <Grid Grid.Row="1"
                   Padding="16"
                   Background="#101010">
-                <ScrollView x:Name="TextScrollViewer">
+                <ScrollViewer x:Name="TextScrollViewer">
                     <RichTextBlock HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    FontFamily="Cascadia Mono">
                         <interactivity:Interaction.Behaviors>
-                            <appBehaviors:ConsoleMirrorBehavior />
+                            <behaviors:ConsoleMirrorBehavior AutoScroll="{x:Bind ViewModel.AutoScroll, Mode=OneWay}"
+                                                             ScrollViewer="{x:Bind TextScrollViewer}" />
                         </interactivity:Interaction.Behaviors>
                     </RichTextBlock>
-                </ScrollView>
+                </ScrollViewer>
             </Grid>
         </Grid>
         <ScrollViewer Grid.Column="2"

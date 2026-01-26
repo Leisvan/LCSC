@@ -17,28 +17,4 @@
     <ProjectReference Include="..\LCSC.Models\LCSC.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Strings\EmojiResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>EmojiResources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Strings\MessageResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>MessageResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Strings\EmojiResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>EmojiResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Strings\MessageResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MessageResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
