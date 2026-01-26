@@ -1,0 +1,32 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/.github-workflows/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/BuildAndDeployStart.yml" />
+    <File Path=".github/workflows/bundle.yml" />
+    <File Path=".github/workflows/gittag.yml" />
+    <File Path=".github/workflows/log.yml" />
+    <File Path=".github/workflows/store-upload.yml" />
+  </Folder>
+  <Folder Name="/submodules/">
+    <Project Path="submodules/LCTWorks.Common/LCTWorks.Core/LCTWorks.Core.csproj" />
+    <Project Path="submodules/LCTWorks.Common/LCTWorks.Telemetry/LCTWorks.Telemetry.csproj" />
+    <Project Path="submodules/LCTWorks.Common/LCTWorks.WinUI/LCTWorks.WinUI.csproj" />
+  </Folder>
+  <Project Path="LCSC.App/LCSC.App.csproj">
+    <Platform Solution="*|Any CPU" Project="x64" />
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
+  <Project Path="LCSC.Bot/LCSC.Discord.csproj" />
+  <Project Path="LCSC.Common/LCSC.Core.csproj" />
+  <Project Path="LCSC.Http/LCSC.Http.csproj" />
+  <Project Path="LCSC.Models/LCSC.Models.csproj" />
+</Solution>
