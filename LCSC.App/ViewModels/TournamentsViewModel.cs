@@ -104,7 +104,11 @@ namespace LCSC.App.ViewModels
             {
                 return;
             }
-            var result = await DialogHelper.ShowDialogAsync("Eliminar partida", "¿Está seguro que quiere eliminar esta partida?", "Sí", "No");
+            var result = await DialogHelper.ShowDialogAsync(
+                "Tournaments-DeleteMatchDialogTitle".GetTextLocalized(),
+                "Tournaments-DeleteMatchDialogContent".GetTextLocalized(),
+                "Dialog-Yes".GetTextLocalized(),
+                "Dialog-No".GetTextLocalized());
 
             if (result == ContentDialogResult.Primary)
             {
@@ -112,7 +116,10 @@ namespace LCSC.App.ViewModels
                 SelectedTournament.Matches?.Remove(match);
                 MatchCreator.Update(match);
 
-                await DialogHelper.ShowDialogAsync("Partida eliminada", "Los datos se han copiado en el dialogo de agregar partida", "Ok");
+                await DialogHelper.ShowDialogAsync(
+                    "Tournaments-MatchDeletedDialogTitle".GetTextLocalized(),
+                    "Tournaments-MatchDeletedDialogContent".GetTextLocalized(),
+                    "Dialog-Ok".GetTextLocalized());
             }
         }
 
@@ -124,8 +131,11 @@ namespace LCSC.App.ViewModels
             {
                 return;
             }
-            var result = await DialogHelper.ShowDialogAsync("Actualizar partidas",
-                "¿Está seguro que quiere enviar estas partidas?", "Sí", "No");
+            var result = await DialogHelper.ShowDialogAsync(
+                "Tournaments-UpdateMatchDialogTitle".GetTextLocalized(),
+                "Tournaments-UpdateMatchDialogContent".GetTextLocalized(),
+                "Dialog-Yes".GetTextLocalized(),
+                "Dialog-No".GetTextLocalized());
 
             if (result == ContentDialogResult.Primary)
             {

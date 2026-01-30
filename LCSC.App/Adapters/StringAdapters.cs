@@ -24,7 +24,9 @@ public static class StringAdapters
         {
             return string.Empty;
         }
-        return participants?.Count > 0 ? $"{participants.Count} participantes" : "0 participantes";
+        return participants?.Count > 0
+            ? string.Format("Tournaments-ParticipantsCountFormat".GetTextLocalized(), participants.Count)
+            : "Tournaments-NoParticipants".GetTextLocalized();
     }
 
     public static string ToRegionDisplayName(LadderRegionRecord? record)
@@ -35,25 +37,29 @@ public static class StringAdapters
         }
         string regionLeague = record.League switch
         {
-            0 => "Bronce",
-            1 => "Plata",
-            2 => "Oro",
-            3 => "Platino",
-            4 => "Diamante",
-            5 => "Maestro",
-            6 => "Gran maestro",
-            _ => "Desconocido",
+            0 => "Ladder-RankBronze",
+            1 => "Ladder-RankSilver",
+            2 => "Ladder-RankGold",
+            3 => "Ladder-RankPlatinum",
+            4 => "Ladder-RankDiamond",
+            5 => "Ladder-RankMaster",
+            6 => "Ladder-RankGrandMaster",
+            _ => "Ladder-RankUnknown",
         };
-        return $"{record.Race} | {regionLeague} {record.Tier + 1}";
+        if (record.League < 0 || record.League > 6)
+        {
+            return regionLeague.GetTextLocalized();
+        }
+        return $"{record.Race} | {regionLeague.GetTextLocalized()} {record.Tier + 1}";
     }
 
     public static string ToTournamentAffiliationDescription(TournamentAffiliation affiliation)
     {
         return affiliation switch
         {
-            TournamentAffiliation.Official => "Torneo oficial",
-            TournamentAffiliation.Partner => "Torneo en colaboración",
-            TournamentAffiliation.Community => "Torneo de la comunidad",
+            TournamentAffiliation.Official => "Tournament-AffiliationOfficial".GetTextLocalized(),
+            TournamentAffiliation.Partner => "Tournament-AffiliationPartner".GetTextLocalized(),
+            TournamentAffiliation.Community => "Tournament-AffiliationCommunity".GetTextLocalized(),
             _ => string.Empty,
         };
     }

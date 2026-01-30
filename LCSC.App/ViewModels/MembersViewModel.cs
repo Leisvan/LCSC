@@ -63,7 +63,7 @@ public partial class MembersViewModel(CommunityDataService communityDataService,
         }
     }
 
-    public string SeasonString => _seasonId == 0 ? string.Empty : $"Season {_seasonId}";
+    public string SeasonString => _seasonId == 0 ? string.Empty : string.Format("Members-SeasonFormat".GetTextLocalized(), _seasonId);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NoMemberSelected))]
