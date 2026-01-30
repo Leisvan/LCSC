@@ -28,17 +28,19 @@
                    Source="ms-appx:///Assets/Images/LCSC.png" />
         </Grid>
         <Pivot Grid.Row="1"
+               Margin="8,0"
+               Padding="0"
                IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
-            <PivotItem Header="Miembros"
+            <PivotItem x:Uid="Shell-MembersTab"
                        Visibility="{x:Bind ViewModel.IsMembersViewEnabled, Mode=OneWay}">
                 <views:MembersUserControl />
             </PivotItem>
 
-            <PivotItem Header="Torneos"
+            <PivotItem x:Uid="Shell-TournamentsTab"
                        Visibility="{x:Bind ViewModel.IsTournamentsViewEnabled, Mode=OneWay}">
                 <views:TournamentsUserControl />
             </PivotItem>
-            <PivotItem Header="Bot"
+            <PivotItem x:Uid="Shell-BotTab"
                        Visibility="{x:Bind ViewModel.IsBotViewEnabled, Mode=OneWay}">
                 <views:BotUserControl />
             </PivotItem>

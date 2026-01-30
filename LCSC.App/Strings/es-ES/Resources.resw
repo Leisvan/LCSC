@@ -294,4 +294,13 @@
   <data name="BotView-MessagesExpander.Description" xml:space="preserve">
     <value>Mensajes</value>
   </data>
+  <data name="Shell-MembersTab.Header" xml:space="preserve">
+    <value>Miembros</value>
+  </data>
+  <data name="Shell-TournamentsTab.Header" xml:space="preserve">
+    <value>Torneos</value>
+  </data>
+  <data name="Shell-BotTab.Header" xml:space="preserve">
+    <value>Bot</value>
+  </data>
 </root>

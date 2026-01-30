@@ -48,7 +48,7 @@
             <ColumnDefinition />
             <ColumnDefinition MinWidth="420" />
         </Grid.ColumnDefinitions>
-        <Grid Margin="8"
+        <Grid Margin="0,8"
               RowSpacing="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
