@@ -159,6 +159,27 @@
   <data name="AppUpdates-UpdateFound" xml:space="preserve">
     <value>Actualización disponible.</value>
   </data>
+  <data name="BotView-AutoScrollButton.Content" xml:space="preserve">
+    <value>Auto Scroll</value>
+  </data>
+  <data name="BotView-BotLogTitle.Text" xml:space="preserve">
+    <value>BOT LOG</value>
+  </data>
+  <data name="BotView-ConfigExpander.Description" xml:space="preserve">
+    <value>Lista de configuraciones en uso por el bot.</value>
+  </data>
+  <data name="BotView-ConfigExpander.Header" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="BotView-UpdateAndDisplayCard.Header" xml:space="preserve">
+    <value>Actualizar y mostrar</value>
+  </data>
+  <data name="BotView-RankingExpander.Description" xml:space="preserve">
+    <value>Lista de acciones relacionadas con el ranking</value>
+  </data>
+  <data name="BotView-RankingExpander.Header" xml:space="preserve">
+    <value>Ranking</value>
+  </data>
   <data name="Dialog-No" xml:space="preserve">
     <value>No</value>
   </data>
@@ -227,5 +248,50 @@
   </data>
   <data name="Tournaments-UpdateMatchDialogTitle" xml:space="preserve">
     <value>Actualizar partidas</value>
+  </data>
+  <data name="BotView-UpdateAndDisplayCard.Description" xml:space="preserve">
+    <value>Ejecuta 'Actualizar' y luego 'Mostrar' secuencialmente.</value>
+  </data>
+  <data name="BotView-UpdateAndDisplayButton.Content" xml:space="preserve">
+    <value>Actualizar y mostrar</value>
+  </data>
+  <data name="BotView-UpdateCard.Description" xml:space="preserve">
+    <value>Estas acciones solo actualizan el ranking y almacenan los resultados.</value>
+  </data>
+  <data name="BotView-UpdateCard.Header" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="BotView-UpdateButton.Content" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="BotView-UpdateForceButton.Content" xml:space="preserve">
+    <value>Actualizar (forzar)</value>
+  </data>
+  <data name="BotView-DisplayCard.Header" xml:space="preserve">
+    <value>Mostrar</value>
+  </data>
+  <data name="BotView-DisplayCard.Description" xml:space="preserve">
+    <value>Muestra el ranking, puede escoger si incluir o no a los miembros restringidos</value>
+  </data>
+  <data name="BotView-DisplayButton.Content" xml:space="preserve">
+    <value>Mostrar</value>
+  </data>
+  <data name="BotView-DisplayBannedButton.Content" xml:space="preserve">
+    <value>Mostrar (expulsados)</value>
+  </data>
+  <data name="BotView-CleaunpCard.Header" xml:space="preserve">
+    <value>Limpiar</value>
+  </data>
+  <data name="BotView-CleaunpCard.Description" xml:space="preserve">
+    <value>Limpia las regiones de temporadas pasadas.</value>
+  </data>
+  <data name="BotView-CleanRegionsButton.Content" xml:space="preserve">
+    <value>Limpiar regiones</value>
+  </data>
+  <data name="BotView-MessagesExpander.Header" xml:space="preserve">
+    <value>Lista de opciones para enviar mensajes</value>
+  </data>
+  <data name="BotView-MessagesExpander.Description" xml:space="preserve">
+    <value>Mensajes</value>
   </data>
 </root>

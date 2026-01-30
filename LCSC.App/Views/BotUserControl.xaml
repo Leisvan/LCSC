@@ -33,14 +33,14 @@
                             Orientation="Horizontal"
                             Spacing="8">
                     <FontIcon Glyph="&#xE756;" />
-                    <TextBlock FontSize="16"
-                               Text="BOT LOG" />
+                    <TextBlock x:Uid="BotView-BotLogTitle"
+                               FontSize="16" />
                 </StackPanel>
 
                 <StackPanel HorizontalAlignment="Right"
                             Orientation="Horizontal"
                             Spacing="4">
-                    <ToggleButton Content="Auto Scroll"
+                    <ToggleButton x:Uid="BotView-AutoScrollButton"
                                   IsChecked="{x:Bind ViewModel.AutoScroll, Mode=TwoWay}" />
                     <Button Command="{x:Bind ViewModel.ConnectBotCommand, Mode=OneWay}"
                             Style="{ThemeResource AccentButtonStyle}"
@@ -79,8 +79,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <controls:SettingsExpander Description="Lista de configuraciones en uso por el bot"
-                                           Header="Config"
+                <controls:SettingsExpander x:Uid="BotView-ConfigExpander"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE713;}"
                                            IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal"
@@ -94,59 +93,55 @@
                         </Button>
                     </StackPanel>
                 </controls:SettingsExpander>
-                <controls:SettingsExpander Grid.Row="1"
-                                           Description="Lista de acciones relacionadas con el ranking"
-                                           Header="Ranking"
+                <controls:SettingsExpander x:Uid="BotView-RankingExpander"
+                                           Grid.Row="1"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE902;}"
                                            IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"
                                            IsExpanded="True">
+                    <lctWorks:ThemedButton Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
+                                           Content="Cancelar"
+                                           Style="{StaticResource DangerThemedButtonStyle}"
+                                           Visibility="{x:Bind ViewModel.IsRankingBusy, Mode=OneWay}" />
                     <controls:SettingsExpander.Items>
-                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                               Description="Ejecuta 'Actualizar' y luego 'Mostrar' secuencialmente."
-                                               Header="Actualizar y mostrar">
+                        <controls:SettingsCard x:Uid="BotView-UpdateAndDisplayCard"
+                                               HorizontalContentAlignment="Stretch">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
-                                                       Content="Actualizar y mostrar"
+                                <lctWorks:ThemedButton x:Uid="BotView-UpdateAndDisplayButton"
+                                                       Command="{x:Bind ViewModel.UpdateAndDisplayRankCommand}"
                                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}"
                                                        Style="{StaticResource AccentThemedButtonStyle}">
                                     <lctWorks:ThemedButton.CommandParameter>
                                         <x:Boolean>False</x:Boolean>
                                     </lctWorks:ThemedButton.CommandParameter>
                                 </lctWorks:ThemedButton>
-                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.CancelUpdateRankCommand}"
-                                                       Content="Cancelar"
-                                                       IsEnabled="{x:Bind ViewModel.IsRankingBusy, Mode=OneWay}"
-                                                       Style="{StaticResource DangerThemedButtonStyle}" />
                             </StackPanel>
                         </controls:SettingsCard>
-                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                               Description="Estas acciones solo actualizan el ranking y almacenan los resultados."
-                                               Header="Actualizar">
+                        <controls:SettingsCard x:Uid="BotView-UpdateCard"
+                                               HorizontalContentAlignment="Stretch">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <Button Command="{x:Bind ViewModel.UpdateRankCommand}"
-                                        Content="Actualizar"
+                                <Button x:Uid="BotView-UpdateButton"
+                                        Command="{x:Bind ViewModel.UpdateRankCommand}"
                                         IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
-                                <Button Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
-                                        Content="Actualizar (forzado)"
+                                <Button x:Uid="BotView-UpdateForceButton"
+                                        Command="{x:Bind ViewModel.UpdateRankForcedCommand}"
                                         IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}" />
                             </StackPanel>
                         </controls:SettingsCard>
-                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                               Description="Muestra el ranking, puede escoger si incluir o no a los miembros restringidos"
-                                               Header="Mostrar">
+                        <controls:SettingsCard x:Uid="BotView-DisplayCard"
+                                               HorizontalContentAlignment="Stretch">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                        Content="Mostrar"
+                                <Button x:Uid="BotView-DisplayButton"
+                                        Command="{x:Bind ViewModel.DisplayRankCommand}"
                                         IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
                                     <Button.CommandParameter>
                                         <x:Boolean>False</x:Boolean>
                                     </Button.CommandParameter>
                                 </Button>
-                                <Button Command="{x:Bind ViewModel.DisplayRankCommand}"
-                                        Content="Mostrar (Restringidos)"
+                                <Button x:Uid="BotView-DisplayBannedButton"
+                                        Command="{x:Bind ViewModel.DisplayRankCommand}"
                                         IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}">
                                     <Button.CommandParameter>
                                         <x:Boolean>True</x:Boolean>
@@ -154,22 +149,20 @@
                                 </Button>
                             </StackPanel>
                         </controls:SettingsCard>
-                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                               Description="Limpia las regiones de temporadas pasadas."
-                                               Header="Limpiar">
+                        <controls:SettingsCard x:Uid="BotView-CleaunpCard"
+                                               HorizontalContentAlignment="Stretch">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8">
-                                <lctWorks:ThemedButton Command="{x:Bind ViewModel.PruneRegionsCommand}"
-                                                       Content="Limpiar regiones"
+                                <lctWorks:ThemedButton x:Uid="BotView-CleanRegionsButton"
+                                                       Command="{x:Bind ViewModel.PruneRegionsCommand}"
                                                        IsEnabled="{x:Bind ViewModel.IsRankingIdle, Mode=OneWay}"
                                                        Style="{ThemeResource WarningThemedButtonStyle}" />
                             </StackPanel>
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <controls:SettingsExpander Grid.Row="2"
-                                           Description="Lista de opciones para enviar mensajes"
-                                           Header="Mensajes"
+                <controls:SettingsExpander x:Uid="BotView-MessagesExpander"
+                                           Grid.Row="2"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xEBDB;}"
                                            IsEnabled="False">
                     <controls:SettingsExpander.Items>
@@ -179,7 +172,7 @@
                                             Spacing="8">
                                     <StackPanel Orientation="Horizontal"
                                                 Spacing="8">
-                                        <Button Content="Test"
+                                        <Button Content="Send message"
                                                 Style="{ThemeResource AccentButtonStyle}" />
                                     </StackPanel>
                                 </StackPanel>
