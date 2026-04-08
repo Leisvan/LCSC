@@ -116,6 +116,7 @@ jobs:
             /p:UapAppxPackageBuildMode=StoreUpload `
             /p:GenerateAppxPackageOnBuild=true `
             /p:AppxPackageSigningEnabled=false `
+            /p:GenerateTemporaryStoreCertificate=false `
             /p:Platform=x64
 
       - name: Build x86 MSIX
@@ -128,6 +129,7 @@ jobs:
             /p:UapAppxPackageBuildMode=StoreUpload `
             /p:GenerateAppxPackageOnBuild=true `
             /p:AppxPackageSigningEnabled=false `
+            /p:GenerateTemporaryStoreCertificate=false `
             /p:Platform=x86
 
       - name: Set Package Vars
