@@ -13,11 +13,6 @@
     <File Path=".github/workflows/log.yml" />
     <File Path=".github/workflows/store-upload.yml" />
   </Folder>
-  <Folder Name="/submodules/">
-    <Project Path="submodules/LCTWorks.Common/LCTWorks.Core/LCTWorks.Core.csproj" />
-    <Project Path="submodules/LCTWorks.Common/LCTWorks.Telemetry/LCTWorks.Telemetry.csproj" />
-    <Project Path="submodules/LCTWorks.Common/LCTWorks.WinUI/LCTWorks.WinUI.csproj" />
-  </Folder>
   <Project Path="LCSC.App/LCSC.App.csproj">
     <Platform Solution="*|Any CPU" Project="x64" />
     <Platform Solution="*|ARM64" Project="ARM64" />

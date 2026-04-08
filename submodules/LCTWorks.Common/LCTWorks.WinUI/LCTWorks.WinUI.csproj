@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>LCTWorks.WinUI</RootNamespace>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+	  <Nullable>enable</Nullable>
+    <UseWinUI>true</UseWinUI>
+	  <LangVersion>preview</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Assets\Fonts\SegoeFluentIcons.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Controls\Chip.xaml" />
+    <None Remove="Controls\MenuFlyoutHeader.xaml" />
+    <None Remove="Controls\NavigationViewItemButton.xaml" />
+    <None Remove="Controls\ThemedButton.xaml" />
+    <None Remove="Themes\Constants.xaml" />
+    <None Remove="Themes\FontFamilies.xaml" />
+    <None Remove="Themes\TextBlocks.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\MenuFlyoutHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\ThemedButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\Fonts\FA7Brands-Regular.otf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbols-Outlined-300.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\Poppins-Bold.otf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\Poppins-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\Poppins-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\NavigationViewItemButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\Chip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\Constants.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\FontFamilies.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\TextBlocks.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\Dialogs\FeedbackContentDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  
+</Project>
