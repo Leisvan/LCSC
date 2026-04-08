@@ -1,4 +1,4 @@
-name: x86/x64 MSIX
+name: x86/x64/arm64 MSIX
 
 on:
   workflow_dispatch:
@@ -106,6 +106,19 @@ jobs:
 
           Set-Content -Path (Join-Path $configDir 'appsettings.json') -Value $json -Encoding UTF8
 
+      - name: Build arm64 MSIX
+        shell: pwsh
+        run: |
+          msbuild ${{ env.Solution_Name }} `
+            /p:Configuration=${{ env.Configuration }} `
+            /p:AppxBundle=Never `
+            /p:AppxPackageDir="${{ env.Appx_Package_Dir }}\" `
+            /p:UapAppxPackageBuildMode=StoreUpload `
+            /p:GenerateAppxPackageOnBuild=true `
+            /p:AppxPackageSigningEnabled=false `
+            /p:GenerateTemporaryStoreCertificate=false `
+            /p:Platform=arm64
+
       - name: Build x64 MSIX
         shell: pwsh
         run: |
@@ -136,8 +149,15 @@ jobs:
         id: set-package
         shell: pwsh
         run: |
-          "X86=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_x86_Test" >> $env:GITHUB_OUTPUT
+          "x86=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_x86_Test" >> $env:GITHUB_OUTPUT
           "x64=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_x64_Test" >> $env:GITHUB_OUTPUT
+          "arm64=${{ env.Appx_Package_Dir }}\${{ env.Project_Name }}_${{ steps.gitversion.outputs.MajorMinorPatch }}.0_arm64_Test" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Msix arm64
+        uses: actions/upload-artifact@v4
+        with:
+          name: Msix-arm64
+          path: ${{ steps.set-package.outputs.arm64 }}\*.msix
 
       - name: Upload Msix x86
         uses: actions/upload-artifact@v4

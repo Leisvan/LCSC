@@ -122,7 +122,7 @@ public partial class MainViewModel : ObservableRecipient
 
     private async Task UpdateVersionNotificationAsync(string? notificationText = null, int delayInMs = 2000)
     {
-        notificationText ??= RuntimePackageHelper.IsDebug()
+        notificationText ??= AppHelper.IsDebug()
                 ? $"{"AppUpdates-DebugVersion".GetTextLocalized()} ({RuntimePackageHelper.OsArchitecture})"
                 : $"{RuntimePackageHelper.PackageVersion} ({RuntimePackageHelper.OsArchitecture})";
         AppVersionNotification = notificationText;

@@ -73,7 +73,7 @@ public partial class App : Application, IAppExtended
 
         //Telemetry
         .AddSentry(configuration["TelemetryKey:key"] ?? string.Empty, AppHelper.GetEnvironment(), BuildHelper.IsDebugBuild, RuntimePackageHelper.GetTelemetryContextData())
-        .AddSerilog(AppStorageHelper.GetLocalFolder("Log").Path, BuildHelper.IsDebugBuild ? Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Information, BuildHelper.IsDebugBuild, includeConsole: true)
+        .AddSerilog(AppStorageHelper.GetLocalFolder("Log").Path, AppHelper.IsDebug() ? Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Information, BuildHelper.IsDebugBuild, includeConsole: true)
 
         //Build:
         .BuildServiceProvider(true);
