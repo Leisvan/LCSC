@@ -221,6 +221,12 @@ public class CommunityDataService(LadderService ladderService, CacheService cach
         Func<RegionUpdateProgressReportData, Task>? progressReport = null,
         CancellationToken? token = null)
     {
+        if (progressReport != null)
+        {
+            await progressReport.Invoke(RegionUpdateProgressReportData.Message("Obteniendo información actualizada"));
+        }
+        await RefreshAllAsync();
+
         var profilesList = _members
             .Where(m => includeBannedPlayers || !m.Record.Banned)
             .Where(m => m.Profiles != null && m.Profiles.Count > 0)
