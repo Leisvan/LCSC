@@ -4,10 +4,8 @@ using LCSC.Http.Services;
 using LCSC.Models;
 using LCSC.Models.Airtable;
 using LCSC.Models.Pulse;
-using LCTWorks.Core.Extensions;
 using LCTWorks.Core.Helpers;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace LCSC.Core.Services;
 
